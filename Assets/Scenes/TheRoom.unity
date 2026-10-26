@@ -1332,8 +1332,31 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: -2887686530609931221, guid: a971f90571437f79b946524561c86dab, type: 3}
       insertIndex: -1
       addedObject: {fileID: 8344885230122667135}
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: -2549992049239406492, guid: a971f90571437f79b946524561c86dab, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2100456790}
   m_SourcePrefab: {fileID: 100100000, guid: a971f90571437f79b946524561c86dab, type: 3}
+--- !u!1 &2100456789 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: -2549992049239406492, guid: a971f90571437f79b946524561c86dab, type: 3}
+  m_PrefabInstance: {fileID: 1319707347}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &2100456790
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2100456789}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7f3e9a1c5b8d4e2f9a0c6d1e4b7f2a85, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlanetCloudLayer
+  cloudMaterial: {fileID: 2100000, guid: e6feb4ddbd09e3b858dfd796d0690401, type: 2}
+  shellScale: 1.01
+  cloudChildName: Clouds
 --- !u!1001 &1370941011
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2124,15 +2147,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5014038006303422403, guid: febcb61dfd2226ac9ad17411cb8aa7b7, type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.28
+      value: 0.07
       objectReference: {fileID: 0}
     - target: {fileID: 5014038006303422403, guid: febcb61dfd2226ac9ad17411cb8aa7b7, type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.28
+      value: 0.07
       objectReference: {fileID: 0}
     - target: {fileID: 5014038006303422403, guid: febcb61dfd2226ac9ad17411cb8aa7b7, type: 3}
       propertyPath: m_LocalScale.z
-      value: 0.28
+      value: 0.07
       objectReference: {fileID: 0}
     - target: {fileID: 5014038006303422403, guid: febcb61dfd2226ac9ad17411cb8aa7b7, type: 3}
       propertyPath: m_LocalPosition.x
