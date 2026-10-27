@@ -13,6 +13,21 @@ public static class SolarSystemLocator
                 return found.transform;
         }
 
+        GameObject solarSystem = GameObject.Find("SolarSystem");
+        if (solarSystem == null)
+            return null;
+
+        Transform[] children = solarSystem.GetComponentsInChildren<Transform>(true);
+        for (int i = 0; i < children.Length; i++)
+        {
+            Transform child = children[i];
+            for (int n = 0; n < SunNames.Length; n++)
+            {
+                if (child.name.Equals(SunNames[n], System.StringComparison.OrdinalIgnoreCase))
+                    return child;
+            }
+        }
+
         return null;
     }
 

@@ -38,6 +38,10 @@ public class PlanetOrbitMotion : MonoBehaviour
     Quaternion _baseLocalRotation;
     Vector3 _initialLocalPosition;
     Quaternion _lockedWorldRotation;
+    bool _orbitInitialized;
+
+    public bool IsOrbitEnabled => enableOrbit;
+    public SolarPlanetId PlanetProfile => planetProfile;
 
     void Awake()
     {
@@ -48,6 +52,10 @@ public class PlanetOrbitMotion : MonoBehaviour
         _baseLocalRotation = transform.localRotation;
         _lockedWorldRotation = transform.rotation;
 
+        // Orbit lives on Wrapper; spin lives on the planet child. Never both.
+        if (enableOrbit)
+            enableSpin = false;
+
         if (enableSpin && applyAxialTiltOnStart)
             _baseLocalRotation = PlanetSpinCalculator.ApplyAxialTilt(_baseLocalRotation, axialTiltDegrees);
 
@@ -56,7 +64,10 @@ public class PlanetOrbitMotion : MonoBehaviour
 
         ResolveOrbitCenter();
         if (orbitCenter == null)
+        {
+            Debug.LogWarning($"PlanetOrbitMotion on '{name}': orbit center (Sun) not found.", this);
             return;
+        }
 
         CacheOrbitOffsetAroundSun();
     }
@@ -73,11 +84,39 @@ public class PlanetOrbitMotion : MonoBehaviour
             if (orbitCenter == null)
                 ResolveOrbitCenter();
             if (orbitCenter != null)
+            {
+                if (!_orbitInitialized)
+                    CacheOrbitOffsetAroundSun();
                 UpdateOrbit(dt);
+            }
         }
-
-        if (enableSpin)
+        else if (enableSpin)
+        {
             UpdateSpin(dt);
+        }
+    }
+
+    public void SetTimeScale(float value)
+    {
+        timeScale = Mathf.Max(0f, value);
+    }
+
+    public void SetOrbitDistanceScale(float earthOrbitSceneUnits)
+    {
+        if (!enableOrbit)
+            return;
+
+        PlanetScientificData data = PlanetScientificCatalog.Get(planetProfile);
+        orbitRadius = data.SceneOrbitRadius(Mathf.Max(0.01f, earthOrbitSceneUnits));
+
+        if (!_orbitInitialized)
+            return;
+
+        ResolveOrbitCenter();
+        if (orbitCenter == null)
+            return;
+
+        RefreshOrbitOffsetMagnitude();
     }
 
     [ContextMenu("Apply Scientific Profile")]
@@ -116,6 +155,24 @@ public class PlanetOrbitMotion : MonoBehaviour
         transform.SetPositionAndRotation(
             orbitCenter.position + _orbitOffsetFromCenter,
             _lockedWorldRotation);
+        _orbitInitialized = true;
+    }
+
+    void RefreshOrbitOffsetMagnitude()
+    {
+        float minClearance = SolarSystemLocator.EstimateRadius(orbitCenter) * sunClearanceMultiplier
+            + SolarSystemLocator.EstimateRadius(transform);
+
+        orbitRadius = PlanetOrbitCalculator.ResolveRadius(
+            orbitRadius,
+            orbitRadius,
+            minClearance,
+            ensureOrbitClearsSun);
+
+        if (_orbitOffsetFromCenter.sqrMagnitude < 0.0001f)
+            _orbitOffsetFromCenter = Vector3.right * orbitRadius;
+        else
+            _orbitOffsetFromCenter = _orbitOffsetFromCenter.normalized * orbitRadius;
     }
 
     void UpdateOrbit(float dt)

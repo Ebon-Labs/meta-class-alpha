@@ -829,7 +829,7 @@ Transform:
   m_GameObject: {fileID: 399272072}
   serializedVersion: 2
   m_LocalRotation: {x: -0.5261021, y: 0.47245798, z: 0.4724579, w: 0.52610224}
-  m_LocalPosition: {x: -5410.0923, y: 0, z: -1969.1125}
+  m_LocalPosition: {x: -5410.0923, y: 0, z: -1969.1126}
   m_LocalScale: {x: 99.01004, y: 99.01004, z: 99.01005}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1500,7 +1500,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 635656655}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4a8c2e6f0b1d3e5a7c9f1b3d5e7a9024, type: 3}
+  m_Script: {fileID: 11500000, guid: 6589900b21bd457aca4f8912a7f5547c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlanetOrbitMotion
   planetProfile: 2
@@ -1517,6 +1517,7 @@ MonoBehaviour:
   siderealDayHours: 23.934
   applyAxialTiltOnStart: 1
   timeScale: 4320
+
 --- !u!1 &678365484
 GameObject:
   m_ObjectHideFlags: 0
@@ -1543,7 +1544,7 @@ Transform:
   m_GameObject: {fileID: 678365484}
   serializedVersion: 2
   m_LocalRotation: {x: -0.32225728, y: 0.6294047, z: 0.62940466, w: 0.3222573}
-  m_LocalPosition: {x: -2688.5547, y: 0, z: 978.5538}
+  m_LocalPosition: {x: -2688.5546, y: 0, z: 978.5538}
   m_LocalScale: {x: 100.70532, y: 100.7053, z: 100.70529}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1827,11 +1828,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 1033286301}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4a8c2e6f0b1d3e5a7c9f1b3d5e7a9024, type: 3}
+  m_Script: {fileID: 11500000, guid: 6589900b21bd457aca4f8912a7f5547c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlanetOrbitMotion
   planetProfile: 0
-  applyScientificProfileOnAwake: 1
+  applyScientificProfileOnAwake: 0
   enableOrbit: 1
   orbitCenter: {fileID: 1847293651}
   orbitRadius: 116.1
@@ -1844,6 +1845,7 @@ MonoBehaviour:
   siderealDayHours: 1407.6
   applyAxialTiltOnStart: 0
   timeScale: 4320
+
 --- !u!114 &910000002
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1853,10 +1855,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 1059745204}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4a8c2e6f0b1d3e5a7c9f1b3d5e7a9024, type: 3}
+  m_Script: {fileID: 11500000, guid: 6589900b21bd457aca4f8912a7f5547c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlanetOrbitMotion
-  planetProfile: 2
+  planetProfile: 0
   applyScientificProfileOnAwake: 0
   enableOrbit: 0
   orbitCenter: {fileID: 0}
@@ -1870,6 +1872,7 @@ MonoBehaviour:
   siderealDayHours: 1407.6
   applyAxialTiltOnStart: 1
   timeScale: 4320
+
 --- !u!114 &910000003
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1879,11 +1882,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 593370430}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4a8c2e6f0b1d3e5a7c9f1b3d5e7a9024, type: 3}
+  m_Script: {fileID: 11500000, guid: 6589900b21bd457aca4f8912a7f5547c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlanetOrbitMotion
   planetProfile: 1
-  applyScientificProfileOnAwake: 1
+  applyScientificProfileOnAwake: 0
   enableOrbit: 1
   orbitCenter: {fileID: 1847293651}
   orbitRadius: 216.9
@@ -1896,6 +1899,7 @@ MonoBehaviour:
   siderealDayHours: -5832.6
   applyAxialTiltOnStart: 0
   timeScale: 4320
+
 --- !u!114 &910000004
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1905,10 +1909,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 768488720}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4a8c2e6f0b1d3e5a7c9f1b3d5e7a9024, type: 3}
+  m_Script: {fileID: 11500000, guid: 6589900b21bd457aca4f8912a7f5547c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlanetOrbitMotion
-  planetProfile: 2
+  planetProfile: 1
   applyScientificProfileOnAwake: 0
   enableOrbit: 0
   orbitCenter: {fileID: 0}
@@ -1922,6 +1926,7 @@ MonoBehaviour:
   siderealDayHours: -5832.6
   applyAxialTiltOnStart: 1
   timeScale: 4320
+
 --- !u!114 &910000005
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1931,11 +1936,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 493912490}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4a8c2e6f0b1d3e5a7c9f1b3d5e7a9024, type: 3}
+  m_Script: {fileID: 11500000, guid: 6589900b21bd457aca4f8912a7f5547c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlanetOrbitMotion
   planetProfile: 3
-  applyScientificProfileOnAwake: 1
+  applyScientificProfileOnAwake: 0
   enableOrbit: 1
   orbitCenter: {fileID: 1847293651}
   orbitRadius: 457.2
@@ -1948,6 +1953,7 @@ MonoBehaviour:
   siderealDayHours: 24.623
   applyAxialTiltOnStart: 0
   timeScale: 4320
+
 --- !u!114 &910000006
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1957,10 +1963,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 415959104}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4a8c2e6f0b1d3e5a7c9f1b3d5e7a9024, type: 3}
+  m_Script: {fileID: 11500000, guid: 6589900b21bd457aca4f8912a7f5547c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlanetOrbitMotion
-  planetProfile: 2
+  planetProfile: 3
   applyScientificProfileOnAwake: 0
   enableOrbit: 0
   orbitCenter: {fileID: 0}
@@ -1974,6 +1980,7 @@ MonoBehaviour:
   siderealDayHours: 24.623
   applyAxialTiltOnStart: 1
   timeScale: 4320
+
 --- !u!114 &910000007
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1983,11 +1990,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 1405667085}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4a8c2e6f0b1d3e5a7c9f1b3d5e7a9024, type: 3}
+  m_Script: {fileID: 11500000, guid: 6589900b21bd457aca4f8912a7f5547c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlanetOrbitMotion
   planetProfile: 4
-  applyScientificProfileOnAwake: 1
+  applyScientificProfileOnAwake: 0
   enableOrbit: 1
   orbitCenter: {fileID: 1847293651}
   orbitRadius: 1560.9
@@ -2000,6 +2007,7 @@ MonoBehaviour:
   siderealDayHours: 9.925
   applyAxialTiltOnStart: 0
   timeScale: 4320
+
 --- !u!114 &910000008
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2009,10 +2017,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 1518038469}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4a8c2e6f0b1d3e5a7c9f1b3d5e7a9024, type: 3}
+  m_Script: {fileID: 11500000, guid: 6589900b21bd457aca4f8912a7f5547c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlanetOrbitMotion
-  planetProfile: 2
+  planetProfile: 4
   applyScientificProfileOnAwake: 0
   enableOrbit: 0
   orbitCenter: {fileID: 0}
@@ -2026,6 +2034,7 @@ MonoBehaviour:
   siderealDayHours: 9.925
   applyAxialTiltOnStart: 1
   timeScale: 4320
+
 --- !u!114 &910000009
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2035,11 +2044,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 678365484}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4a8c2e6f0b1d3e5a7c9f1b3d5e7a9024, type: 3}
+  m_Script: {fileID: 11500000, guid: 6589900b21bd457aca4f8912a7f5547c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlanetOrbitMotion
   planetProfile: 5
-  applyScientificProfileOnAwake: 1
+  applyScientificProfileOnAwake: 0
   enableOrbit: 1
   orbitCenter: {fileID: 1847293651}
   orbitRadius: 2861.1
@@ -2052,6 +2061,7 @@ MonoBehaviour:
   siderealDayHours: 10.656
   applyAxialTiltOnStart: 0
   timeScale: 4320
+
 --- !u!114 &910000010
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2061,10 +2071,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 19674680}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4a8c2e6f0b1d3e5a7c9f1b3d5e7a9024, type: 3}
+  m_Script: {fileID: 11500000, guid: 6589900b21bd457aca4f8912a7f5547c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlanetOrbitMotion
-  planetProfile: 2
+  planetProfile: 5
   applyScientificProfileOnAwake: 0
   enableOrbit: 0
   orbitCenter: {fileID: 0}
@@ -2078,6 +2088,7 @@ MonoBehaviour:
   siderealDayHours: 10.656
   applyAxialTiltOnStart: 1
   timeScale: 4320
+
 --- !u!114 &910000011
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2087,11 +2098,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 399272072}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4a8c2e6f0b1d3e5a7c9f1b3d5e7a9024, type: 3}
+  m_Script: {fileID: 11500000, guid: 6589900b21bd457aca4f8912a7f5547c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlanetOrbitMotion
   planetProfile: 6
-  applyScientificProfileOnAwake: 1
+  applyScientificProfileOnAwake: 0
   enableOrbit: 1
   orbitCenter: {fileID: 1847293651}
   orbitRadius: 5757.3
@@ -2104,6 +2115,7 @@ MonoBehaviour:
   siderealDayHours: -17.24
   applyAxialTiltOnStart: 0
   timeScale: 4320
+
 --- !u!114 &910000012
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2113,10 +2125,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 1105573717}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4a8c2e6f0b1d3e5a7c9f1b3d5e7a9024, type: 3}
+  m_Script: {fileID: 11500000, guid: 6589900b21bd457aca4f8912a7f5547c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlanetOrbitMotion
-  planetProfile: 2
+  planetProfile: 6
   applyScientificProfileOnAwake: 0
   enableOrbit: 0
   orbitCenter: {fileID: 0}
@@ -2130,6 +2142,7 @@ MonoBehaviour:
   siderealDayHours: -17.24
   applyAxialTiltOnStart: 1
   timeScale: 4320
+
 --- !u!114 &910000013
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2139,15 +2152,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 1994629194}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4a8c2e6f0b1d3e5a7c9f1b3d5e7a9024, type: 3}
+  m_Script: {fileID: 11500000, guid: 6589900b21bd457aca4f8912a7f5547c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlanetOrbitMotion
   planetProfile: 7
-  applyScientificProfileOnAwake: 1
+  applyScientificProfileOnAwake: 0
   enableOrbit: 1
   orbitCenter: {fileID: 1847293651}
   orbitRadius: 9020.7
-  orbitalPeriodDays: 60182
+  orbitalPeriodDays: 60182.0
   orbitAxis: {x: 0, y: 1, z: 0}
   ensureOrbitClearsSun: 1
   sunClearanceMultiplier: 1.35
@@ -2156,6 +2169,7 @@ MonoBehaviour:
   siderealDayHours: 16.11
   applyAxialTiltOnStart: 0
   timeScale: 4320
+
 --- !u!114 &910000014
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2165,15 +2179,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 3696319}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4a8c2e6f0b1d3e5a7c9f1b3d5e7a9024, type: 3}
+  m_Script: {fileID: 11500000, guid: 6589900b21bd457aca4f8912a7f5547c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlanetOrbitMotion
-  planetProfile: 2
+  planetProfile: 7
   applyScientificProfileOnAwake: 0
   enableOrbit: 0
   orbitCenter: {fileID: 0}
   orbitRadius: 0
-  orbitalPeriodDays: 60182
+  orbitalPeriodDays: 60182.0
   orbitAxis: {x: 0, y: 1, z: 0}
   ensureOrbitClearsSun: 0
   sunClearanceMultiplier: 1.35
@@ -2182,6 +2196,27 @@ MonoBehaviour:
   siderealDayHours: 16.11
   applyAxialTiltOnStart: 1
   timeScale: 4320
+
+--- !u!114 &920000001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 920000002}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1a2b3c4d5e6f708192a3b4c5d6e7f809, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SolarSystemMotionController
+  timeScale: 4320
+  maxDistanceScale: 300
+  distanceScale: 300
+--- !u!1 &920000002 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: a971f90571437f79b946524561c86dab, type: 3}
+  m_PrefabInstance: {fileID: 1319707347}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &941359222
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2419,7 +2454,7 @@ Transform:
   m_GameObject: {fileID: 1033286301}
   serializedVersion: 2
   m_LocalRotation: {x: -0.7071068, y: -0, z: -0, w: 0.7071067}
-  m_LocalPosition: {x: 116.1, y: 0, z: 0}
+  m_LocalPosition: {x: 116.1, y: 0, z: 0.0}
   m_LocalScale: {x: 100, y: 99.999985, z: 99.999985}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -3488,7 +3523,10 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: a971f90571437f79b946524561c86dab, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1471677688}
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: a971f90571437f79b946524561c86dab, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 920000001}
   m_SourcePrefab: {fileID: 100100000, guid: a971f90571437f79b946524561c86dab, type: 3}
 --- !u!1001 &1370941011
 PrefabInstance:
@@ -3743,7 +3781,7 @@ Transform:
   m_GameObject: {fileID: 1405667085}
   serializedVersion: 2
   m_LocalRotation: {x: -0.07575513, y: 0.7030371, z: 0.70303714, w: 0.07575513}
-  m_LocalPosition: {x: -780.45, y: 0, z: 1351.779}
+  m_LocalPosition: {x: -780.45, y: 0, z: 1351.7791}
   m_LocalScale: {x: 98.27002, y: 98.270004, z: 98.27}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -3899,7 +3937,7 @@ Transform:
   m_GameObject: {fileID: 1471677687}
   serializedVersion: 2
   m_LocalRotation: {x: 0.4133752, y: 0.57369065, z: 0.57369065, w: -0.41337517}
-  m_LocalPosition: {x: 300, y: 0, z: 0}
+  m_LocalPosition: {x: 300.0, y: 0, z: 0.0}
   m_LocalScale: {x: 100, y: 100, z: 100}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -3916,14 +3954,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 1471677687}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4a8c2e6f0b1d3e5a7c9f1b3d5e7a9024, type: 3}
+  m_Script: {fileID: 11500000, guid: 6589900b21bd457aca4f8912a7f5547c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlanetOrbitMotion
   planetProfile: 2
-  applyScientificProfileOnAwake: 1
+  applyScientificProfileOnAwake: 0
   enableOrbit: 1
   orbitCenter: {fileID: 1847293651}
-  orbitRadius: 300
+  orbitRadius: 300.0
   orbitalPeriodDays: 365.256
   orbitAxis: {x: 0, y: 1, z: 0}
   ensureOrbitClearsSun: 1
@@ -3933,6 +3971,7 @@ MonoBehaviour:
   siderealDayHours: 23.934
   applyAxialTiltOnStart: 0
   timeScale: 4320
+
 --- !u!1001 &1477882513
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4811,7 +4850,7 @@ Transform:
   m_GameObject: {fileID: 1994629194}
   serializedVersion: 2
   m_LocalRotation: {x: -0.660307, y: 0.25297192, z: 0.25297192, w: 0.66030693}
-  m_LocalPosition: {x: -4510.35, y: 0, z: -7812.1553}
+  m_LocalPosition: {x: -4510.35, y: 0, z: -7812.1554}
   m_LocalScale: {x: 99.82265, y: 99.82268, z: 99.82267}
   m_ConstrainProportionsScale: 0
   m_Children:
