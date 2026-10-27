@@ -70,7 +70,7 @@ Material:
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
-    - _GlowStrenght: 4
+    - _GlowStrenght: 10
     - _Metallic: 0
     - _Mode: 3
     - _OcclusionStrength: 1
@@ -82,9 +82,9 @@ Material:
     - _UVSec: 0
     - _ZWrite: 0
     m_Colors:
-    - _BaseColor: {r: 0.9811321, g: 0.9811321, b: 0.9811321, a: 0}
+    - _BaseColor: {r: 1, g: 0, b: 0.88550186, a: 0.14117648}
     - _Color: {r: 0.0420523, g: 0.7953686, b: 0.99056596, a: 0.03529412}
-    - _EmissionColor: {r: 0.92156863, g: 0.9811321, b: 0.54509807, a: 1}
+    - _EmissionColor: {r: 0.04004982, g: 0.8784314, b: 0.9433962, a: 1}
     - _NeonColor: {r: 1, g: 0.45461857, b: 0.06132078, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
