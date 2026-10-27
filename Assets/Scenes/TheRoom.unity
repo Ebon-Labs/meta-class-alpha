@@ -1403,6 +1403,7 @@ GameObject:
   - component: {fileID: 635656656}
   - component: {fileID: 635656659}
   - component: {fileID: 635656658}
+  - component: {fileID: 635656660}
   m_Layer: 0
   m_Name: 'Earth '
   m_TagString: Planet
@@ -1427,6 +1428,30 @@ Transform:
   - {fileID: 1515644064}
   m_Father: {fileID: 1471677688}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &635656660
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 635656655}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4a8c2e6f0b1d3e5a7c9f1b3d5e7a9024, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlanetOrbitMotion
+  enableOrbit: 0
+  orbitCenter: {fileID: 0}
+  orbitRadius: 0
+  orbitalPeriodDays: 365.256
+  orbitAxis: {x: 0, y: 1, z: 0}
+  ensureOrbitClearsSun: 0
+  sunClearanceMultiplier: 1.35
+  enableSpin: 1
+  axialTiltDegrees: 23.44
+  siderealDayHours: 23.934
+  applyAxialTiltOnStart: 1
+  timeScale: 4320
 --- !u!23 &635656658
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -3496,7 +3521,7 @@ Transform:
   m_GameObject: {fileID: 1471677687}
   serializedVersion: 2
   m_LocalRotation: {x: 0.4133752, y: 0.57369065, z: 0.57369065, w: -0.41337517}
-  m_LocalPosition: {x: 0, y: 0, z: -24.63613}
+  m_LocalPosition: {x: 300, y: 0, z: 0}
   m_LocalScale: {x: 100, y: 100, z: 100}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -3511,18 +3536,23 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1471677687}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4a8c2e6f0b1d3e5a7c9f1b3d5e7a9024, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlanetOrbitMotion
+  enableOrbit: 1
   orbitCenter: {fileID: 1847293651}
-  orbitRadius: 0
+  orbitRadius: 300
+  orbitalPeriodDays: 365.256
+  orbitAxis: {x: 0, y: 1, z: 0}
+  ensureOrbitClearsSun: 1
+  sunClearanceMultiplier: 1.35
+  enableSpin: 0
   axialTiltDegrees: 23.44
   siderealDayHours: 23.934
-  orbitalPeriodDays: 365.25
+  applyAxialTiltOnStart: 0
   timeScale: 4320
-  orbitAxis: {x: 0, y: 1, z: 0}
 --- !u!1001 &1477882513
 PrefabInstance:
   m_ObjectHideFlags: 0
