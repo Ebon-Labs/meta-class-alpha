@@ -2223,8 +2223,35 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: -2887686530609931221, guid: a971f90571437f79b946524561c86dab, type: 3}
       insertIndex: -1
       addedObject: {fileID: 8344885230122667135}
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: -2549992049239406492, guid: a971f90571437f79b946524561c86dab, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2100456801}
   m_SourcePrefab: {fileID: 100100000, guid: a971f90571437f79b946524561c86dab, type: 3}
+--- !u!1 &2100456800 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: -2549992049239406492, guid: a971f90571437f79b946524561c86dab, type: 3}
+  m_PrefabInstance: {fileID: 1319707347}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &2100456801
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2100456800}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4a8c2e6f0b1d3e5a7c9f1b3d5e7a9024, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlanetOrbitMotion
+  orbitCenter: {fileID: 1847293651}
+  orbitRadius: 0
+  axialTiltDegrees: 23.44
+  siderealDayHours: 23.934
+  orbitalPeriodDays: 365.25
+  timeScale: 4320
+  orbitAxis: {x: 0, y: 1, z: 0}
 --- !u!1001 &1370941011
 PrefabInstance:
   m_ObjectHideFlags: 0
