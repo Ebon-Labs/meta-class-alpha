@@ -130,6 +130,7 @@ GameObject:
   - component: {fileID: 3696320}
   - component: {fileID: 3696322}
   - component: {fileID: 3696321}
+  - component: {fileID: 910000014}
   m_Layer: 0
   m_Name: Neptune
   m_TagString: Planet
@@ -221,6 +222,7 @@ GameObject:
   - component: {fileID: 19674681}
   - component: {fileID: 19674683}
   - component: {fileID: 19674682}
+  - component: {fileID: 910000010}
   m_Layer: 0
   m_Name: Saturn
   m_TagString: Planet
@@ -810,6 +812,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 399272073}
+  - component: {fileID: 910000011}
   m_Layer: 0
   m_Name: UranusWrapper
   m_TagString: Untagged
@@ -826,7 +829,7 @@ Transform:
   m_GameObject: {fileID: 399272072}
   serializedVersion: 2
   m_LocalRotation: {x: -0.5261021, y: 0.47245798, z: 0.4724579, w: 0.52610224}
-  m_LocalPosition: {x: 0, y: 0, z: -24.63613}
+  m_LocalPosition: {x: -5410.0923, y: 0, z: -1969.1125}
   m_LocalScale: {x: 99.01004, y: 99.01004, z: 99.01005}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -845,6 +848,7 @@ GameObject:
   - component: {fileID: 415959105}
   - component: {fileID: 415959107}
   - component: {fileID: 415959106}
+  - component: {fileID: 910000006}
   m_Layer: 0
   m_Name: Mars
   m_TagString: Planet
@@ -1117,6 +1121,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 493912491}
+  - component: {fileID: 910000005}
   m_Layer: 0
   m_Name: MarsWrapper
   m_TagString: Untagged
@@ -1133,7 +1138,7 @@ Transform:
   m_GameObject: {fileID: 493912490}
   serializedVersion: 2
   m_LocalRotation: {x: 0.18077426, y: 0.68360865, z: 0.6836085, w: -0.1807743}
-  m_LocalPosition: {x: 0, y: 0, z: -24.63613}
+  m_LocalPosition: {x: 79.3919, y: 0, z: 450.2541}
   m_LocalScale: {x: 100.000015, y: 100, z: 100}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1268,6 +1273,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 593370431}
+  - component: {fileID: 910000003}
   m_Layer: 0
   m_Name: VenusWrapper
   m_TagString: Untagged
@@ -1284,7 +1290,7 @@ Transform:
   m_GameObject: {fileID: 593370430}
   serializedVersion: 2
   m_LocalRotation: {x: -0.5912573, y: -0.3878335, z: -0.38783348, w: 0.59125733}
-  m_LocalPosition: {x: 0, y: 0, z: -24.63613}
+  m_LocalPosition: {x: 166.155, y: 0, z: 139.4206}
   m_LocalScale: {x: 100, y: 100.00001, z: 100}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1428,30 +1434,6 @@ Transform:
   - {fileID: 1515644064}
   m_Father: {fileID: 1471677688}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &635656660
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 635656655}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4a8c2e6f0b1d3e5a7c9f1b3d5e7a9024, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlanetOrbitMotion
-  enableOrbit: 0
-  orbitCenter: {fileID: 0}
-  orbitRadius: 0
-  orbitalPeriodDays: 365.256
-  orbitAxis: {x: 0, y: 1, z: 0}
-  ensureOrbitClearsSun: 0
-  sunClearanceMultiplier: 1.35
-  enableSpin: 1
-  axialTiltDegrees: 23.44
-  siderealDayHours: 23.934
-  applyAxialTiltOnStart: 1
-  timeScale: 4320
 --- !u!23 &635656658
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -1509,6 +1491,32 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 635656655}
   m_Mesh: {fileID: 504364662958719123, guid: a971f90571437f79b946524561c86dab, type: 3}
+--- !u!114 &635656660
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 635656655}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4a8c2e6f0b1d3e5a7c9f1b3d5e7a9024, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlanetOrbitMotion
+  planetProfile: 2
+  applyScientificProfileOnAwake: 0
+  enableOrbit: 0
+  orbitCenter: {fileID: 0}
+  orbitRadius: 0
+  orbitalPeriodDays: 365.256
+  orbitAxis: {x: 0, y: 1, z: 0}
+  ensureOrbitClearsSun: 0
+  sunClearanceMultiplier: 1.35
+  enableSpin: 1
+  axialTiltDegrees: 23.44
+  siderealDayHours: 23.934
+  applyAxialTiltOnStart: 1
+  timeScale: 4320
 --- !u!1 &678365484
 GameObject:
   m_ObjectHideFlags: 0
@@ -1518,6 +1526,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 678365485}
+  - component: {fileID: 910000009}
   m_Layer: 0
   m_Name: SaturnWrapper
   m_TagString: Untagged
@@ -1534,7 +1543,7 @@ Transform:
   m_GameObject: {fileID: 678365484}
   serializedVersion: 2
   m_LocalRotation: {x: -0.32225728, y: 0.6294047, z: 0.62940466, w: 0.3222573}
-  m_LocalPosition: {x: 0, y: 0, z: -24.63613}
+  m_LocalPosition: {x: -2688.5547, y: 0, z: 978.5538}
   m_LocalScale: {x: 100.70532, y: 100.7053, z: 100.70529}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1613,6 +1622,7 @@ GameObject:
   - component: {fileID: 768488721}
   - component: {fileID: 768488723}
   - component: {fileID: 768488722}
+  - component: {fileID: 910000004}
   m_Layer: 0
   m_Name: Venus
   m_TagString: Planet
@@ -1808,6 +1818,370 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 5209321470821200043, guid: 01407e962d5b6ee15baeba9a43b5737d, type: 3}
   m_PrefabInstance: {fileID: 768680303}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &910000001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1033286301}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4a8c2e6f0b1d3e5a7c9f1b3d5e7a9024, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlanetOrbitMotion
+  planetProfile: 0
+  applyScientificProfileOnAwake: 1
+  enableOrbit: 1
+  orbitCenter: {fileID: 1847293651}
+  orbitRadius: 116.1
+  orbitalPeriodDays: 87.969
+  orbitAxis: {x: 0, y: 1, z: 0}
+  ensureOrbitClearsSun: 1
+  sunClearanceMultiplier: 1.35
+  enableSpin: 0
+  axialTiltDegrees: 0.034
+  siderealDayHours: 1407.6
+  applyAxialTiltOnStart: 0
+  timeScale: 4320
+--- !u!114 &910000002
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1059745204}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4a8c2e6f0b1d3e5a7c9f1b3d5e7a9024, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlanetOrbitMotion
+  planetProfile: 2
+  applyScientificProfileOnAwake: 0
+  enableOrbit: 0
+  orbitCenter: {fileID: 0}
+  orbitRadius: 0
+  orbitalPeriodDays: 87.969
+  orbitAxis: {x: 0, y: 1, z: 0}
+  ensureOrbitClearsSun: 0
+  sunClearanceMultiplier: 1.35
+  enableSpin: 1
+  axialTiltDegrees: 0.034
+  siderealDayHours: 1407.6
+  applyAxialTiltOnStart: 1
+  timeScale: 4320
+--- !u!114 &910000003
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 593370430}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4a8c2e6f0b1d3e5a7c9f1b3d5e7a9024, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlanetOrbitMotion
+  planetProfile: 1
+  applyScientificProfileOnAwake: 1
+  enableOrbit: 1
+  orbitCenter: {fileID: 1847293651}
+  orbitRadius: 216.9
+  orbitalPeriodDays: 224.701
+  orbitAxis: {x: 0, y: 1, z: 0}
+  ensureOrbitClearsSun: 1
+  sunClearanceMultiplier: 1.35
+  enableSpin: 0
+  axialTiltDegrees: 177.36
+  siderealDayHours: -5832.6
+  applyAxialTiltOnStart: 0
+  timeScale: 4320
+--- !u!114 &910000004
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 768488720}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4a8c2e6f0b1d3e5a7c9f1b3d5e7a9024, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlanetOrbitMotion
+  planetProfile: 2
+  applyScientificProfileOnAwake: 0
+  enableOrbit: 0
+  orbitCenter: {fileID: 0}
+  orbitRadius: 0
+  orbitalPeriodDays: 224.701
+  orbitAxis: {x: 0, y: 1, z: 0}
+  ensureOrbitClearsSun: 0
+  sunClearanceMultiplier: 1.35
+  enableSpin: 1
+  axialTiltDegrees: 177.36
+  siderealDayHours: -5832.6
+  applyAxialTiltOnStart: 1
+  timeScale: 4320
+--- !u!114 &910000005
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 493912490}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4a8c2e6f0b1d3e5a7c9f1b3d5e7a9024, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlanetOrbitMotion
+  planetProfile: 3
+  applyScientificProfileOnAwake: 1
+  enableOrbit: 1
+  orbitCenter: {fileID: 1847293651}
+  orbitRadius: 457.2
+  orbitalPeriodDays: 686.98
+  orbitAxis: {x: 0, y: 1, z: 0}
+  ensureOrbitClearsSun: 1
+  sunClearanceMultiplier: 1.35
+  enableSpin: 0
+  axialTiltDegrees: 25.19
+  siderealDayHours: 24.623
+  applyAxialTiltOnStart: 0
+  timeScale: 4320
+--- !u!114 &910000006
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 415959104}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4a8c2e6f0b1d3e5a7c9f1b3d5e7a9024, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlanetOrbitMotion
+  planetProfile: 2
+  applyScientificProfileOnAwake: 0
+  enableOrbit: 0
+  orbitCenter: {fileID: 0}
+  orbitRadius: 0
+  orbitalPeriodDays: 686.98
+  orbitAxis: {x: 0, y: 1, z: 0}
+  ensureOrbitClearsSun: 0
+  sunClearanceMultiplier: 1.35
+  enableSpin: 1
+  axialTiltDegrees: 25.19
+  siderealDayHours: 24.623
+  applyAxialTiltOnStart: 1
+  timeScale: 4320
+--- !u!114 &910000007
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1405667085}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4a8c2e6f0b1d3e5a7c9f1b3d5e7a9024, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlanetOrbitMotion
+  planetProfile: 4
+  applyScientificProfileOnAwake: 1
+  enableOrbit: 1
+  orbitCenter: {fileID: 1847293651}
+  orbitRadius: 1560.9
+  orbitalPeriodDays: 4332.59
+  orbitAxis: {x: 0, y: 1, z: 0}
+  ensureOrbitClearsSun: 1
+  sunClearanceMultiplier: 1.35
+  enableSpin: 0
+  axialTiltDegrees: 3.13
+  siderealDayHours: 9.925
+  applyAxialTiltOnStart: 0
+  timeScale: 4320
+--- !u!114 &910000008
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1518038469}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4a8c2e6f0b1d3e5a7c9f1b3d5e7a9024, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlanetOrbitMotion
+  planetProfile: 2
+  applyScientificProfileOnAwake: 0
+  enableOrbit: 0
+  orbitCenter: {fileID: 0}
+  orbitRadius: 0
+  orbitalPeriodDays: 4332.59
+  orbitAxis: {x: 0, y: 1, z: 0}
+  ensureOrbitClearsSun: 0
+  sunClearanceMultiplier: 1.35
+  enableSpin: 1
+  axialTiltDegrees: 3.13
+  siderealDayHours: 9.925
+  applyAxialTiltOnStart: 1
+  timeScale: 4320
+--- !u!114 &910000009
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 678365484}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4a8c2e6f0b1d3e5a7c9f1b3d5e7a9024, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlanetOrbitMotion
+  planetProfile: 5
+  applyScientificProfileOnAwake: 1
+  enableOrbit: 1
+  orbitCenter: {fileID: 1847293651}
+  orbitRadius: 2861.1
+  orbitalPeriodDays: 10759.22
+  orbitAxis: {x: 0, y: 1, z: 0}
+  ensureOrbitClearsSun: 1
+  sunClearanceMultiplier: 1.35
+  enableSpin: 0
+  axialTiltDegrees: 26.73
+  siderealDayHours: 10.656
+  applyAxialTiltOnStart: 0
+  timeScale: 4320
+--- !u!114 &910000010
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 19674680}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4a8c2e6f0b1d3e5a7c9f1b3d5e7a9024, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlanetOrbitMotion
+  planetProfile: 2
+  applyScientificProfileOnAwake: 0
+  enableOrbit: 0
+  orbitCenter: {fileID: 0}
+  orbitRadius: 0
+  orbitalPeriodDays: 10759.22
+  orbitAxis: {x: 0, y: 1, z: 0}
+  ensureOrbitClearsSun: 0
+  sunClearanceMultiplier: 1.35
+  enableSpin: 1
+  axialTiltDegrees: 26.73
+  siderealDayHours: 10.656
+  applyAxialTiltOnStart: 1
+  timeScale: 4320
+--- !u!114 &910000011
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 399272072}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4a8c2e6f0b1d3e5a7c9f1b3d5e7a9024, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlanetOrbitMotion
+  planetProfile: 6
+  applyScientificProfileOnAwake: 1
+  enableOrbit: 1
+  orbitCenter: {fileID: 1847293651}
+  orbitRadius: 5757.3
+  orbitalPeriodDays: 30688.5
+  orbitAxis: {x: 0, y: 1, z: 0}
+  ensureOrbitClearsSun: 1
+  sunClearanceMultiplier: 1.35
+  enableSpin: 0
+  axialTiltDegrees: 97.77
+  siderealDayHours: -17.24
+  applyAxialTiltOnStart: 0
+  timeScale: 4320
+--- !u!114 &910000012
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1105573717}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4a8c2e6f0b1d3e5a7c9f1b3d5e7a9024, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlanetOrbitMotion
+  planetProfile: 2
+  applyScientificProfileOnAwake: 0
+  enableOrbit: 0
+  orbitCenter: {fileID: 0}
+  orbitRadius: 0
+  orbitalPeriodDays: 30688.5
+  orbitAxis: {x: 0, y: 1, z: 0}
+  ensureOrbitClearsSun: 0
+  sunClearanceMultiplier: 1.35
+  enableSpin: 1
+  axialTiltDegrees: 97.77
+  siderealDayHours: -17.24
+  applyAxialTiltOnStart: 1
+  timeScale: 4320
+--- !u!114 &910000013
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1994629194}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4a8c2e6f0b1d3e5a7c9f1b3d5e7a9024, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlanetOrbitMotion
+  planetProfile: 7
+  applyScientificProfileOnAwake: 1
+  enableOrbit: 1
+  orbitCenter: {fileID: 1847293651}
+  orbitRadius: 9020.7
+  orbitalPeriodDays: 60182
+  orbitAxis: {x: 0, y: 1, z: 0}
+  ensureOrbitClearsSun: 1
+  sunClearanceMultiplier: 1.35
+  enableSpin: 0
+  axialTiltDegrees: 28.32
+  siderealDayHours: 16.11
+  applyAxialTiltOnStart: 0
+  timeScale: 4320
+--- !u!114 &910000014
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3696319}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4a8c2e6f0b1d3e5a7c9f1b3d5e7a9024, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlanetOrbitMotion
+  planetProfile: 2
+  applyScientificProfileOnAwake: 0
+  enableOrbit: 0
+  orbitCenter: {fileID: 0}
+  orbitRadius: 0
+  orbitalPeriodDays: 60182
+  orbitAxis: {x: 0, y: 1, z: 0}
+  ensureOrbitClearsSun: 0
+  sunClearanceMultiplier: 1.35
+  enableSpin: 1
+  axialTiltDegrees: 28.32
+  siderealDayHours: 16.11
+  applyAxialTiltOnStart: 1
+  timeScale: 4320
 --- !u!1001 &941359222
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2028,6 +2402,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1033286302}
+  - component: {fileID: 910000001}
   m_Layer: 0
   m_Name: MercuryWrapper
   m_TagString: Untagged
@@ -2044,7 +2419,7 @@ Transform:
   m_GameObject: {fileID: 1033286301}
   serializedVersion: 2
   m_LocalRotation: {x: -0.7071068, y: -0, z: -0, w: 0.7071067}
-  m_LocalPosition: {x: 0, y: 0, z: -24.63613}
+  m_LocalPosition: {x: 116.1, y: 0, z: 0}
   m_LocalScale: {x: 100, y: 99.999985, z: 99.999985}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -2177,6 +2552,7 @@ GameObject:
   - component: {fileID: 1059745205}
   - component: {fileID: 1059745207}
   - component: {fileID: 1059745206}
+  - component: {fileID: 910000002}
   m_Layer: 0
   m_Name: Mercury
   m_TagString: Planet
@@ -2374,6 +2750,7 @@ GameObject:
   - component: {fileID: 1105573718}
   - component: {fileID: 1105573720}
   - component: {fileID: 1105573719}
+  - component: {fileID: 910000012}
   m_Layer: 0
   m_Name: Uranus
   m_TagString: Planet
@@ -2773,7 +3150,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1000, y: 1000, z: 1000}
+  m_LocalScale: {x: 50000, y: 50000, z: 50000}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 0}
@@ -3349,6 +3726,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1405667086}
+  - component: {fileID: 910000007}
   m_Layer: 0
   m_Name: JupterWrapper
   m_TagString: Untagged
@@ -3365,7 +3743,7 @@ Transform:
   m_GameObject: {fileID: 1405667085}
   serializedVersion: 2
   m_LocalRotation: {x: -0.07575513, y: 0.7030371, z: 0.70303714, w: 0.07575513}
-  m_LocalPosition: {x: 0, y: 0, z: -24.63613}
+  m_LocalPosition: {x: -780.45, y: 0, z: 1351.779}
   m_LocalScale: {x: 98.27002, y: 98.270004, z: 98.27}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -3541,6 +3919,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4a8c2e6f0b1d3e5a7c9f1b3d5e7a9024, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlanetOrbitMotion
+  planetProfile: 2
+  applyScientificProfileOnAwake: 1
   enableOrbit: 1
   orbitCenter: {fileID: 1847293651}
   orbitRadius: 300
@@ -3998,6 +4378,7 @@ GameObject:
   - component: {fileID: 1518038470}
   - component: {fileID: 1518038472}
   - component: {fileID: 1518038471}
+  - component: {fileID: 910000008}
   m_Layer: 0
   m_Name: Jupter
   m_TagString: Planet
@@ -4413,6 +4794,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1994629195}
+  - component: {fileID: 910000013}
   m_Layer: 0
   m_Name: NeptuneWrapper
   m_TagString: Untagged
@@ -4429,7 +4811,7 @@ Transform:
   m_GameObject: {fileID: 1994629194}
   serializedVersion: 2
   m_LocalRotation: {x: -0.660307, y: 0.25297192, z: 0.25297192, w: 0.66030693}
-  m_LocalPosition: {x: 0, y: 0, z: -24.63613}
+  m_LocalPosition: {x: -4510.35, y: 0, z: -7812.1553}
   m_LocalScale: {x: 99.82265, y: 99.82268, z: 99.82267}
   m_ConstrainProportionsScale: 0
   m_Children:
