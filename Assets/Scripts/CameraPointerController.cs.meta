@@ -3,7 +3,11 @@ guid: a38630dbaeedc784c8e2dd39bf3ab692
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - Loader: {instanceID: 0}
+  - pointerIcon: {instanceID: 0}
+  - idleIcon: {fileID: 21300000, guid: 2f087f39a981db4169ee67e965242d59, type: 3}
+  - gazedIcon: {fileID: 21300000, guid: 171cedf29ae54c798ff6ee63b657be06, type: 3}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

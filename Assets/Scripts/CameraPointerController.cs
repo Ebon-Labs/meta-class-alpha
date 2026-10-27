@@ -19,6 +19,9 @@ public class CameraPointerController : NetworkBehaviour
     private Slider SliderObject;
     private string[] interactiveTags = { "Interactive", "Teleportable", "Player" };
     public GameObject Loader;
+    public Image pointerIcon;
+    public Sprite idleIcon;
+    public Sprite gazedIcon;
 
     public override void OnStartClient()
     {
@@ -122,6 +125,18 @@ public class CameraPointerController : NetworkBehaviour
             Loader.SetActive(false);
             SliderObject.value = 0f;
         }
+
+        UpdatePointerIcon(hasPointerEntered);
+    }
+
+    void UpdatePointerIcon(bool gazed)
+    {
+        if (pointerIcon == null)
+            return;
+
+        Sprite next = gazed ? gazedIcon : idleIcon;
+        if (next != null && pointerIcon.sprite != next)
+            pointerIcon.sprite = next;
     }
 
     public float getOnPointerEnterCounter()

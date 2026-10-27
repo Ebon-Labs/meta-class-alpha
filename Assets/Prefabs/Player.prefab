@@ -708,6 +708,9 @@ MonoBehaviour:
   syncInterval: 0.1
   onPointerClickTime: 3
   Loader: {fileID: 2864296460585804339}
+  pointerIcon: {fileID: 355293047852120020}
+  idleIcon: {fileID: 21300000, guid: 2f087f39a981db4169ee67e965242d59, type: 3}
+  gazedIcon: {fileID: 21300000, guid: 171cedf29ae54c798ff6ee63b657be06, type: 3}
 --- !u!114 &2864296461989590327
 MonoBehaviour:
   m_ObjectHideFlags: 0
