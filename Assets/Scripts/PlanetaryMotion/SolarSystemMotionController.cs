@@ -9,23 +9,23 @@ public class SolarSystemMotionController : MonoBehaviour
     [SerializeField] float timeScale = 4320f;
 
     [Header("Distance")]
-    [Tooltip("Maximum Earth orbit radius in scene units (current scientific scale).")]
-    [SerializeField] float maxDistanceScale = PlanetScientificCatalog.EarthOrbitSceneUnits;
-
-    [Tooltip("Earth orbit radius used now. Clamped to maxDistanceScale. Other planets keep AU proportions.")]
+    [Tooltip("Earth orbit radius used now. Clamped to MaxDistanceScale. Other planets keep AU proportions.")]
     [SerializeField] float distanceScale = PlanetScientificCatalog.EarthOrbitSceneUnits;
 
     float _appliedTimeScale = -1f;
     float _appliedDistanceScale = -1f;
 
+    /// <summary>Maximum Earth orbit radius in scene units (scientific scale).</summary>
+    public float MaxDistanceScale => PlanetScientificCatalog.EarthOrbitSceneUnits;
+
     void OnValidate()
     {
-        maxDistanceScale = Mathf.Max(0.01f, maxDistanceScale);
-        distanceScale = Mathf.Clamp(distanceScale, 0.01f, maxDistanceScale);
+        distanceScale = Mathf.Clamp(distanceScale, 0.01f, MaxDistanceScale);
     }
 
-    void Awake()
+    void Start()
     {
+        // After PlanetOrbitMotion.Awake captured child poses / orbit offsets.
         ApplyToPlanets(force: true);
     }
 

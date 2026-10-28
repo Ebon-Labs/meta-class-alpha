@@ -1,6 +1,7 @@
 using UnityEngine;
 
 [DisallowMultipleComponent]
+[DefaultExecutionOrder(1000)]
 public class PlanetOrbitMotion : MonoBehaviour
 {
     [Header("Profile")]
@@ -15,7 +16,7 @@ public class PlanetOrbitMotion : MonoBehaviour
     [Tooltip("Sidereal orbital period in days (Earth ≈ 365.256).")]
     [SerializeField] float orbitalPeriodDays = 365.256f;
     [SerializeField] Vector3 orbitAxis = Vector3.up;
-    [Tooltip("If the current distance to the Sun is smaller than the Sun radius, push the orbit out.")]
+    [Tooltip("If true, expands radius when too close to the Sun without moving on the first frame.")]
     [SerializeField] bool ensureOrbitClearsSun = true;
     [SerializeField] float sunClearanceMultiplier = 1.35f;
 
@@ -26,7 +27,7 @@ public class PlanetOrbitMotion : MonoBehaviour
     [Tooltip("Sidereal day in hours (Earth ≈ 23.934). Negative = retrograde (Venus, Uranus).")]
     [SerializeField] float siderealDayHours = 23.934f;
     [Tooltip("If true, applies axial tilt once from the scene local rotation.")]
-    [SerializeField] bool applyAxialTiltOnStart = true;
+    [SerializeField] bool applyAxialTiltOnStart = false;
 
     [Header("Time")]
     [Tooltip("Simulation speed. 4320 ≈ 1 Earth sidereal day every 20 real seconds.")]
@@ -37,8 +38,18 @@ public class PlanetOrbitMotion : MonoBehaviour
     float _spinAngleDegrees;
     Quaternion _baseLocalRotation;
     Vector3 _initialLocalPosition;
-    Quaternion _lockedWorldRotation;
     bool _orbitInitialized;
+    ChildLocalPose[] _childPoses;
+
+    struct ChildLocalPose
+    {
+        public Transform transform;
+        public Vector3 localPosition;
+        public Quaternion localRotation;
+        public Vector3 localScale;
+        public Vector3 anchoredPosition3D;
+        public bool isRect;
+    }
 
     public bool IsOrbitEnabled => enableOrbit;
     public SolarPlanetId PlanetProfile => planetProfile;
@@ -48,9 +59,10 @@ public class PlanetOrbitMotion : MonoBehaviour
         if (applyScientificProfileOnAwake)
             ApplyScientificProfile();
 
+        // Capture scene pose first — never alter parent/child locals on start.
         _initialLocalPosition = transform.localPosition;
         _baseLocalRotation = transform.localRotation;
-        _lockedWorldRotation = transform.rotation;
+        CacheChildLocalPoses();
 
         // Orbit lives on Wrapper; spin lives on the planet child. Never both.
         if (enableOrbit)
@@ -70,6 +82,13 @@ public class PlanetOrbitMotion : MonoBehaviour
         }
 
         CacheOrbitOffsetAroundSun();
+        RestoreChildLocalPoses();
+    }
+
+    void Start()
+    {
+        // Undo anything other Awake/Start scripts may have done to children.
+        RestoreChildLocalPoses();
     }
 
     void Update()
@@ -96,6 +115,12 @@ public class PlanetOrbitMotion : MonoBehaviour
         }
     }
 
+    void LateUpdate()
+    {
+        // Hard guarantee: markers/orbs keep the exact local pose captured at start.
+        RestoreChildLocalPoses();
+    }
+
     public void SetTimeScale(float value)
     {
         timeScale = Mathf.Max(0f, value);
@@ -107,7 +132,13 @@ public class PlanetOrbitMotion : MonoBehaviour
             return;
 
         PlanetScientificData data = PlanetScientificCatalog.Get(planetProfile);
-        orbitRadius = data.SceneOrbitRadius(Mathf.Max(0.01f, earthOrbitSceneUnits));
+        float nextRadius = data.SceneOrbitRadius(Mathf.Max(0.01f, earthOrbitSceneUnits));
+
+        // Avoid a first-frame jump when the requested scale matches the current orbit.
+        if (_orbitInitialized && Mathf.Approximately(nextRadius, orbitRadius))
+            return;
+
+        orbitRadius = nextRadius;
 
         if (!_orbitInitialized)
             return;
@@ -117,6 +148,8 @@ public class PlanetOrbitMotion : MonoBehaviour
             return;
 
         RefreshOrbitOffsetMagnitude();
+        ApplyOrbitPosition();
+        RestoreChildLocalPoses();
     }
 
     [ContextMenu("Apply Scientific Profile")]
@@ -141,34 +174,19 @@ public class PlanetOrbitMotion : MonoBehaviour
 
     void CacheOrbitOffsetAroundSun()
     {
+        // Keep the exact scene placement so InteractionOrb/planet local poses stay valid.
         Vector3 toPlanet = transform.position - orbitCenter.position;
-        float minClearance = SolarSystemLocator.EstimateRadius(orbitCenter) * sunClearanceMultiplier
-            + SolarSystemLocator.EstimateRadius(transform);
-
-        orbitRadius = PlanetOrbitCalculator.ResolveRadius(
-            orbitRadius,
-            toPlanet.magnitude,
-            minClearance,
-            ensureOrbitClearsSun);
-
-        _orbitOffsetFromCenter = PlanetOrbitCalculator.BuildOffsetFromCenter(toPlanet, orbitRadius);
-        transform.SetPositionAndRotation(
-            orbitCenter.position + _orbitOffsetFromCenter,
-            _lockedWorldRotation);
+        _orbitOffsetFromCenter = toPlanet.sqrMagnitude < 0.0001f
+            ? Vector3.right * Mathf.Max(0.01f, orbitRadius)
+            : toPlanet;
+        orbitRadius = _orbitOffsetFromCenter.magnitude;
         _orbitInitialized = true;
     }
 
     void RefreshOrbitOffsetMagnitude()
     {
-        float minClearance = SolarSystemLocator.EstimateRadius(orbitCenter) * sunClearanceMultiplier
-            + SolarSystemLocator.EstimateRadius(transform);
-
-        orbitRadius = PlanetOrbitCalculator.ResolveRadius(
-            orbitRadius,
-            orbitRadius,
-            minClearance,
-            ensureOrbitClearsSun);
-
+        // Never re-apply sun clearance after init — that jumps the Wrapper and breaks
+        // authored InteractionOrb local placement under scaled parents.
         if (_orbitOffsetFromCenter.sqrMagnitude < 0.0001f)
             _orbitOffsetFromCenter = Vector3.right * orbitRadius;
         else
@@ -179,14 +197,19 @@ public class PlanetOrbitMotion : MonoBehaviour
     {
         float degreesPerSecond = PlanetOrbitCalculator.DegreesPerSecond(orbitalPeriodDays, timeScale);
         _orbitAngleDegrees = PlanetOrbitCalculator.AdvanceAngle(_orbitAngleDegrees, degreesPerSecond, dt);
+        ApplyOrbitPosition();
+    }
 
+    void ApplyOrbitPosition()
+    {
         Vector3 nextPosition = PlanetOrbitCalculator.EvaluatePosition(
             orbitCenter.position,
             _orbitOffsetFromCenter,
             _orbitAngleDegrees,
             orbitAxis);
 
-        transform.SetPositionAndRotation(nextPosition, _lockedWorldRotation);
+        // Translation only — never touch rotation so RectTransform children keep locals.
+        transform.position = nextPosition;
     }
 
     void UpdateSpin(float dt)
@@ -198,5 +221,88 @@ public class PlanetOrbitMotion : MonoBehaviour
         transform.localRotation = PlanetSpinCalculator.EvaluateLocalRotation(
             _baseLocalRotation,
             _spinAngleDegrees);
+    }
+
+    void CacheChildLocalPoses()
+    {
+        // Lock markers/orbs on the Wrapper. Do not lock the spinning Planet child.
+        int lockedCount = 0;
+        for (int i = 0; i < transform.childCount; i++)
+        {
+            if (ShouldPreserveChildPose(transform.GetChild(i)))
+                lockedCount++;
+        }
+
+        _childPoses = new ChildLocalPose[lockedCount];
+        int index = 0;
+        for (int i = 0; i < transform.childCount; i++)
+        {
+            Transform child = transform.GetChild(i);
+            if (!ShouldPreserveChildPose(child))
+                continue;
+
+            ChildLocalPose pose = new ChildLocalPose
+            {
+                transform = child,
+                localPosition = child.localPosition,
+                localRotation = child.localRotation,
+                localScale = child.localScale,
+                isRect = child is RectTransform
+            };
+
+            if (pose.isRect)
+                pose.anchoredPosition3D = ((RectTransform)child).anchoredPosition3D;
+
+            _childPoses[index++] = pose;
+        }
+    }
+
+    static bool ShouldPreserveChildPose(Transform child)
+    {
+        if (child == null)
+            return false;
+
+        // Always lock interaction markers regardless of tag/components.
+        if (child.name.StartsWith("InteractionOrb"))
+            return true;
+
+        // Planet mesh must keep spinning under the Wrapper.
+        if (child.CompareTag("Planet"))
+            return false;
+
+        PlanetOrbitMotion childMotion = child.GetComponent<PlanetOrbitMotion>();
+        if (childMotion != null && !childMotion.IsOrbitEnabled)
+            return false;
+
+        return true;
+    }
+
+    void RestoreChildLocalPoses()
+    {
+        if (_childPoses == null)
+            return;
+
+        for (int i = 0; i < _childPoses.Length; i++)
+        {
+            ChildLocalPose pose = _childPoses[i];
+            if (pose.transform == null)
+                continue;
+
+            if (pose.isRect)
+            {
+                RectTransform rect = (RectTransform)pose.transform;
+                // Only drive RectTransform via anchored pose — setting localPosition too
+                // fights Unity's Rect layout under a scaled/rotated parent.
+                rect.localRotation = pose.localRotation;
+                rect.localScale = pose.localScale;
+                rect.anchoredPosition3D = pose.anchoredPosition3D;
+            }
+            else
+            {
+                pose.transform.localPosition = pose.localPosition;
+                pose.transform.localRotation = pose.localRotation;
+                pose.transform.localScale = pose.localScale;
+            }
+        }
     }
 }
