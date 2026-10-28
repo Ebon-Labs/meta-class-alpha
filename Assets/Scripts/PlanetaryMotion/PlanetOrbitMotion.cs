@@ -262,19 +262,9 @@ public class PlanetOrbitMotion : MonoBehaviour
         if (child == null)
             return false;
 
-        // Always lock interaction markers regardless of tag/components.
-        if (child.name.StartsWith("InteractionOrb"))
-            return true;
-
-        // Planet mesh must keep spinning under the Wrapper.
-        if (child.CompareTag("Planet"))
-            return false;
-
-        PlanetOrbitMotion childMotion = child.GetComponent<PlanetOrbitMotion>();
-        if (childMotion != null && !childMotion.IsOrbitEnabled)
-            return false;
-
-        return true;
+        // Only InteractionOrb is pose-locked. PlanetLabel drives its own
+        // billboard rotation and distance-independent scale each LateUpdate.
+        return child.name.StartsWith("InteractionOrb");
     }
 
     void RestoreChildLocalPoses()
