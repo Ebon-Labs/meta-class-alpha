@@ -2195,8 +2195,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SolarSystemMotionController
   timeScale: 4320
-  maxDistanceScale: 300
   distanceScale: 300
+  showInteractionOrbs: 1
 --- !u!1 &920000002 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: a971f90571437f79b946524561c86dab, type: 3}

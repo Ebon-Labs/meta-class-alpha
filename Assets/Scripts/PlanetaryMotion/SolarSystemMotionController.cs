@@ -12,8 +12,13 @@ public class SolarSystemMotionController : MonoBehaviour
     [Tooltip("Earth orbit radius used now. Clamped to MaxDistanceScale. Other planets keep AU proportions.")]
     [SerializeField] float distanceScale = PlanetScientificCatalog.EarthOrbitSceneUnits;
 
+    [Header("Interaction")]
+    [Tooltip("Shows or hides every InteractionOrb under this SolarSystem.")]
+    [SerializeField] bool showInteractionOrbs = true;
+
     float _appliedTimeScale = -1f;
     float _appliedDistanceScale = -1f;
+    bool _appliedShowInteractionOrbs;
 
     /// <summary>Maximum Earth orbit radius in scene units (scientific scale).</summary>
     public float MaxDistanceScale => PlanetScientificCatalog.EarthOrbitSceneUnits;
@@ -46,24 +51,47 @@ public class SolarSystemMotionController : MonoBehaviour
 
         bool timeChanged = force || !Mathf.Approximately(_appliedTimeScale, timeScale);
         bool distanceChanged = force || !Mathf.Approximately(_appliedDistanceScale, distanceScale);
-        if (!timeChanged && !distanceChanged)
+        bool orbsChanged = force || _appliedShowInteractionOrbs != showInteractionOrbs;
+        if (!timeChanged && !distanceChanged && !orbsChanged)
             return;
 
-        PlanetOrbitMotion[] motions = GetComponentsInChildren<PlanetOrbitMotion>(true);
-        for (int i = 0; i < motions.Length; i++)
+        if (timeChanged || distanceChanged)
         {
-            PlanetOrbitMotion motion = motions[i];
-            if (motion == null)
-                continue;
+            PlanetOrbitMotion[] motions = GetComponentsInChildren<PlanetOrbitMotion>(true);
+            for (int i = 0; i < motions.Length; i++)
+            {
+                PlanetOrbitMotion motion = motions[i];
+                if (motion == null)
+                    continue;
 
-            if (timeChanged)
-                motion.SetTimeScale(timeScale);
+                if (timeChanged)
+                    motion.SetTimeScale(timeScale);
 
-            if (distanceChanged && motion.IsOrbitEnabled)
-                motion.SetOrbitDistanceScale(distanceScale);
+                if (distanceChanged && motion.IsOrbitEnabled)
+                    motion.SetOrbitDistanceScale(distanceScale);
+            }
         }
+
+        if (orbsChanged)
+            ApplyInteractionOrbVisibility();
 
         _appliedTimeScale = timeScale;
         _appliedDistanceScale = distanceScale;
+        _appliedShowInteractionOrbs = showInteractionOrbs;
+    }
+
+    void ApplyInteractionOrbVisibility()
+    {
+        Transform[] transforms = GetComponentsInChildren<Transform>(true);
+        for (int i = 0; i < transforms.Length; i++)
+        {
+            Transform child = transforms[i];
+            if (child == null || !child.name.StartsWith("InteractionOrb"))
+                continue;
+
+            GameObject orb = child.gameObject;
+            if (orb.activeSelf != showInteractionOrbs)
+                orb.SetActive(showInteractionOrbs);
+        }
     }
 }
