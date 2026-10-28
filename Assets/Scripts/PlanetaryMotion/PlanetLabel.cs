@@ -7,22 +7,24 @@ using UnityEngine;
 public class PlanetLabel : MonoBehaviour
 {
     [SerializeField] TextMeshPro label;
+    [SerializeField] Material billboardMaterial;
     [SerializeField] Vector3 localOffset = new Vector3(0f, 1.5f, 0f);
+    [SerializeField] Quaternion localRotation = Quaternion.identity;
     [Tooltip("Apparent height on screen in pixels, constant at any distance.")]
     [SerializeField] float targetPixelHeight = 20f;
-    [SerializeField] string overrideText;
+    [SerializeField] string overrideText = "Earth";
 
     Camera _camera;
     Transform _cameraTransform;
+    bool _capturedPose;
 
     void Awake()
     {
         if (label == null)
             label = GetComponent<TextMeshPro>();
 
-        // Keep the local pose authored under EarthWrapper in the scene.
-        localOffset = transform.localPosition;
-
+        CaptureLocalPoseFromScene();
+        ApplyBillboardMaterial();
         ApplyPlanetName();
         ApplyLocalPose();
     }
@@ -32,12 +34,10 @@ public class PlanetLabel : MonoBehaviour
         if (!TryResolveCamera())
             return;
 
+        // Keep authored transform rotation — facing is done in the billboard shader.
         ApplyLocalPose();
 
-        // Face the player: match camera orientation (TMP Example FloatingText pattern).
-        transform.rotation = _cameraTransform.rotation;
-
-        float distance = Vector3.Distance(_cameraTransform.position, transform.position);
+        float distance = Mathf.Max(0.01f, Vector3.Distance(_cameraTransform.position, transform.position));
         float parentScale = transform.parent != null
             ? Mathf.Max(0.0001f, Mathf.Abs(transform.parent.lossyScale.x))
             : 1f;
@@ -59,9 +59,29 @@ public class PlanetLabel : MonoBehaviour
         gameObject.SetActive(visible);
     }
 
+    void CaptureLocalPoseFromScene()
+    {
+        if (_capturedPose)
+            return;
+
+        localOffset = transform.localPosition;
+        localRotation = transform.localRotation;
+        _capturedPose = true;
+    }
+
     void ApplyLocalPose()
     {
         transform.localPosition = localOffset;
+        transform.localRotation = localRotation;
+    }
+
+    void ApplyBillboardMaterial()
+    {
+        if (label == null)
+            return;
+
+        if (billboardMaterial != null)
+            label.fontSharedMaterial = billboardMaterial;
     }
 
     void ApplyPlanetName()
@@ -69,10 +89,13 @@ public class PlanetLabel : MonoBehaviour
         if (label == null)
             return;
 
+        label.fontSize = targetPixelHeight;
+        label.enableAutoSizing = false;
+        label.alignment = TextAlignmentOptions.Center;
+
         if (!string.IsNullOrWhiteSpace(overrideText))
         {
             label.text = overrideText;
-            label.fontSize = targetPixelHeight;
             return;
         }
 
@@ -82,21 +105,17 @@ public class PlanetLabel : MonoBehaviour
             if (motions[i] != null && motions[i].IsOrbitEnabled)
             {
                 label.text = motions[i].PlanetProfile.ToString();
-                label.fontSize = targetPixelHeight;
                 return;
             }
         }
 
         if (motions.Length > 0 && motions[0] != null)
-        {
             label.text = motions[0].PlanetProfile.ToString();
-            label.fontSize = targetPixelHeight;
-        }
     }
 
     bool TryResolveCamera()
     {
-        if (_camera != null && _camera.enabled && _camera.gameObject.activeInHierarchy)
+        if (_camera != null && _cameraTransform != null && _cameraTransform.gameObject.activeInHierarchy)
             return true;
 
         _camera = null;
@@ -105,7 +124,10 @@ public class PlanetLabel : MonoBehaviour
         if (NetworkClient.active && NetworkClient.localPlayer != null)
         {
             Camera cam = NetworkClient.localPlayer.GetComponent<Camera>();
-            if (cam != null && cam.enabled)
+            if (cam == null)
+                cam = NetworkClient.localPlayer.GetComponentInChildren<Camera>(true);
+
+            if (cam != null)
             {
                 _camera = cam;
                 _cameraTransform = cam.transform;
@@ -122,6 +144,14 @@ public class PlanetLabel : MonoBehaviour
                 _cameraTransform = cameras[i].transform;
                 return true;
             }
+        }
+
+        Camera fallback = Object.FindFirstObjectByType<Camera>();
+        if (fallback != null)
+        {
+            _camera = fallback;
+            _cameraTransform = fallback.transform;
+            return true;
         }
 
         return false;
