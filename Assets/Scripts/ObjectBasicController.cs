@@ -5,47 +5,43 @@ public class ObjectBasicController : MonoBehaviour
     public Material InactiveMaterial;
     public Material GazedAtMaterial;
 
-    // The objects are about 1 meter in radius, so the min/max target distance are
-    // set so that the objects are always within the room (which is about 5 meters
-    // across).
-    private const float _minObjectDistance = 2.5f;
-    private const float _maxObjectDistance = 3.5f;
-    private const float _minObjectHeight = 0.5f;
-    private const float _maxObjectHeight = 3.5f;
-
     private Renderer _myRenderer;
-    private Vector3 _startingPosition;
+    private Material _inactiveInstance;
+    private Material _gazedInstance;
 
     void Start()
     {
-        if (transform.parent != null)
-            _startingPosition = transform.parent.localPosition;
         _myRenderer = GetComponent<Renderer>();
+        CreateMaterialInstances();
         SetMaterial(false);
     }
 
-    /*
-    GameObject FindLocalNetworkPlayer()
+    void OnDestroy()
     {
-        GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
-        foreach (GameObject player in players)
-        {
-            if (player.GetComponent<NetworkIdentity>().isLocalPlayer){
-                return player;
-            }
-        }
-        return null;
-    }*/
-    
+        if (_inactiveInstance != null)
+            Destroy(_inactiveInstance);
+        if (_gazedInstance != null)
+            Destroy(_gazedInstance);
+    }
+
+    void CreateMaterialInstances()
+    {
+        if (InactiveMaterial != null)
+            _inactiveInstance = new Material(InactiveMaterial);
+        if (GazedAtMaterial != null)
+            _gazedInstance = new Material(GazedAtMaterial);
+    }
 
     /// Sets this instance's material according to gazedAt status.
     /// Value `true` if this object is being gazed at, `false` otherwise.
     private void SetMaterial(bool gazedAt)
     {
-        if (InactiveMaterial != null && GazedAtMaterial != null)
-        {
-            _myRenderer.material = gazedAt ? GazedAtMaterial : InactiveMaterial;
-        }
+        if (_myRenderer == null || _inactiveInstance == null || _gazedInstance == null)
+            return;
+
+        // Use the same material instances every time so Shader Graph Time/Emission
+        // pulse keeps running across repeated gaze enter/exit.
+        _myRenderer.sharedMaterial = gazedAt ? _gazedInstance : _inactiveInstance;
     }
 
     /// This method is called by the Main Camera when it starts gazing at this GameObject.
