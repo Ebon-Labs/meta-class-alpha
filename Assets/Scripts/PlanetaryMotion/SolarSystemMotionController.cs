@@ -16,9 +16,13 @@ public class SolarSystemMotionController : MonoBehaviour
     [Tooltip("Shows or hides every InteractionOrb under this SolarSystem.")]
     [SerializeField] bool showInteractionOrbs = true;
 
+    [Tooltip("Shows or hides every PlanetLabel under this SolarSystem.")]
+    [SerializeField] bool showPlanetLabels = true;
+
     float _appliedTimeScale = -1f;
     float _appliedDistanceScale = -1f;
     bool _appliedShowInteractionOrbs;
+    bool _appliedShowPlanetLabels;
 
     /// <summary>Maximum Earth orbit radius in scene units (scientific scale).</summary>
     public float MaxDistanceScale => PlanetScientificCatalog.EarthOrbitSceneUnits;
@@ -52,7 +56,8 @@ public class SolarSystemMotionController : MonoBehaviour
         bool timeChanged = force || !Mathf.Approximately(_appliedTimeScale, timeScale);
         bool distanceChanged = force || !Mathf.Approximately(_appliedDistanceScale, distanceScale);
         bool orbsChanged = force || _appliedShowInteractionOrbs != showInteractionOrbs;
-        if (!timeChanged && !distanceChanged && !orbsChanged)
+        bool labelsChanged = force || _appliedShowPlanetLabels != showPlanetLabels;
+        if (!timeChanged && !distanceChanged && !orbsChanged && !labelsChanged)
             return;
 
         if (timeChanged || distanceChanged)
@@ -75,9 +80,13 @@ public class SolarSystemMotionController : MonoBehaviour
         if (orbsChanged)
             ApplyInteractionOrbVisibility();
 
+        if (labelsChanged)
+            ApplyPlanetLabelVisibility();
+
         _appliedTimeScale = timeScale;
         _appliedDistanceScale = distanceScale;
         _appliedShowInteractionOrbs = showInteractionOrbs;
+        _appliedShowPlanetLabels = showPlanetLabels;
     }
 
     void ApplyInteractionOrbVisibility()
@@ -92,6 +101,19 @@ public class SolarSystemMotionController : MonoBehaviour
             GameObject orb = child.gameObject;
             if (orb.activeSelf != showInteractionOrbs)
                 orb.SetActive(showInteractionOrbs);
+        }
+    }
+
+    void ApplyPlanetLabelVisibility()
+    {
+        PlanetLabel[] labels = GetComponentsInChildren<PlanetLabel>(true);
+        for (int i = 0; i < labels.Length; i++)
+        {
+            PlanetLabel planetLabel = labels[i];
+            if (planetLabel == null)
+                continue;
+
+            planetLabel.SetVisible(showPlanetLabels);
         }
     }
 }

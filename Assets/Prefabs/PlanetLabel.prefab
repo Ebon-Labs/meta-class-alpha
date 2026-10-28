@@ -134,12 +134,12 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 20
-  m_fontSizeBase: 20
+  m_fontSize: 200
+  m_fontSizeBase: 200
   m_fontWeight: 400
-  m_enableAutoSizing: 0
-  m_fontSizeMin: 18
-  m_fontSizeMax: 72
+  m_enableAutoSizing: 1
+  m_fontSizeMin: 200
+  m_fontSizeMax: 500
   m_fontStyle: 0
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
@@ -151,7 +151,7 @@ MonoBehaviour:
   m_lineSpacingMax: 0
   m_paragraphSpacing: 0
   m_charWidthMaxAdj: 0
-  m_TextWrappingMode: 1
+  m_TextWrappingMode: 0
   m_wordWrappingRatios: 0.4
   m_overflowMode: 0
   m_linkedTextComponent: {fileID: 0}
@@ -191,12 +191,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 2320827393956409690}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a7c4e91f2b8d4e6a9f0c1d2e3b4a5c6d, type: 3}
+  m_Script: {fileID: 11500000, guid: 1779df337210db72b9239ca2068e89aa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlanetLabel
-  label: {fileID: 2996190509798965650}
-  billboardMaterial: {fileID: 2100000, guid: c1d2e3f4a5b697887766554433221100, type: 2}
-  localOffset: {x: 0.0658, y: 1.2167, z: 0.0847}
+  label: {fileID: 0}
+  billboardMaterial: {fileID: 0}
+  localOffset: {x: 0, y: 0, z: 0}
   localRotation: {x: 0, y: 0, z: 0, w: 1}
-  targetPixelHeight: 20
-  overrideText: Earth
+  targetPixelHeight: 100
+  overrideText: Planet

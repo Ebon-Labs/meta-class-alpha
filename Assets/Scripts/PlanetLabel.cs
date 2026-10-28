@@ -10,9 +10,7 @@ public class PlanetLabel : MonoBehaviour
     [SerializeField] Material billboardMaterial;
     [SerializeField] Vector3 localOffset = new Vector3(0f, 1.5f, 0f);
     [SerializeField] Quaternion localRotation = Quaternion.identity;
-    [Tooltip("Apparent height on screen in pixels, constant at any distance.")]
-    [SerializeField] float targetPixelHeight = 20f;
-    [SerializeField] string overrideText = "Earth";
+    [SerializeField] string overrideText = "Planet";
 
     Camera _camera;
     Transform _cameraTransform;
@@ -37,15 +35,16 @@ public class PlanetLabel : MonoBehaviour
         // Keep authored transform rotation — facing is done in the billboard shader.
         ApplyLocalPose();
 
+        float fontSize = label != null ? Mathf.Max(1f, label.fontSize) : 200f;
         float distance = Mathf.Max(0.01f, Vector3.Distance(_cameraTransform.position, transform.position));
         float parentScale = transform.parent != null
             ? Mathf.Max(0.0001f, Mathf.Abs(transform.parent.lossyScale.x))
             : 1f;
 
-        float fontSize = label != null ? Mathf.Max(1f, label.fontSize) : Mathf.Max(1f, targetPixelHeight);
+        // Apparent height in pixels ≈ TextMeshPro.fontSize (authored on the TMP component).
         float halfFovRad = _camera.fieldOfView * 0.5f * Mathf.Deg2Rad;
         float screenHeight = Mathf.Max(1f, Screen.height);
-        float worldHeight = (targetPixelHeight / screenHeight)
+        float worldHeight = (fontSize / screenHeight)
             * 2f
             * distance
             * Mathf.Tan(halfFovRad);
@@ -89,7 +88,6 @@ public class PlanetLabel : MonoBehaviour
         if (label == null)
             return;
 
-        label.fontSize = targetPixelHeight;
         label.enableAutoSizing = false;
         label.alignment = TextAlignmentOptions.Center;
 
