@@ -52,7 +52,7 @@ public class CameraPointerController : NetworkBehaviour
         // Casts ray towards camera's forward direction, to detect if a GameObject is being gazed
         // at.
         RaycastHit hit;
-        if (Physics.Raycast(transform.position, transform.forward, out hit, _maxDistance))
+        if (Physics.Raycast(transform.position, transform.forward, out hit, _maxDistance, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore))
         {
             GameObject hitObject = hit.transform.gameObject;
             bool isTeleportable = IsTeleportable(hitObject);

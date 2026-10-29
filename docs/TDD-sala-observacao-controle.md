@@ -2,7 +2,7 @@
 
 **Projeto:** meta-class-alpha  
 **Escopo:** features de sala de controle, retorno via portal e painel descritivo de UI  
-**Status:** a fazer  
+**Status:** parcial. O painel descritivo (seção 4) está feito. Sala de controle e portal de retorno continuam a fazer.  
 **Contexto técnico atual:** Unity + Mirror (multiplayer) + Cardboard XR; interação por gaze (`CameraPointerController`); teleporte via tag `Teleportable`; UI HUD no Canvas World Space do Player (`UILogger` / TMP).
 
 ---
@@ -13,7 +13,7 @@ Permitir que o jogador:
 
 1. Observe e **controle o cenário** (ex.: sistema solar) a partir de uma sala dedicada.
 2. **Volte à sala de controle** a qualquer momento por um objeto de interação sob os pés.
-3. Veja um **painel descritivo na UI** ao entrar em áreas específicas do cenário.
+3. Veja um **painel descritivo na UI** ao entrar em áreas específicas do cenário. **Feito:** `InfoArea` + `SceneInfo` mostram o corpo do texto.
 
 ---
 
@@ -119,16 +119,28 @@ Integração em `CameraPointerController.handlePointerClick`:
 
 ## 4. Feature: Painel descritivo na UI
 
+**Status: feito.**
+
 ### 4.1 Descrição
 
-Quando o player entra em uma **área determinada** (trigger / volume), um painel na UI exibe informações contextuais (texto, título, opcionalmente imagem). Ao sair da área, o painel some ou volta ao estado vazio.
+Quando o player entra em uma **área determinada** (volume esférico), um painel na UI exibe o texto daquela área. Ao sair, o painel some ou volta ao texto da área anterior.
+
+Entrega:
+
+- `InfoArea` (`Assets/Scripts/InfoArea.cs`) num `SphereCollider` trigger. A presença é um teste geométrico no espaço local da esfera, não `OnTriggerEnter`, porque o Player não tem collider nem rigidbody.
+- `SceneInfoPanel` (`Assets/Scripts/SceneInfoPanel.cs`) na raiz do Player, escrevendo no objeto `SceneInfo` do Canvas. Esse objeto começa desligado e é separado do log de gaze (`UILogger`).
+- Só o jogador local vê o painel. Áreas sobrepostas usam a última entrada. Texto vazio esconde aquela origem.
+- O raio de olhar ignora triggers, então o volume não vira alvo de gaze.
+- Na cena The Room há uma `InfoArea` em cada wrapper de planeta, no `MoonWrapper` e no Sol, com o parágrafo curto daquele corpo. O prefab ainda traz Lorem ipsum como padrão.
+
+O esboço abaixo, com título, imagem e `ScriptableObject`, não entrou na entrega. O aceite é o corpo do texto no campo `body`.
 
 ### 4.2 Requisitos funcionais
 
 | ID | Requisito |
 |----|-----------|
 | UI-01 | Áreas do cenário possuem um volume (Collider `isTrigger`) com dados descritivos. |
-| UI-02 | Ao entrar na área (player local), o painel HUD mostra título + corpo do texto. |
+| UI-02 | Ao entrar na área (player local), o painel HUD mostra o corpo do texto. |
 | UI-03 | Ao sair, o painel é ocultado ou limpo. |
 | UI-04 | Se duas áreas se sobrepuserem, prevalece a última entrada ou a de maior prioridade (definir: **última entrada**). |
 | UI-05 | Conteúdo é configurável por área (ScriptableObject ou campos no componente). |
@@ -173,10 +185,10 @@ Casos de uso iniciais sugeridos:
 
 ### 4.5 Critérios de aceite (testes)
 
-- [ ] Entrar no trigger mostra o painel com o texto correto.
-- [ ] Sair esconde o painel.
-- [ ] Outro player na área não afeta a UI local.
-- [ ] Área sem conteúdo não quebra (no-op ou mensagem vazia).
+- [x] Entrar no volume mostra o painel com o texto do corpo.
+- [x] Sair esconde o painel, ou volta ao texto da área que ainda contém o jogador.
+- [x] Outro player na área não afeta a UI local.
+- [x] Área com texto vazio não quebra: a origem é removida.
 
 ---
 
@@ -188,7 +200,7 @@ Casos de uso iniciais sugeridos:
 | Tag `Teleportable` / `Interactive` | Interação |
 | `SolarSystemMotionController` | Controles de cenário |
 | `PlanetLabel` / InteractionOrb | Toggles da sala |
-| Player Canvas + TMP | Painel descritivo |
+| Player Canvas + TMP | Painel descritivo, feito: `SceneInfo` + `SceneInfoPanel`, separado do `UILogger` |
 | Mirror `NetworkTransform` | Sync de posição no retorno |
 
 ---
@@ -197,7 +209,7 @@ Casos de uso iniciais sugeridos:
 
 1. **Sala de controle** (espaço + spawn + wiring dos controles ao `SolarSystemMotionController`).
 2. **Portal de retorno** (objeto sob os pés + ramo de teleporte para spawn).
-3. **Painel descritivo** (UI + triggers de área + conteúdos).
+3. **Painel descritivo** — feito (`InfoArea` + `SceneInfoPanel`, texto de corpo, última área vence).
 
 ---
 
@@ -215,7 +227,7 @@ Casos de uso iniciais sugeridos:
 | Risco | Mitigação |
 |-------|-----------|
 | Teleporte atual usa borda do alvo, inadequado para portal sob os pés | Ramo dedicado com destino fixo |
-| Trigger 3D em VR com CharacterController / sem collider no player | Garantir collider no Player ou detector baseado em posição |
+| Trigger 3D em VR sem collider no player | Feito por teste geométrico da esfera em `InfoArea`, não por `OnTriggerEnter` |
 | Sync multiplayer dos controles da sala | `SyncVar` / mensagens Mirror no controller |
 | Objeto sob os pés captura gaze acidentalmente | Ângulo mínimo / só ativo se olhar para baixo |
 
@@ -223,6 +235,6 @@ Casos de uso iniciais sugeridos:
 
 ## 9. Definição de pronto (DoD)
 
-- Features SC, PT e UI implementadas conforme critérios de aceite.
-- Documentação de como configurar uma nova `InfoArea` e o spawn da sala.
+- Features SC e PT implementadas conforme critérios de aceite. O painel descritivo está feito.
+- Como configurar uma nova `InfoArea` está em [arquitetura.md](arquitetura.md) (seções 2.13 e 3). O spawn da sala de controle ainda não.
 - Sem regressão no teleporte atual para planetas/`Teleportable`.

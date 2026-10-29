@@ -3,7 +3,7 @@
 **Projeto:** meta-class-alpha  
 **Cena de build:** `Assets/Scenes/TheRoom.unity`  
 **Escopo:** funcionalidades implementadas e a forma como a cena The Room as compõe  
-**Fora de escopo:** features descritas em [TDD-sala-observacao-controle.md](TDD-sala-observacao-controle.md), que ainda não estão implementadas
+**Fora de escopo:** sala de controle e portal de retorno descritos em [TDD-sala-observacao-controle.md](TDD-sala-observacao-controle.md), que ainda não estão implementados. O painel descritivo desse TDD está feito (`InfoArea` e `SceneInfoPanel`, seções 2.13 e 3).
 
 Este documento separa duas camadas. A primeira descreve capacidades genéricas: scripts e contratos que não conhecem a sala, os planetas nem o enredo da experiência. A segunda descreve como The Room instancia essas capacidades, qual é a hierarquia da cena e como os objetos se relacionam em runtime.
 
@@ -26,6 +26,7 @@ flowchart LR
         Orbit[Movimento orbital]
         Label[Rótulo billboard]
         Light[Luz do sol]
+        Info[Área informativa]
     end
 
     subgraph Cena["The Room"]
@@ -44,6 +45,8 @@ flowchart LR
     Orbit --> System
     Label --> System
     Light --> System
+    Info --> Player
+    Info --> System
 ```
 
 ---
@@ -81,7 +84,7 @@ Parâmetros atuais do manager, reutilizáveis como padrão do projeto: porta **7
 
 Fluxo, independente do conteúdo da cena:
 
-1. Um raio sai da posição da câmera na direção `forward`, sem limite de distância.
+1. Um raio sai da posição da câmera na direção `forward`, sem limite de distância. Colliders em modo trigger são ignorados (`QueryTriggerInteraction.Ignore`), para o volume de uma `InfoArea` não roubar o foco.
 2. Se o alvo muda, o objeto anterior recebe `OnPointerExit` e o novo pode receber `OnPointerEnter`.
 3. Objetos com tag `Environment` não entram em foco. O mesmo vale para um alvo de teleporte em cuja borda o observador já está, e para o alvo recém-usado (o ponteiro fica desarmado até o olhar sair dele).
 4. Enquanto o foco permanece, um contador avança. O tempo padrão de confirmação é **3 segundos**. Um slider mostra a fração decorrida.
@@ -139,7 +142,9 @@ Dois eixos de movimento ficam em objetos diferentes de propósito. Órbita e rot
 
 `PlanetOrbitMotion` grava a pose local dos filhos cujo nome começa com `InteractionOrb` e a restaura no `LateUpdate`, para o marcador não derivar quando o pai é movido. Rótulos ficam de fora desse travamento: eles próprios ajustam escala e pose.
 
-A escala de distância é a da órbita da Terra em unidades de cena. O catálogo fixa o máximo em **300**. Os outros corpos mantêm a proporção em unidades astronômicas (`semiMajorAxisAu * earthOrbitSceneUnits`). O `timeScale` padrão **4320** comprime um dia sideral da Terra para cerca de 20 segundos reais.
+A escala de distância é a da órbita da Terra em unidades de cena. O catálogo fixa o máximo em **300**. Os outros planetas mantêm a proporção em unidades astronômicas (`semiMajorAxisAu * earthOrbitSceneUnits`). O `timeScale` padrão **4320** comprime um dia sideral da Terra para cerca de 20 segundos reais.
+
+`useSolarDistanceScale` começa ligado: o wrapper acompanha o `distanceScale` do controlador. Uma lua desliga o flag. O raio gravado em volta do planeta permanece, em vez de ser reescrito como se fosse um semi-eixo em unidades astronômicas. O `orbitCenter` é qualquer transform. Nos planetas é o Sol; numa lua é o centro do planeta. `SolarSystemMotionController` só chama `SetOrbitDistanceScale` quando a órbita está ligada e o flag também.
 
 `SolarSystemMotionController` observa os próprios campos e só reaplica o que mudou: `timeScale`, `distanceScale`, `showInteractionOrbs` e `showPlanetLabels`. Orbes são objetos filhos cujo nome começa com `InteractionOrb`. Rótulos são componentes `PlanetLabel`. A ordem de execução é `-100`, antes do movimento (`1000`) e dos rótulos (`1100`).
 
@@ -174,6 +179,14 @@ Definidas em `ProjectSettings/TagManager.asset`. A lógica genérica depende del
 | `Planet` | Não é alvo de teleporte. Serve para agrupar o corpo e nomear o HUD quando o filho focado tem essa tag no pai |
 | `Player` | Recebe enter/exit. Identifica o avatar em rede |
 | `Environment` | O raycast acerta, mas o foco não começa |
+
+### 2.13 Painel descritivo por área
+
+`SceneInfoPanel` fica no jogador e escreve num `TextMeshProUGUI` separado do `UILogger`. `Show(source, text)` empilha a origem; se duas áreas valem ao mesmo tempo, o texto da última entrada fica visível. `Hide(source)` tira essa origem da pilha. Texto vazio equivale a esconder. Com a pilha vazia, o objeto `SceneInfo` fica desligado. O `Awake` só esconde o painel se ainda não houver origem, para não apagar um texto que a área já tenha mostrado no mesmo frame.
+
+`InfoArea` exige um `SphereCollider` e o força como trigger. Não usa `OnTriggerEnter`: o jogador não tem collider nem rigidbody. A cada `Update` o script compara a posição do `SceneInfoPanel` do jogador local com a esfera no espaço local do volume (`InverseTransformPoint`), o que continua válido com pais escalados e depois de um teleporte. Só `NetworkClient.localPlayer` é consultado. Ao desligar o componente, se o jogador local estava dentro, o painel esconde aquela origem.
+
+O campo `body` é o texto mostrado. O valor padrão do prefab é uma frase de Lorem ipsum. A cena substitui esse texto pelo parágrafo de cada corpo.
 
 ---
 
@@ -215,8 +228,30 @@ JupterWrapper | SaturnWrapper | UranusWrapper | NeptuneWrapper
 │   ├── Portal                Sphere Portal, tag Teleportable
 │   └── Clouds                só Terra e Vênus
 ├── PlanetLabel               texto com o nome do corpo
+├── InfoArea                  esfera trigger; texto curto daquele corpo
 └── InteractionOrb            partículas; pose local travada pelo wrapper
 ```
+
+A Terra acrescenta o centro visual da malha e a Lua. O pivô do wrapper não coincide com o globo, então a órbita da Lua usa `EarthCenter`, filho do wrapper e não da malha que gira.
+
+```
+EarthWrapper
+├── Earth                     malha, tag Planet, só rotação
+│   ├── Portal
+│   └── Clouds
+├── EarthCenter               centro da malha visível; não gira
+├── MoonWrapper               órbita a Terra; useSolarDistanceScale desligado
+│   ├── Moon                  esfera Unity, tag Planet, só rotação
+│   │   └── Portal
+│   ├── PlanetLabel           texto "Moon"
+│   ├── InfoArea
+│   └── InteractionOrb
+├── PlanetLabel
+├── InfoArea
+└── InteractionOrb
+```
+
+A Lua acompanha a Terra em volta do Sol porque `MoonWrapper` é filho de `EarthWrapper`. O corpo é uma esfera primitiva com material cinza Standard (`Material.013`). O raio local é cerca de 27,3% do raio visível da Terra (1737 km / 6371 km): escala uniforme **0,017628** sobre a primitiva, cujo raio de malha é 0,5. A distância ao `EarthCenter` é **195** unidades de cena, cerca de 60,3 raios terrestres (384 399 km). O eixo da órbita está inclinado **5,145°** em relação ao eixo Y da eclíptica da cena, `(0, 0,995971, 0,089677)`. O período é **27,322** dias. A rotação do corpo usa **655,728** horas e obliquidade **6,68°**, o mesmo ritmo da translação. `ensureOrbitClearsSun` fica desligado. O perfil científico no componente é o da Terra só como valor serializado; `applyScientificProfileOnAwake` está desligado, e a Lua não entra em `SolarPlanetId`.
 
 O jogador não está na hierarquia salva. O `NetworkManager` instancia `Assets/Prefabs/Player.prefab` ao conectar.
 
@@ -225,10 +260,13 @@ Player                        tag Player
 ├── câmera, listener, gaze, editor, NetworkIdentity, NetworkTransform, voz
 ├── Canvas                    World Space, desligado até ser o jogador local
 │   ├── Text (TMP)            mensagem do UILogger
+│   ├── SceneInfo             texto da InfoArea; começa desligado
 │   ├── Loader / Slider       barra dos 3 segundos
 │   └── Icon                  sprite ocioso ou focado
 └── Male_002                  avatar visual
 ```
+
+`SceneInfoPanel` está na raiz do Player, com referência ao objeto `SceneInfo` e ao texto TMP dele.
 
 ### 3.3 Como cada funcionalidade aparece na cena
 
@@ -241,12 +279,13 @@ Player                        tag Player
 | HUD | Canvas do Player, à frente da câmera em World Space |
 | Olhar no Editor | `CameraEditorController` no Player, sensibilidade cerca de 10 |
 | Voz | `VoiceChatController` e `AudioSource` no Player; os outros ouvem na posição do avatar |
-| Órbita | `PlanetOrbitMotion` em cada `*Wrapper`, centro no Sol, `SolarSystemMotionController` na raiz do FBX |
-| Rotação | `PlanetOrbitMotion` na malha de cada planeta, com o perfil científico correspondente |
-| Rótulos | Oito instâncias de `PlanetLabel.prefab`, uma por wrapper, com `overrideText` igual ao nome do corpo |
+| Órbita | `PlanetOrbitMotion` em cada `*Wrapper`, centro no Sol, `SolarSystemMotionController` na raiz do FBX. A Lua orbita `EarthCenter` e não segue o `distanceScale` solar |
+| Rotação | `PlanetOrbitMotion` na malha de cada planeta e na Lua, com o perfil científico correspondente. Na Lua o perfil não é reaplicado no `Awake` |
+| Rótulos | Uma instância de `PlanetLabel.prefab` por wrapper de planeta e mais uma no `MoonWrapper`, com `overrideText` igual ao nome do corpo |
+| Painel descritivo | `SceneInfo` no Canvas do Player. Uma `InfoArea` em cada wrapper de planeta, no `MoonWrapper` e no Sol |
 | Luz | `Sun Light` segue `Sun Sphere` |
 | Nuvens | Filhos `Clouds` já presentes em Terra e Vênus. `PlanetCloudLayer` existe como script e não está atribuído na cena |
-| Marcadores | Oito `InteractionOrb`, visíveis porque `showInteractionOrbs` está ligado |
+| Marcadores | Um `InteractionOrb` por wrapper de planeta e um no `MoonWrapper`, visíveis porque `showInteractionOrbs` está ligado |
 
 Parâmetros do controlador na cena: `timeScale = 4320`, `distanceScale = 300`, orbes e rótulos visíveis. Com a Terra em 300 unidades, os raios de órbita gravados nos wrappers são as proporções do catálogo:
 
@@ -260,8 +299,9 @@ Parâmetros do controlador na cena: `timeScale = 4320`, `distanceScale = 300`, o
 | Saturno | 5 | 2861,1 | 10759,22 | 10,656 | 26,73° |
 | Urano | 6 | 5757,3 | 30688,5 | −17,24 | 97,77° |
 | Netuno | 7 | 9020,7 | 60182 | 16,11 | 28,32° |
+| Lua | — | 195 em volta da Terra | 27,322 | 655,728 | 6,68° |
 
-Vênus e Urano usam dia sideral negativo: a rotação do corpo é retrógrada. Os wrappers não giram; só transladam em torno do eixo Y do Sol.
+Vênus e Urano usam dia sideral negativo: a rotação do corpo é retrógrada. Os wrappers dos planetas não giram; só transladam em torno do eixo Y do Sol. A Lua translada em torno de `EarthCenter`, com o eixo inclinado 5,145°, e o corpo gira no próprio eixo. O raio 195 não vem do catálogo em unidades astronômicas.
 
 ### 3.4 Sala, portais e sistema solar
 
@@ -271,9 +311,11 @@ Vênus e Urano usam dia sideral negativo: a rotação do corpo é retrógrada. O
 - `Chair` — instância de `Cylinder Portal`. O prefab nasce com tag `Teleportable` e `ObjectBasicController`, então o olhar sustentado move o jogador para a borda do cilindro.
 - `Sphere Portal` — o mesmo contrato, em forma de esfera, solto na sala.
 
-No sistema solar o mesmo prefab `Sphere Portal` é reutilizado com o nome `Portal`. Há um portal filho de cada malha de planeta e mais um no `Sun Sphere`. Como o pai tem tag `Planet`, o HUD mostra `Planeta: <nome>` enquanto o olhar está no portal do corpo. O teleporte coloca o jogador na superfície do volume do portal, não no centro da malha do planeta. Em seguida o ponteiro ignora esse portal até o olhar sair, para o clique não se repetir no mesmo alvo.
+No sistema solar o mesmo prefab `Sphere Portal` é reutilizado com o nome `Portal`. Há um portal filho de cada malha de planeta, um na Lua e mais um no `Sun Sphere`. Como o pai tem tag `Planet`, o HUD mostra `Planeta: <nome>` enquanto o olhar está no portal do corpo. No portal da Lua o pai se chama `Moon`, então a mensagem é `Planeta: Moon`. O teleporte coloca o jogador na superfície do volume do portal, não no centro da malha do planeta. Em seguida o ponteiro ignora esse portal até o olhar sair, para o clique não se repetir no mesmo alvo.
 
 `InteractionOrb` é visual. O prefab não tem collider de jogo nem tag de interação; o travamento de pose no wrapper existe para o marcador continuar no lugar autoral enquanto o wrapper orbita. `SolarSystemMotionController` liga e desliga todos eles juntos.
+
+Cada `InfoArea` da cena traz o parágrafo curto daquele corpo: Mercúrio, Vênus, Terra, Marte, Júpiter, Saturno, Urano, Netuno, a Lua e o Sol. Entrar no volume mostra esse texto em `SceneInfo`. Sair esconde. O olhar continua nos portais e nos objetos da sala, porque o raio ignora o trigger.
 
 `Plane` tem tag `Environment` e um `MeshCollider`. O chão pode ser atingido pelo raio e não inicia foco. `SpaceSphere` é uma esfera de escala 50000 na origem, com collider, e funciona como casca de fundo atrás do sistema solar. `Sun Light` também está em `Environment`, para a luz não virar alvo de olhar se o raycast a encontrar.
 
@@ -304,7 +346,7 @@ sequenceDiagram
     end
 ```
 
-O que cada cliente calcula sozinho: órbitas, rotações, escala dos rótulos, posição da luz e visibilidade de orbes e rótulos. O que a rede replica: transform do jogador e pacotes de voz. Um teleporte é uma mudança de `transform.position` no dono; os outros clientes veem o avatar chegar à borda do portal porque o `NetworkTransform` está em `ClientToServer`.
+O que cada cliente calcula sozinho: órbitas, rotações, escala dos rótulos, posição da luz, visibilidade de orbes e rótulos, e o texto de `SceneInfo`. O painel descritivo não atravessa a rede: cada cliente testa só o próprio jogador contra as `InfoArea`. O que a rede replica: transform do jogador e pacotes de voz. Um teleporte é uma mudança de `transform.position` no dono; os outros clientes veem o avatar chegar à borda do portal porque o `NetworkTransform` está em `ClientToServer`.
 
 A fase orbital não é reconciliada. Dois clientes que entram em momentos diferentes, ou que alterassem `timeScale` só de um lado, veriam os planetas em lugares diferentes. Na cena os valores estão iguais e fixos no componente, então a divergência prática vem do instante em que cada processo começou a simular.
 
@@ -313,12 +355,13 @@ A fase orbital não é reconciliada. Dois clientes que entram em momentos difere
 | Prefab | Uso em The Room |
 |--------|-----------------|
 | `Player.prefab` | Spawn de rede. Não está colocado na cena |
-| `Sphere Portal.prefab` | Um na sala, um por planeta e um no Sol. Na órbita o nome vira `Portal` |
+| `Sphere Portal.prefab` | Um na sala, um por planeta, um na Lua e um no Sol. Na órbita o nome vira `Portal` |
 | `Cylinder Portal.prefab` | Um na sala, renomeado `Chair` |
 | `Treasure.prefab` | Um sob `Interactive` |
-| `PlanetLabel.prefab` | Um por wrapper, texto fixo do corpo |
-| `InteractionOrb.prefab` | Um por wrapper |
-| `Sun Sphere` | Substitui o Sol do FBX; pai do portal solar |
+| `PlanetLabel.prefab` | Um por wrapper de planeta e um no `MoonWrapper`, texto fixo do corpo |
+| `InteractionOrb.prefab` | Um por wrapper de planeta e um no `MoonWrapper` |
+| `InfoArea.prefab` | Um por wrapper de planeta, um no `MoonWrapper` e um no Sol. O `body` da cena substitui o Lorem ipsum do prefab |
+| `Sun Sphere` | Substitui o Sol do FBX; pai do portal solar e de uma `InfoArea` |
 | `SolarSystem.fbx` | Malhas dos corpos, raiz sob `Environment` |
 | `Male_002.fbx` | Avatar filho do Player |
 
@@ -341,6 +384,8 @@ Assets/Scripts/
 ├── CameraEditorController.cs        mouse no Editor
 ├── ObjectBasicController.cs         material de foco
 ├── UILogger.cs                      texto do HUD
+├── SceneInfoPanel.cs                painel descritivo do jogador local
+├── InfoArea.cs                      volume esférico que mostra e esconde o painel
 ├── VoiceChatController.cs           voz PCM16
 ├── SunLightController.cs            luz pontual no Sol
 ├── SolarSystemSunReplacer.cs        troca da malha do Sol

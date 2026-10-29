@@ -197,7 +197,7 @@ Extensões atuais: C#, Unity Tools, Unity Debug, DocComment.
 ## Documentação adicional
 
 - [docs/arquitetura.md](docs/arquitetura.md) — arquitetura: funcionalidades genéricas e aplicação na cena The Room
-- [docs/TDD-sala-observacao-controle.md](docs/TDD-sala-observacao-controle.md) — TDD da sala de observação e controle (a fazer)
+- [docs/TDD-sala-observacao-controle.md](docs/TDD-sala-observacao-controle.md) — TDD da sala de observação e controle (painel descritivo feito; sala e portal de retorno a fazer)
 - [BUILD_ANDROID_pt.md](BUILD_ANDROID_pt.md) — gerar e instalar APK ([EN](BUILD_ANDROID.md))
 - [Mirror Documentation](https://mirror-networking.com/docs/)
 - [Cardboard XR Plugin](https://github.com/googlevr/cardboard-xr-plugin)

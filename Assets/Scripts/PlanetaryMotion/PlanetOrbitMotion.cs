@@ -11,6 +11,8 @@ public class PlanetOrbitMotion : MonoBehaviour
 
     [Header("Orbit (translation around the Sun)")]
     [SerializeField] bool enableOrbit = true;
+    [Tooltip("Planets follow SolarSystemMotionController distanceScale. Moons keep the radius authored around their planet.")]
+    [SerializeField] bool useSolarDistanceScale = true;
     [SerializeField] Transform orbitCenter;
     [SerializeField] float orbitRadius;
     [Tooltip("Sidereal orbital period in days (Earth ≈ 365.256).")]
@@ -52,6 +54,7 @@ public class PlanetOrbitMotion : MonoBehaviour
     }
 
     public bool IsOrbitEnabled => enableOrbit;
+    public bool UseSolarDistanceScale => useSolarDistanceScale;
     public SolarPlanetId PlanetProfile => planetProfile;
 
     void Awake()
@@ -128,7 +131,7 @@ public class PlanetOrbitMotion : MonoBehaviour
 
     public void SetOrbitDistanceScale(float earthOrbitSceneUnits)
     {
-        if (!enableOrbit)
+        if (!enableOrbit || !useSolarDistanceScale)
             return;
 
         PlanetScientificData data = PlanetScientificCatalog.Get(planetProfile);
