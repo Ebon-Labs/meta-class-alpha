@@ -72,7 +72,7 @@ public class SolarSystemMotionController : MonoBehaviour
                 if (timeChanged)
                     motion.SetTimeScale(timeScale);
 
-                if (distanceChanged && motion.IsOrbitEnabled)
+                if (distanceChanged && motion.IsOrbitEnabled && motion.UseSolarDistanceScale)
                     motion.SetOrbitDistanceScale(distanceScale);
             }
         }
