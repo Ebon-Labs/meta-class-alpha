@@ -177,7 +177,7 @@ public class PlanetOrbitMotion : MonoBehaviour
 
     void CacheOrbitOffsetAroundSun()
     {
-        // Keep the exact scene placement so InteractionOrb/planet local poses stay valid.
+        // Keep the exact scene placement so InteractionMarkerOrb/planet local poses stay valid.
         Vector3 toPlanet = transform.position - orbitCenter.position;
         _orbitOffsetFromCenter = toPlanet.sqrMagnitude < 0.0001f
             ? Vector3.right * Mathf.Max(0.01f, orbitRadius)
@@ -189,7 +189,7 @@ public class PlanetOrbitMotion : MonoBehaviour
     void RefreshOrbitOffsetMagnitude()
     {
         // Never re-apply sun clearance after init — that jumps the Wrapper and breaks
-        // authored InteractionOrb local placement under scaled parents.
+        // authored InteractionMarkerOrb local placement under scaled parents.
         if (_orbitOffsetFromCenter.sqrMagnitude < 0.0001f)
             _orbitOffsetFromCenter = Vector3.right * orbitRadius;
         else
@@ -265,9 +265,9 @@ public class PlanetOrbitMotion : MonoBehaviour
         if (child == null)
             return false;
 
-        // Only InteractionOrb is pose-locked. PlanetLabel drives its own
+        // Only InteractionMarkerOrb is pose-locked. PlanetLabel drives its own
         // billboard rotation and distance-independent scale each LateUpdate.
-        return child.name.StartsWith("InteractionOrb");
+        return child.name.StartsWith("InteractionMarkerOrb");
     }
 
     void RestoreChildLocalPoses()

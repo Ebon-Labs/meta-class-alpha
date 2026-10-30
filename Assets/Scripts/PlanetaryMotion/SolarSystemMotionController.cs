@@ -13,7 +13,7 @@ public class SolarSystemMotionController : MonoBehaviour
     [SerializeField] float distanceScale = PlanetScientificCatalog.EarthOrbitSceneUnits;
 
     [Header("Interaction")]
-    [Tooltip("Shows or hides every InteractionOrb under this SolarSystem.")]
+    [Tooltip("Shows or hides every InteractionMarkerOrb under this SolarSystem.")]
     [SerializeField] bool showInteractionOrbs = true;
 
     [Tooltip("Shows or hides every PlanetLabel under this SolarSystem.")]
@@ -95,7 +95,7 @@ public class SolarSystemMotionController : MonoBehaviour
         for (int i = 0; i < transforms.Length; i++)
         {
             Transform child = transforms[i];
-            if (child == null || !child.name.StartsWith("InteractionOrb"))
+            if (child == null || !child.name.StartsWith("InteractionMarkerOrb"))
                 continue;
 
             GameObject orb = child.gameObject;
