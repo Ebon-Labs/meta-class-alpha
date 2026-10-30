@@ -23,10 +23,16 @@ public class CameraPointerController : NetworkBehaviour
     public Sprite idleIcon;
     public Sprite gazedIcon;
 
+    public override void OnStartServer()
+    {
+        PlaceAboveGuestArea();
+    }
+
     public override void OnStartClient()
     {
         SliderObject = Loader.GetComponentInChildren<Slider>();
-        transform.position = new Vector3(Random.Range(0f, 3f), 1, Random.Range(0f, 3f));
+        if (isLocalPlayer)
+            PlaceAboveGuestArea();
 
         cameraPointerController = this.GetComponentInChildren<CameraPointerController>();
         loggerScript = this.GetComponentInChildren<UILogger>();
@@ -40,6 +46,24 @@ public class CameraPointerController : NetworkBehaviour
             return;
         }
 
+    }
+
+    void PlaceAboveGuestArea()
+    {
+        GameObject area = GameObject.Find("GuestArea");
+        if (area == null)
+            return;
+
+        const float eyeHeight = 1.6f;
+        Vector3 position = area.transform.position + Vector3.up * eyeHeight;
+        Renderer renderer = area.GetComponent<Renderer>();
+        if (renderer != null)
+        {
+            Bounds bounds = renderer.bounds;
+            position = new Vector3(bounds.center.x, bounds.max.y + eyeHeight, bounds.center.z);
+        }
+
+        transform.position = position;
     }
 
     public void Update()
