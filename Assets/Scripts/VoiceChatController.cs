@@ -47,6 +47,7 @@ public class VoiceChatController : NetworkBehaviour
 
         RequestMicrophonePermission();
         StartMicrophone();
+        RefreshMicrophoneMuteState();
     }
 
     public override void OnStopLocalPlayer()
@@ -64,6 +65,25 @@ public class VoiceChatController : NetworkBehaviour
     {
         if (isLocalPlayer)
             CaptureAndSend();
+    }
+
+    /// <summary>
+    /// Called by ClassController when muteGuests changes.
+    /// Host mic stays active; guests stop/start capture.
+    /// </summary>
+    public void RefreshMicrophoneMuteState()
+    {
+        if (!isLocalPlayer)
+            return;
+
+        bool isHostPlayer = NetworkServer.active;
+        bool shouldMute = ClassController.Instance != null
+            && ClassController.Instance.ShouldMuteGuestMicrophone(isHostPlayer);
+
+        if (shouldMute)
+            StopMicrophone();
+        else if (micClip == null || string.IsNullOrEmpty(micDevice) || !Microphone.IsRecording(micDevice))
+            StartMicrophone();
     }
 
     static void RequestMicrophonePermission()
@@ -105,6 +125,11 @@ public class VoiceChatController : NetworkBehaviour
 
     void CaptureAndSend()
     {
+        bool isHostPlayer = NetworkServer.active;
+        if (ClassController.Instance != null
+            && ClassController.Instance.ShouldMuteGuestMicrophone(isHostPlayer))
+            return;
+
         if (micClip == null || string.IsNullOrEmpty(micDevice) || !Microphone.IsRecording(micDevice))
             return;
 

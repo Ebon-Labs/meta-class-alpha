@@ -505,6 +505,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 107057020}
+  - component: {fileID: 107057021}
   m_Layer: 0
   m_Name: Class
   m_TagString: Untagged
@@ -532,6 +533,23 @@ Transform:
   - {fileID: 252340762}
   m_Father: {fileID: 1265919733}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &107057021
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 107057019}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6f8a1c2d3e4b5a69708192a3b4c5d6e7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ClassController
+  hostArea: {fileID: 1055570966}
+  guestArea: {fileID: 2142311338}
+  eyeHeight: 1.6
+  muteGuests: 0
+  hideFloorAreas: 0
 --- !u!1 &115158468
 GameObject:
   m_ObjectHideFlags: 0
