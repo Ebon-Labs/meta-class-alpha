@@ -151,7 +151,11 @@ public class CameraPointerController : NetworkBehaviour
             Debug.Log("handlePointerClick: " + target.tag);
             transform.position = GetTargetEdgePosition(target);
             DisablePointerForTarget(target);
+            return;
         }
+
+        target.SendMessage("OnPointerClick", SendMessageOptions.DontRequireReceiver);
+        DisablePointerForTarget(target);
     }
 
     void DisablePointerForTarget(GameObject target)

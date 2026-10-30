@@ -13,9 +13,10 @@ GameObject:
   - component: {fileID: 512365567619452133}
   - component: {fileID: 1318772135488474084}
   - component: {fileID: 5915386850733922592}
+  - component: {fileID: 8123456789012345678}
   m_Layer: 0
   m_Name: Button
-  m_TagString: Untagged
+  m_TagString: Interactive
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -109,7 +110,7 @@ CapsuleCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 2
   m_Radius: 0.5000001
   m_Height: 2
@@ -129,3 +130,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ObjectBasicController
   InactiveMaterial: {fileID: 2100000, guid: ae32f0609a5e9453b95ec3b9e28c2ac8, type: 2}
   GazedAtMaterial: {fileID: -876546973899608171, guid: b7d4e1758864ee726870c28f6a7b4c1f, type: 3}
+--- !u!114 &8123456789012345678
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8896481115595345485}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b8c1d2e3f4a5566778899aabbccdde01, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ScreenControlButton
+  action: 0
+

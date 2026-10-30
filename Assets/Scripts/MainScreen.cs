@@ -52,6 +52,30 @@ public class MainScreen : MonoBehaviour
             Destroy(material);
     }
 
+    public void Play()
+    {
+        if (videoPlayer == null)
+            return;
+
+        videoPlayer.Play();
+    }
+
+    public void Pause()
+    {
+        if (videoPlayer == null)
+            return;
+
+        videoPlayer.Pause();
+    }
+
+    public void Stop()
+    {
+        if (videoPlayer == null)
+            return;
+
+        videoPlayer.Stop();
+    }
+
     void OnVideoStarted(VideoPlayer source)
     {
         if (tintFade != null)
