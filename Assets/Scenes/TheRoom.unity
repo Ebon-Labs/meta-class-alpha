@@ -1004,6 +1004,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1591309561}
     m_Modifications:
+    - target: {fileID: -171929055249147387, guid: 13c82b8ab87216fce9b156e217899d37, type: 3}
+      propertyPath: ground
+      value: 
+      objectReference: {fileID: 1414315496}
+    - target: {fileID: -171929055249147387, guid: 13c82b8ab87216fce9b156e217899d37, type: 3}
+      propertyPath: subject
+      value: 
+      objectReference: {fileID: 107057019}
+    - target: {fileID: -171929055249147387, guid: 13c82b8ab87216fce9b156e217899d37, type: 3}
+      propertyPath: destination
+      value: 
+      objectReference: {fileID: 768488720}
     - target: {fileID: 512365567619452133, guid: 13c82b8ab87216fce9b156e217899d37, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
@@ -1068,7 +1080,8 @@ PrefabInstance:
       propertyPath: m_Name
       value: VenusButton
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 8123456789012345678, guid: 13c82b8ab87216fce9b156e217899d37, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -1213,6 +1226,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1591309561}
     m_Modifications:
+    - target: {fileID: -171929055249147387, guid: 13c82b8ab87216fce9b156e217899d37, type: 3}
+      propertyPath: ground
+      value: 
+      objectReference: {fileID: 1414315496}
+    - target: {fileID: -171929055249147387, guid: 13c82b8ab87216fce9b156e217899d37, type: 3}
+      propertyPath: subject
+      value: 
+      objectReference: {fileID: 107057019}
+    - target: {fileID: -171929055249147387, guid: 13c82b8ab87216fce9b156e217899d37, type: 3}
+      propertyPath: destination
+      value: 
+      objectReference: {fileID: 1059745204}
     - target: {fileID: 512365567619452133, guid: 13c82b8ab87216fce9b156e217899d37, type: 3}
       propertyPath: m_Materials.Array.size
       value: 1
@@ -1285,7 +1310,8 @@ PrefabInstance:
       propertyPath: m_Name
       value: MercuryButton
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 8123456789012345678, guid: 13c82b8ab87216fce9b156e217899d37, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -1401,6 +1427,14 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2996190509798965650, guid: b73669fd4fe701295acbbc70f4cf3a1b, type: 3}
+      propertyPath: m_fontSize
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 2996190509798965650, guid: b73669fd4fe701295acbbc70f4cf3a1b, type: 3}
+      propertyPath: m_fontSizeBase
+      value: 100
+      objectReference: {fileID: 0}
     - target: {fileID: 3996190509798965651, guid: b73669fd4fe701295acbbc70f4cf3a1b, type: 3}
       propertyPath: overrideText
       value: Mars
@@ -1498,6 +1532,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1591309561}
     m_Modifications:
+    - target: {fileID: -171929055249147387, guid: 13c82b8ab87216fce9b156e217899d37, type: 3}
+      propertyPath: ground
+      value: 
+      objectReference: {fileID: 1414315496}
+    - target: {fileID: -171929055249147387, guid: 13c82b8ab87216fce9b156e217899d37, type: 3}
+      propertyPath: subject
+      value: 
+      objectReference: {fileID: 107057019}
+    - target: {fileID: -171929055249147387, guid: 13c82b8ab87216fce9b156e217899d37, type: 3}
+      propertyPath: destination
+      value: 
+      objectReference: {fileID: 635656655}
     - target: {fileID: 512365567619452133, guid: 13c82b8ab87216fce9b156e217899d37, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
@@ -1562,7 +1608,8 @@ PrefabInstance:
       propertyPath: m_Name
       value: EarthButton
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 8123456789012345678, guid: 13c82b8ab87216fce9b156e217899d37, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -3779,6 +3826,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1591309561}
     m_Modifications:
+    - target: {fileID: -171929055249147387, guid: 13c82b8ab87216fce9b156e217899d37, type: 3}
+      propertyPath: ground
+      value: 
+      objectReference: {fileID: 1414315496}
+    - target: {fileID: -171929055249147387, guid: 13c82b8ab87216fce9b156e217899d37, type: 3}
+      propertyPath: subject
+      value: 
+      objectReference: {fileID: 107057019}
+    - target: {fileID: -171929055249147387, guid: 13c82b8ab87216fce9b156e217899d37, type: 3}
+      propertyPath: destination
+      value: 
+      objectReference: {fileID: 1518038469}
     - target: {fileID: 512365567619452133, guid: 13c82b8ab87216fce9b156e217899d37, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
@@ -3843,7 +3902,8 @@ PrefabInstance:
       propertyPath: m_Name
       value: JupterButton
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 8123456789012345678, guid: 13c82b8ab87216fce9b156e217899d37, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -5243,6 +5303,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1591309561}
     m_Modifications:
+    - target: {fileID: -171929055249147387, guid: 13c82b8ab87216fce9b156e217899d37, type: 3}
+      propertyPath: ground
+      value: 
+      objectReference: {fileID: 1414315496}
+    - target: {fileID: -171929055249147387, guid: 13c82b8ab87216fce9b156e217899d37, type: 3}
+      propertyPath: subject
+      value: 
+      objectReference: {fileID: 107057019}
+    - target: {fileID: -171929055249147387, guid: 13c82b8ab87216fce9b156e217899d37, type: 3}
+      propertyPath: destination
+      value: 
+      objectReference: {fileID: 1847293652}
     - target: {fileID: 512365567619452133, guid: 13c82b8ab87216fce9b156e217899d37, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
@@ -5311,37 +5383,13 @@ PrefabInstance:
     - {fileID: 8123456789012345678, guid: 13c82b8ab87216fce9b156e217899d37, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 8896481115595345485, guid: 13c82b8ab87216fce9b156e217899d37, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1095634114}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 13c82b8ab87216fce9b156e217899d37, type: 3}
 --- !u!4 &1095634112 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7794277062746235424, guid: 13c82b8ab87216fce9b156e217899d37, type: 3}
   m_PrefabInstance: {fileID: 1095634111}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &1095634113 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 8896481115595345485, guid: 13c82b8ab87216fce9b156e217899d37, type: 3}
-  m_PrefabInstance: {fileID: 1095634111}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &1095634114
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1095634113}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e6a0c3d29f41508c1d5e7f903b2c4d6e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: MetaClass::MoveToEdge
-  subject: {fileID: 107057019}
-  destination: {fileID: 1847293652}
-  ground: {fileID: 1414315496}
-  duration: 7
 --- !u!1 &1105573717
 GameObject:
   m_ObjectHideFlags: 0
@@ -6118,6 +6166,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1591309561}
     m_Modifications:
+    - target: {fileID: -171929055249147387, guid: 13c82b8ab87216fce9b156e217899d37, type: 3}
+      propertyPath: ground
+      value: 
+      objectReference: {fileID: 1414315496}
+    - target: {fileID: -171929055249147387, guid: 13c82b8ab87216fce9b156e217899d37, type: 3}
+      propertyPath: subject
+      value: 
+      objectReference: {fileID: 107057019}
+    - target: {fileID: -171929055249147387, guid: 13c82b8ab87216fce9b156e217899d37, type: 3}
+      propertyPath: destination
+      value: 
+      objectReference: {fileID: 19674680}
     - target: {fileID: 512365567619452133, guid: 13c82b8ab87216fce9b156e217899d37, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
@@ -6182,7 +6242,8 @@ PrefabInstance:
       propertyPath: m_Name
       value: SaturnButton
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 8123456789012345678, guid: 13c82b8ab87216fce9b156e217899d37, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -6933,6 +6994,14 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2996190509798965650, guid: b73669fd4fe701295acbbc70f4cf3a1b, type: 3}
+      propertyPath: m_fontSize
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 2996190509798965650, guid: b73669fd4fe701295acbbc70f4cf3a1b, type: 3}
+      propertyPath: m_fontSizeBase
+      value: 100
+      objectReference: {fileID: 0}
     - target: {fileID: 3996190509798965651, guid: b73669fd4fe701295acbbc70f4cf3a1b, type: 3}
       propertyPath: overrideText
       value: Neptune
@@ -7419,6 +7488,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1591309561}
     m_Modifications:
+    - target: {fileID: -171929055249147387, guid: 13c82b8ab87216fce9b156e217899d37, type: 3}
+      propertyPath: ground
+      value: 
+      objectReference: {fileID: 1414315496}
+    - target: {fileID: -171929055249147387, guid: 13c82b8ab87216fce9b156e217899d37, type: 3}
+      propertyPath: subject
+      value: 
+      objectReference: {fileID: 107057019}
+    - target: {fileID: -171929055249147387, guid: 13c82b8ab87216fce9b156e217899d37, type: 3}
+      propertyPath: destination
+      value: 
+      objectReference: {fileID: 415959104}
     - target: {fileID: 512365567619452133, guid: 13c82b8ab87216fce9b156e217899d37, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
@@ -7483,7 +7564,8 @@ PrefabInstance:
       propertyPath: m_Name
       value: MarsButton
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 8123456789012345678, guid: 13c82b8ab87216fce9b156e217899d37, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -8127,22 +8209,22 @@ PrefabInstance:
       propertyPath: returnHome
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 1318772135488474084, guid: 13c82b8ab87216fce9b156e217899d37, type: 3}
-      propertyPath: m_Enabled
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 512365567619452133, guid: 13c82b8ab87216fce9b156e217899d37, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: b7e1c4a90d2f4e6a8c3b5d7f1a9e0c32, type: 2}
-    - target: {fileID: 5915386850733922592, guid: 13c82b8ab87216fce9b156e217899d37, type: 3}
-      propertyPath: InactiveMaterial
-      value: 
-      objectReference: {fileID: 2100000, guid: b7e1c4a90d2f4e6a8c3b5d7f1a9e0c32, type: 2}
+    - target: {fileID: 1318772135488474084, guid: 13c82b8ab87216fce9b156e217899d37, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2016921900275569820, guid: 13c82b8ab87216fce9b156e217899d37, type: 3}
       propertyPath: m_Mesh
       value: 
       objectReference: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+    - target: {fileID: 5915386850733922592, guid: 13c82b8ab87216fce9b156e217899d37, type: 3}
+      propertyPath: InactiveMaterial
+      value: 
+      objectReference: {fileID: 2100000, guid: b7e1c4a90d2f4e6a8c3b5d7f1a9e0c32, type: 2}
     - target: {fileID: 7794277062746235424, guid: 13c82b8ab87216fce9b156e217899d37, type: 3}
       propertyPath: m_LocalScale.x
       value: 0.1
@@ -8506,6 +8588,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1591309561}
     m_Modifications:
+    - target: {fileID: -171929055249147387, guid: 13c82b8ab87216fce9b156e217899d37, type: 3}
+      propertyPath: ground
+      value: 
+      objectReference: {fileID: 1414315496}
+    - target: {fileID: -171929055249147387, guid: 13c82b8ab87216fce9b156e217899d37, type: 3}
+      propertyPath: subject
+      value: 
+      objectReference: {fileID: 107057019}
+    - target: {fileID: -171929055249147387, guid: 13c82b8ab87216fce9b156e217899d37, type: 3}
+      propertyPath: destination
+      value: 
+      objectReference: {fileID: 3696319}
     - target: {fileID: 512365567619452133, guid: 13c82b8ab87216fce9b156e217899d37, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
@@ -8570,7 +8664,8 @@ PrefabInstance:
       propertyPath: m_Name
       value: NeptuneButton
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 8123456789012345678, guid: 13c82b8ab87216fce9b156e217899d37, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -8808,6 +8903,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1591309561}
     m_Modifications:
+    - target: {fileID: -171929055249147387, guid: 13c82b8ab87216fce9b156e217899d37, type: 3}
+      propertyPath: ground
+      value: 
+      objectReference: {fileID: 1414315496}
+    - target: {fileID: -171929055249147387, guid: 13c82b8ab87216fce9b156e217899d37, type: 3}
+      propertyPath: subject
+      value: 
+      objectReference: {fileID: 107057019}
+    - target: {fileID: -171929055249147387, guid: 13c82b8ab87216fce9b156e217899d37, type: 3}
+      propertyPath: destination
+      value: 
+      objectReference: {fileID: 1105573717}
     - target: {fileID: 512365567619452133, guid: 13c82b8ab87216fce9b156e217899d37, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
@@ -8872,7 +8979,8 @@ PrefabInstance:
       propertyPath: m_Name
       value: UranusButton
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 8123456789012345678, guid: 13c82b8ab87216fce9b156e217899d37, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -8933,6 +9041,14 @@ PrefabInstance:
     - target: {fileID: 2320827393956409690, guid: b73669fd4fe701295acbbc70f4cf3a1b, type: 3}
       propertyPath: m_IsActive
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2996190509798965650, guid: b73669fd4fe701295acbbc70f4cf3a1b, type: 3}
+      propertyPath: m_fontSize
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 2996190509798965650, guid: b73669fd4fe701295acbbc70f4cf3a1b, type: 3}
+      propertyPath: m_fontSizeBase
+      value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 3996190509798965651, guid: b73669fd4fe701295acbbc70f4cf3a1b, type: 3}
       propertyPath: overrideText
@@ -9229,6 +9345,14 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2996190509798965650, guid: b73669fd4fe701295acbbc70f4cf3a1b, type: 3}
+      propertyPath: m_fontSize
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 2996190509798965650, guid: b73669fd4fe701295acbbc70f4cf3a1b, type: 3}
+      propertyPath: m_fontSizeBase
+      value: 100
+      objectReference: {fileID: 0}
     - target: {fileID: 3996190509798965651, guid: b73669fd4fe701295acbbc70f4cf3a1b, type: 3}
       propertyPath: overrideText
       value: Uranus
@@ -9275,7 +9399,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7389851844210936631, guid: b73669fd4fe701295acbbc70f4cf3a1b, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0.587
+      value: 0.408
       objectReference: {fileID: 0}
     - target: {fileID: 7389851844210936631, guid: b73669fd4fe701295acbbc70f4cf3a1b, type: 3}
       propertyPath: m_LocalRotation.w
@@ -9295,11 +9419,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7389851844210936631, guid: b73669fd4fe701295acbbc70f4cf3a1b, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -0.273
+      value: -0.3
       objectReference: {fileID: 0}
     - target: {fileID: 7389851844210936631, guid: b73669fd4fe701295acbbc70f4cf3a1b, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 2.974
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 7389851844210936631, guid: b73669fd4fe701295acbbc70f4cf3a1b, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -9316,7 +9440,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 2320827393956409690, guid: b73669fd4fe701295acbbc70f4cf3a1b, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 0}
   m_SourcePrefab: {fileID: 100100000, guid: b73669fd4fe701295acbbc70f4cf3a1b, type: 3}
 --- !u!224 &2115630386 stripped
 RectTransform:
@@ -9338,6 +9465,14 @@ PrefabInstance:
     - target: {fileID: 2320827393956409690, guid: b73669fd4fe701295acbbc70f4cf3a1b, type: 3}
       propertyPath: m_IsActive
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2996190509798965650, guid: b73669fd4fe701295acbbc70f4cf3a1b, type: 3}
+      propertyPath: m_fontSize
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 2996190509798965650, guid: b73669fd4fe701295acbbc70f4cf3a1b, type: 3}
+      propertyPath: m_fontSizeBase
+      value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 3996190509798965651, guid: b73669fd4fe701295acbbc70f4cf3a1b, type: 3}
       propertyPath: overrideText
@@ -9445,8 +9580,16 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2996190509798965650, guid: b73669fd4fe701295acbbc70f4cf3a1b, type: 3}
+      propertyPath: m_fontSize
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 2996190509798965650, guid: b73669fd4fe701295acbbc70f4cf3a1b, type: 3}
       propertyPath: m_margin.y
       value: 0.40645337
+      objectReference: {fileID: 0}
+    - target: {fileID: 2996190509798965650, guid: b73669fd4fe701295acbbc70f4cf3a1b, type: 3}
+      propertyPath: m_fontSizeBase
+      value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 3996190509798965651, guid: b73669fd4fe701295acbbc70f4cf3a1b, type: 3}
       propertyPath: overrideText
