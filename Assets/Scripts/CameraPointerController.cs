@@ -100,7 +100,10 @@ public class CameraPointerController : NetworkBehaviour
                 if (_gazedAtObject.tag != "Environment" && !pointerDisabled && !(isTeleportable && atTargetEdge))
                 {
                     sendMessage(_gazedAtObject, "OnPointerEnter");
-                    loggerScript.SetMessage(GetPointerLogName(_gazedAtObject));
+                    if (HasObjectBasicController(_gazedAtObject))
+                        loggerScript.SetMessage(GetPointerLogName(_gazedAtObject));
+                    else
+                        loggerScript.SetMessage("");
                     hasPointerEntered = true;
                 }
                 else
@@ -125,19 +128,29 @@ public class CameraPointerController : NetworkBehaviour
             hasPointerEntered = false;
         }
 
+        bool showLoading = hasPointerEntered && HasObjectBasicController(_gazedAtObject);
+
         if (hasPointerEntered)
         {
             onPointerEnterCounter += Time.deltaTime;
 
-            Loader.SetActive(true);
-            SliderObject.value = onPointerEnterCounter / onPointerClickTime;
+            if (showLoading)
+            {
+                Loader.SetActive(true);
+                SliderObject.value = onPointerEnterCounter / onPointerClickTime;
+            }
+            else
+            {
+                Loader.SetActive(false);
+                SliderObject.value = 0f;
+            }
 
             if (onPointerEnterCounter >= onPointerClickTime)
             {
                 GameObject target = _gazedAtObject;
                 cameraPointerController.handlePointerClick(target);
 
-                if (!IsTeleportable(target))
+                if (!IsTeleportable(target) && HasObjectBasicController(target))
                     loggerScript.SetMessage("Clique em: " + target.name);
                 else
                     loggerScript.SetMessage("");
@@ -154,7 +167,7 @@ public class CameraPointerController : NetworkBehaviour
             SliderObject.value = 0f;
         }
 
-        UpdatePointerIcon(hasPointerEntered);
+        UpdatePointerIcon(showLoading);
     }
 
     void UpdatePointerIcon(bool gazed)
@@ -215,6 +228,14 @@ public class CameraPointerController : NetworkBehaviour
     static bool IsTeleportable(GameObject target)
     {
         return target != null && target.CompareTag("Teleportable");
+    }
+
+    static bool HasObjectBasicController(GameObject target)
+    {
+        if (target == null)
+            return false;
+
+        return target.GetComponentInParent<ObjectBasicController>() != null;
     }
 
     bool IsObserverAtTargetEdge(GameObject target)
