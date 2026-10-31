@@ -13,19 +13,81 @@ public class SolarSystemMotionController : MonoBehaviour
     [SerializeField] float distanceScale = PlanetScientificCatalog.EarthOrbitSceneUnits;
 
     [Header("Interaction")]
-    [Tooltip("Shows or hides every InteractionOrb under this SolarSystem.")]
-    [SerializeField] bool showInteractionOrbs = true;
+    [Tooltip("Shows or hides every InteractionMarkerOrb under this SolarSystem.")]
+    [SerializeField] bool interactionOrbsEnabled = false;
 
     [Tooltip("Shows or hides every PlanetLabel under this SolarSystem.")]
     [SerializeField] bool showPlanetLabels = true;
 
+    /// <summary>Factor applied by OrbitButton to leave the default pace.</summary>
+    public const float IncreasedTimeScaleMultiplier = 1000f;
+
+    float _defaultTimeScale = 4320f;
     float _appliedTimeScale = -1f;
     float _appliedDistanceScale = -1f;
     bool _appliedShowInteractionOrbs;
     bool _appliedShowPlanetLabels;
 
+    /// <summary>Earth orbit radius used by the close-distance view.</summary>
+    public const float NearDistanceScale = 3f;
+
     /// <summary>Maximum Earth orbit radius in scene units (scientific scale).</summary>
     public float MaxDistanceScale => PlanetScientificCatalog.EarthOrbitSceneUnits;
+
+    public float DistanceScale => distanceScale;
+
+    public bool IsNearDistance => Mathf.Approximately(distanceScale, NearDistanceScale);
+
+    public void ToggleDistanceScale()
+    {
+        SetDistanceScale(IsNearDistance ? MaxDistanceScale : NearDistanceScale);
+    }
+
+    public void SetDistanceScale(float scale)
+    {
+        bool wasNear = IsNearDistance;
+        distanceScale = scale;
+        if (wasNear != IsNearDistance)
+            timeScale = IsNearDistance ? 0f : _defaultTimeScale;
+
+        ApplyToPlanets(force: true);
+    }
+
+    public bool ShowInteractionOrbs => interactionOrbsEnabled;
+
+    public void ToggleShowInteractionOrbs()
+    {
+        SetShowInteractionOrbs(!interactionOrbsEnabled);
+    }
+
+    public void SetShowInteractionOrbs(bool show)
+    {
+        interactionOrbsEnabled = show;
+        ApplyToPlanets(force: true);
+    }
+
+    public float TimeScale => timeScale;
+
+    public bool IsIncreasedTimeScale =>
+        Mathf.Approximately(timeScale, _defaultTimeScale * IncreasedTimeScaleMultiplier);
+
+    public void ToggleTimeScale()
+    {
+        SetTimeScale(IsIncreasedTimeScale
+            ? _defaultTimeScale
+            : _defaultTimeScale * IncreasedTimeScaleMultiplier);
+    }
+
+    public void SetTimeScale(float scale)
+    {
+        timeScale = scale;
+        ApplyToPlanets(force: true);
+    }
+
+    void Awake()
+    {
+        _defaultTimeScale = timeScale;
+    }
 
     void OnValidate()
     {
@@ -34,6 +96,10 @@ public class SolarSystemMotionController : MonoBehaviour
 
     void Start()
     {
+        // Near distance keeps the orbits stopped. Common distance keeps the captured default pace.
+        if (IsNearDistance)
+            timeScale = 0f;
+
         // After PlanetOrbitMotion.Awake captured child poses / orbit offsets.
         ApplyToPlanets(force: true);
     }
@@ -55,7 +121,7 @@ public class SolarSystemMotionController : MonoBehaviour
 
         bool timeChanged = force || !Mathf.Approximately(_appliedTimeScale, timeScale);
         bool distanceChanged = force || !Mathf.Approximately(_appliedDistanceScale, distanceScale);
-        bool orbsChanged = force || _appliedShowInteractionOrbs != showInteractionOrbs;
+        bool orbsChanged = force || _appliedShowInteractionOrbs != interactionOrbsEnabled;
         bool labelsChanged = force || _appliedShowPlanetLabels != showPlanetLabels;
         if (!timeChanged && !distanceChanged && !orbsChanged && !labelsChanged)
             return;
@@ -85,7 +151,7 @@ public class SolarSystemMotionController : MonoBehaviour
 
         _appliedTimeScale = timeScale;
         _appliedDistanceScale = distanceScale;
-        _appliedShowInteractionOrbs = showInteractionOrbs;
+        _appliedShowInteractionOrbs = interactionOrbsEnabled;
         _appliedShowPlanetLabels = showPlanetLabels;
     }
 
@@ -95,12 +161,12 @@ public class SolarSystemMotionController : MonoBehaviour
         for (int i = 0; i < transforms.Length; i++)
         {
             Transform child = transforms[i];
-            if (child == null || !child.name.StartsWith("InteractionOrb"))
+            if (child == null || !child.name.StartsWith("InteractionMarkerOrb"))
                 continue;
 
             GameObject orb = child.gameObject;
-            if (orb.activeSelf != showInteractionOrbs)
-                orb.SetActive(showInteractionOrbs);
+            if (orb.activeSelf != interactionOrbsEnabled)
+                orb.SetActive(interactionOrbsEnabled);
         }
     }
 

@@ -23,23 +23,53 @@ public class CameraPointerController : NetworkBehaviour
     public Sprite idleIcon;
     public Sprite gazedIcon;
 
+    public override void OnStartServer()
+    {
+        PlaceAtClassArea();
+    }
+
     public override void OnStartClient()
     {
         SliderObject = Loader.GetComponentInChildren<Slider>();
-        transform.position = new Vector3(Random.Range(0f, 3f), 1, Random.Range(0f, 3f));
+        if (isLocalPlayer)
+            PlaceAtClassArea();
 
         cameraPointerController = this.GetComponentInChildren<CameraPointerController>();
         loggerScript = this.GetComponentInChildren<UILogger>();
+        camera = GetComponentInChildren<Camera>(true);
 
         if (isLocalPlayer)
         {
-            Camera camera = cameraPointerController.GetComponent<Camera>();
-            Canvas canvas = this.GetComponentInChildren<Canvas>();
-            camera.enabled = true;
-            canvas.enabled = true;
+            Canvas canvas = this.GetComponentInChildren<Canvas>(true);
+            if (camera != null)
+                camera.enabled = true;
+            if (canvas != null)
+                canvas.enabled = true;
             return;
         }
 
+    }
+
+    void PlaceAtClassArea()
+    {
+        ClassController classController = ClassController.Instance;
+        if (classController == null)
+            classController = FindFirstObjectByType<ClassController>();
+
+        if (classController == null)
+            return;
+
+        classController.PlacePlayer(transform, IsHostPlayer());
+    }
+
+    bool IsHostPlayer()
+    {
+        if (!NetworkServer.active)
+            return false;
+
+        return connectionToClient != null
+            && NetworkServer.localConnection != null
+            && connectionToClient == NetworkServer.localConnection;
     }
 
     public void Update()
@@ -51,8 +81,12 @@ public class CameraPointerController : NetworkBehaviour
 
         // Casts ray towards camera's forward direction, to detect if a GameObject is being gazed
         // at.
+        if (camera == null)
+            camera = GetComponentInChildren<Camera>(true);
+
+        Transform look = camera != null ? camera.transform : transform;
         RaycastHit hit;
-        if (Physics.Raycast(transform.position, transform.forward, out hit, _maxDistance, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore))
+        if (Physics.Raycast(look.position, look.forward, out hit, _maxDistance, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore))
         {
             GameObject hitObject = hit.transform.gameObject;
             bool isTeleportable = IsTeleportable(hitObject);
@@ -72,7 +106,10 @@ public class CameraPointerController : NetworkBehaviour
                 if (_gazedAtObject.tag != "Environment" && !pointerDisabled && !(isTeleportable && atTargetEdge))
                 {
                     sendMessage(_gazedAtObject, "OnPointerEnter");
-                    loggerScript.SetMessage(GetPointerLogName(_gazedAtObject));
+                    if (HasObjectBasicController(_gazedAtObject))
+                        loggerScript.SetMessage(GetPointerLogName(_gazedAtObject));
+                    else
+                        loggerScript.SetMessage("");
                     hasPointerEntered = true;
                 }
                 else
@@ -97,19 +134,29 @@ public class CameraPointerController : NetworkBehaviour
             hasPointerEntered = false;
         }
 
+        bool showLoading = hasPointerEntered && HasObjectBasicController(_gazedAtObject);
+
         if (hasPointerEntered)
         {
             onPointerEnterCounter += Time.deltaTime;
 
-            Loader.SetActive(true);
-            SliderObject.value = onPointerEnterCounter / onPointerClickTime;
+            if (showLoading)
+            {
+                Loader.SetActive(true);
+                SliderObject.value = onPointerEnterCounter / onPointerClickTime;
+            }
+            else
+            {
+                Loader.SetActive(false);
+                SliderObject.value = 0f;
+            }
 
             if (onPointerEnterCounter >= onPointerClickTime)
             {
                 GameObject target = _gazedAtObject;
                 cameraPointerController.handlePointerClick(target);
 
-                if (!IsTeleportable(target))
+                if (!IsTeleportable(target) && HasObjectBasicController(target))
                     loggerScript.SetMessage("Clique em: " + target.name);
                 else
                     loggerScript.SetMessage("");
@@ -126,7 +173,7 @@ public class CameraPointerController : NetworkBehaviour
             SliderObject.value = 0f;
         }
 
-        UpdatePointerIcon(hasPointerEntered);
+        UpdatePointerIcon(showLoading);
     }
 
     void UpdatePointerIcon(bool gazed)
@@ -151,7 +198,11 @@ public class CameraPointerController : NetworkBehaviour
             Debug.Log("handlePointerClick: " + target.tag);
             transform.position = GetTargetEdgePosition(target);
             DisablePointerForTarget(target);
+            return;
         }
+
+        target.SendMessage("OnPointerClick", SendMessageOptions.DontRequireReceiver);
+        DisablePointerForTarget(target);
     }
 
     void DisablePointerForTarget(GameObject target)
@@ -183,6 +234,14 @@ public class CameraPointerController : NetworkBehaviour
     static bool IsTeleportable(GameObject target)
     {
         return target != null && target.CompareTag("Teleportable");
+    }
+
+    static bool HasObjectBasicController(GameObject target)
+    {
+        if (target == null)
+            return false;
+
+        return target.GetComponentInParent<ObjectBasicController>() != null;
     }
 
     bool IsObserverAtTargetEdge(GameObject target)
