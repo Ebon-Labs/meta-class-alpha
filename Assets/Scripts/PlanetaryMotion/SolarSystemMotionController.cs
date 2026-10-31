@@ -14,7 +14,7 @@ public class SolarSystemMotionController : MonoBehaviour
 
     [Header("Interaction")]
     [Tooltip("Shows or hides every InteractionMarkerOrb under this SolarSystem.")]
-    [SerializeField] bool showInteractionOrbs = true;
+    [SerializeField] bool interactionOrbsEnabled = false;
 
     [Tooltip("Shows or hides every PlanetLabel under this SolarSystem.")]
     [SerializeField] bool showPlanetLabels = true;
@@ -53,16 +53,16 @@ public class SolarSystemMotionController : MonoBehaviour
         ApplyToPlanets(force: true);
     }
 
-    public bool ShowInteractionOrbs => showInteractionOrbs;
+    public bool ShowInteractionOrbs => interactionOrbsEnabled;
 
     public void ToggleShowInteractionOrbs()
     {
-        SetShowInteractionOrbs(!showInteractionOrbs);
+        SetShowInteractionOrbs(!interactionOrbsEnabled);
     }
 
     public void SetShowInteractionOrbs(bool show)
     {
-        showInteractionOrbs = show;
+        interactionOrbsEnabled = show;
         ApplyToPlanets(force: true);
     }
 
@@ -121,7 +121,7 @@ public class SolarSystemMotionController : MonoBehaviour
 
         bool timeChanged = force || !Mathf.Approximately(_appliedTimeScale, timeScale);
         bool distanceChanged = force || !Mathf.Approximately(_appliedDistanceScale, distanceScale);
-        bool orbsChanged = force || _appliedShowInteractionOrbs != showInteractionOrbs;
+        bool orbsChanged = force || _appliedShowInteractionOrbs != interactionOrbsEnabled;
         bool labelsChanged = force || _appliedShowPlanetLabels != showPlanetLabels;
         if (!timeChanged && !distanceChanged && !orbsChanged && !labelsChanged)
             return;
@@ -151,7 +151,7 @@ public class SolarSystemMotionController : MonoBehaviour
 
         _appliedTimeScale = timeScale;
         _appliedDistanceScale = distanceScale;
-        _appliedShowInteractionOrbs = showInteractionOrbs;
+        _appliedShowInteractionOrbs = interactionOrbsEnabled;
         _appliedShowPlanetLabels = showPlanetLabels;
     }
 
@@ -165,8 +165,8 @@ public class SolarSystemMotionController : MonoBehaviour
                 continue;
 
             GameObject orb = child.gameObject;
-            if (orb.activeSelf != showInteractionOrbs)
-                orb.SetActive(showInteractionOrbs);
+            if (orb.activeSelf != interactionOrbsEnabled)
+                orb.SetActive(interactionOrbsEnabled);
         }
     }
 

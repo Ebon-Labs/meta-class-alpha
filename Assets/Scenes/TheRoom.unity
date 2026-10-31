@@ -1860,6 +1860,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: InteractionMarkerOrb
       objectReference: {fileID: 0}
+    - target: {fileID: 698804607782818463, guid: 01407e962d5b6ee15baeba9a43b5737d, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5209321470821200043, guid: 01407e962d5b6ee15baeba9a43b5737d, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -1886,23 +1890,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5209321470821200043, guid: 01407e962d5b6ee15baeba9a43b5737d, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 100
+      value: 200
       objectReference: {fileID: 0}
     - target: {fileID: 5209321470821200043, guid: 01407e962d5b6ee15baeba9a43b5737d, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 100
+      value: 200
       objectReference: {fileID: 0}
     - target: {fileID: 5209321470821200043, guid: 01407e962d5b6ee15baeba9a43b5737d, type: 3}
       propertyPath: m_LocalScale.x
-      value: -1.4199998
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 5209321470821200043, guid: 01407e962d5b6ee15baeba9a43b5737d, type: 3}
       propertyPath: m_LocalScale.y
-      value: -1.4200001
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 5209321470821200043, guid: 01407e962d5b6ee15baeba9a43b5737d, type: 3}
       propertyPath: m_LocalScale.z
-      value: -1.42
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 5209321470821200043, guid: 01407e962d5b6ee15baeba9a43b5737d, type: 3}
       propertyPath: m_LocalPosition.x
@@ -2127,7 +2131,7 @@ PrefabInstance:
     - target: {fileID: 512365567619452133, guid: 13c82b8ab87216fce9b156e217899d37, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: a57c68d79e00f11a223344ee66776666, type: 2}
+      objectReference: {fileID: 2100000, guid: b68d79e80f11a22b334455ff77887777, type: 2}
     - target: {fileID: 2016921900275569820, guid: 13c82b8ab87216fce9b156e217899d37, type: 3}
       propertyPath: m_Mesh
       value: 
@@ -2139,7 +2143,7 @@ PrefabInstance:
     - target: {fileID: 5915386850733922592, guid: 13c82b8ab87216fce9b156e217899d37, type: 3}
       propertyPath: InactiveMaterial
       value: 
-      objectReference: {fileID: 2100000, guid: a57c68d79e00f11a223344ee66776666, type: 2}
+      objectReference: {fileID: 2100000, guid: b68d79e80f11a22b334455ff77887777, type: 2}
     - target: {fileID: 7794277062746235424, guid: 13c82b8ab87216fce9b156e217899d37, type: 3}
       propertyPath: m_LocalScale.x
       value: 0.1
@@ -3019,6 +3023,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: InteractionMarkerOrb
       objectReference: {fileID: 0}
+    - target: {fileID: 698804607782818463, guid: 01407e962d5b6ee15baeba9a43b5737d, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5209321470821200043, guid: 01407e962d5b6ee15baeba9a43b5737d, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -3045,23 +3053,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5209321470821200043, guid: 01407e962d5b6ee15baeba9a43b5737d, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 100
+      value: 200
       objectReference: {fileID: 0}
     - target: {fileID: 5209321470821200043, guid: 01407e962d5b6ee15baeba9a43b5737d, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 100
+      value: 200
       objectReference: {fileID: 0}
     - target: {fileID: 5209321470821200043, guid: 01407e962d5b6ee15baeba9a43b5737d, type: 3}
       propertyPath: m_LocalScale.x
-      value: -1.7400001
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 5209321470821200043, guid: 01407e962d5b6ee15baeba9a43b5737d, type: 3}
       propertyPath: m_LocalScale.y
-      value: -1.7400005
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 5209321470821200043, guid: 01407e962d5b6ee15baeba9a43b5737d, type: 3}
       propertyPath: m_LocalScale.z
-      value: -1.7400005
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 5209321470821200043, guid: 01407e962d5b6ee15baeba9a43b5737d, type: 3}
       propertyPath: m_LocalPosition.x
@@ -3613,17 +3621,21 @@ PrefabInstance:
       propertyPath: m_Name
       value: InteractionMarkerOrb
       objectReference: {fileID: 0}
+    - target: {fileID: 698804607782818463, guid: 01407e962d5b6ee15baeba9a43b5737d, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5209321470821200043, guid: 01407e962d5b6ee15baeba9a43b5737d, type: 3}
       propertyPath: m_LocalScale.x
-      value: -0.9
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5209321470821200043, guid: 01407e962d5b6ee15baeba9a43b5737d, type: 3}
       propertyPath: m_LocalScale.y
-      value: -0.9
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5209321470821200043, guid: 01407e962d5b6ee15baeba9a43b5737d, type: 3}
       propertyPath: m_LocalScale.z
-      value: -0.9
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5209321470821200043, guid: 01407e962d5b6ee15baeba9a43b5737d, type: 3}
       propertyPath: m_LocalPosition.z
@@ -4232,7 +4244,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SolarSystemMotionController
   timeScale: 4320
   distanceScale: 300
-  showInteractionOrbs: 1
+  interactionOrbsEnabled: 0
   showPlanetLabels: 1
 --- !u!1 &920000002 stripped
 GameObject:
@@ -4364,6 +4376,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: InteractionMarkerOrb
       objectReference: {fileID: 0}
+    - target: {fileID: 698804607782818463, guid: 01407e962d5b6ee15baeba9a43b5737d, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5209321470821200043, guid: 01407e962d5b6ee15baeba9a43b5737d, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -4390,11 +4406,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5209321470821200043, guid: 01407e962d5b6ee15baeba9a43b5737d, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 100
+      value: 200
       objectReference: {fileID: 0}
     - target: {fileID: 5209321470821200043, guid: 01407e962d5b6ee15baeba9a43b5737d, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 100
+      value: 200
       objectReference: {fileID: 0}
     - target: {fileID: 5209321470821200043, guid: 01407e962d5b6ee15baeba9a43b5737d, type: 3}
       propertyPath: m_LocalPosition.x
@@ -4461,6 +4477,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: InteractionMarkerOrb
       objectReference: {fileID: 0}
+    - target: {fileID: 698804607782818463, guid: 01407e962d5b6ee15baeba9a43b5737d, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5209321470821200043, guid: 01407e962d5b6ee15baeba9a43b5737d, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -4487,23 +4507,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5209321470821200043, guid: 01407e962d5b6ee15baeba9a43b5737d, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 100
+      value: 200
       objectReference: {fileID: 0}
     - target: {fileID: 5209321470821200043, guid: 01407e962d5b6ee15baeba9a43b5737d, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 100
+      value: 200
       objectReference: {fileID: 0}
     - target: {fileID: 5209321470821200043, guid: 01407e962d5b6ee15baeba9a43b5737d, type: 3}
       propertyPath: m_LocalScale.x
-      value: -15.919994
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 5209321470821200043, guid: 01407e962d5b6ee15baeba9a43b5737d, type: 3}
       propertyPath: m_LocalScale.y
-      value: -15.919998
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 5209321470821200043, guid: 01407e962d5b6ee15baeba9a43b5737d, type: 3}
       propertyPath: m_LocalScale.z
-      value: -15.920001
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 5209321470821200043, guid: 01407e962d5b6ee15baeba9a43b5737d, type: 3}
       propertyPath: m_LocalPosition.x
@@ -4611,6 +4631,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: InteractionMarkerOrb
       objectReference: {fileID: 0}
+    - target: {fileID: 698804607782818463, guid: 01407e962d5b6ee15baeba9a43b5737d, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5209321470821200043, guid: 01407e962d5b6ee15baeba9a43b5737d, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -4637,23 +4661,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5209321470821200043, guid: 01407e962d5b6ee15baeba9a43b5737d, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 100
+      value: 200
       objectReference: {fileID: 0}
     - target: {fileID: 5209321470821200043, guid: 01407e962d5b6ee15baeba9a43b5737d, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 100
+      value: 200
       objectReference: {fileID: 0}
     - target: {fileID: 5209321470821200043, guid: 01407e962d5b6ee15baeba9a43b5737d, type: 3}
       propertyPath: m_LocalScale.x
-      value: -6.120001
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 5209321470821200043, guid: 01407e962d5b6ee15baeba9a43b5737d, type: 3}
       propertyPath: m_LocalScale.y
-      value: -6.120001
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 5209321470821200043, guid: 01407e962d5b6ee15baeba9a43b5737d, type: 3}
       propertyPath: m_LocalScale.z
-      value: -6.1199994
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 5209321470821200043, guid: 01407e962d5b6ee15baeba9a43b5737d, type: 3}
       propertyPath: m_LocalPosition.x
@@ -5030,6 +5054,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: InteractionMarkerOrb
       objectReference: {fileID: 0}
+    - target: {fileID: 698804607782818463, guid: 01407e962d5b6ee15baeba9a43b5737d, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5209321470821200043, guid: 01407e962d5b6ee15baeba9a43b5737d, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -5056,15 +5084,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5209321470821200043, guid: 01407e962d5b6ee15baeba9a43b5737d, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 100
+      value: 200
       objectReference: {fileID: 0}
     - target: {fileID: 5209321470821200043, guid: 01407e962d5b6ee15baeba9a43b5737d, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 100
+      value: 200
       objectReference: {fileID: 0}
     - target: {fileID: 5209321470821200043, guid: 01407e962d5b6ee15baeba9a43b5737d, type: 3}
       propertyPath: m_LocalScale.y
-      value: -3.2799997
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 5209321470821200043, guid: 01407e962d5b6ee15baeba9a43b5737d, type: 3}
       propertyPath: m_LocalPosition.x
@@ -5113,6 +5141,10 @@ PrefabInstance:
     - target: {fileID: 5209321470821200043, guid: 01407e962d5b6ee15baeba9a43b5737d, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5209321470821200043, guid: 01407e962d5b6ee15baeba9a43b5737d, type: 3}
+      propertyPath: m_ConstrainProportionsScale
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -5948,6 +5980,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: InteractionMarkerOrb
       objectReference: {fileID: 0}
+    - target: {fileID: 698804607782818463, guid: 01407e962d5b6ee15baeba9a43b5737d, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5209321470821200043, guid: 01407e962d5b6ee15baeba9a43b5737d, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -5974,23 +6010,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5209321470821200043, guid: 01407e962d5b6ee15baeba9a43b5737d, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 100
+      value: 200
       objectReference: {fileID: 0}
     - target: {fileID: 5209321470821200043, guid: 01407e962d5b6ee15baeba9a43b5737d, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 100
+      value: 200
       objectReference: {fileID: 0}
     - target: {fileID: 5209321470821200043, guid: 01407e962d5b6ee15baeba9a43b5737d, type: 3}
       propertyPath: m_LocalScale.x
-      value: -21.99
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 5209321470821200043, guid: 01407e962d5b6ee15baeba9a43b5737d, type: 3}
       propertyPath: m_LocalScale.y
-      value: -21.99
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 5209321470821200043, guid: 01407e962d5b6ee15baeba9a43b5737d, type: 3}
       propertyPath: m_LocalScale.z
-      value: -21.99
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 5209321470821200043, guid: 01407e962d5b6ee15baeba9a43b5737d, type: 3}
       propertyPath: m_LocalPosition.x
@@ -8394,6 +8430,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: InteractionMarkerOrb
       objectReference: {fileID: 0}
+    - target: {fileID: 698804607782818463, guid: 01407e962d5b6ee15baeba9a43b5737d, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5209321470821200043, guid: 01407e962d5b6ee15baeba9a43b5737d, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -8420,23 +8460,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5209321470821200043, guid: 01407e962d5b6ee15baeba9a43b5737d, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 100
+      value: 200
       objectReference: {fileID: 0}
     - target: {fileID: 5209321470821200043, guid: 01407e962d5b6ee15baeba9a43b5737d, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 100
+      value: 200
       objectReference: {fileID: 0}
     - target: {fileID: 5209321470821200043, guid: 01407e962d5b6ee15baeba9a43b5737d, type: 3}
       propertyPath: m_LocalScale.x
-      value: -11.06
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 5209321470821200043, guid: 01407e962d5b6ee15baeba9a43b5737d, type: 3}
       propertyPath: m_LocalScale.y
-      value: -11.06
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 5209321470821200043, guid: 01407e962d5b6ee15baeba9a43b5737d, type: 3}
       propertyPath: m_LocalScale.z
-      value: -11.06
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 5209321470821200043, guid: 01407e962d5b6ee15baeba9a43b5737d, type: 3}
       propertyPath: m_LocalPosition.x
