@@ -45,7 +45,11 @@ public class SolarSystemMotionController : MonoBehaviour
 
     public void SetDistanceScale(float scale)
     {
+        bool wasNear = IsNearDistance;
         distanceScale = scale;
+        if (wasNear != IsNearDistance)
+            timeScale = IsNearDistance ? 0f : _defaultTimeScale;
+
         ApplyToPlanets(force: true);
     }
 
@@ -64,7 +68,8 @@ public class SolarSystemMotionController : MonoBehaviour
 
     public float TimeScale => timeScale;
 
-    public bool IsIncreasedTimeScale => !Mathf.Approximately(timeScale, _defaultTimeScale);
+    public bool IsIncreasedTimeScale =>
+        Mathf.Approximately(timeScale, _defaultTimeScale * IncreasedTimeScaleMultiplier);
 
     public void ToggleTimeScale()
     {
@@ -91,6 +96,10 @@ public class SolarSystemMotionController : MonoBehaviour
 
     void Start()
     {
+        // Near distance keeps the orbits stopped. Common distance keeps the captured default pace.
+        if (IsNearDistance)
+            timeScale = 0f;
+
         // After PlanetOrbitMotion.Awake captured child poses / orbit offsets.
         ApplyToPlanets(force: true);
     }

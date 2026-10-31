@@ -3295,8 +3295,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c8d9e0f1a2b3547698a9bbccddeeff01, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::OrbitControlButton
-  commonMaterial: {fileID: 0}
-  increasedMaterial: {fileID: 0}
+  commonMaterial: {fileID: 2100000, guid: e35a46b57c88d99e001122ccdd445544, type: 2}
+  increasedMaterial: {fileID: 2100000, guid: f46b57c68d99e00f112233dde5566555, type: 2}
   appearance: {fileID: 0}
 --- !u!1 &809414779 stripped
 GameObject:
