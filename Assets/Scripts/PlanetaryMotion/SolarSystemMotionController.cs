@@ -24,8 +24,26 @@ public class SolarSystemMotionController : MonoBehaviour
     bool _appliedShowInteractionOrbs;
     bool _appliedShowPlanetLabels;
 
+    /// <summary>Earth orbit radius used by the close-distance view.</summary>
+    public const float NearDistanceScale = 3f;
+
     /// <summary>Maximum Earth orbit radius in scene units (scientific scale).</summary>
     public float MaxDistanceScale => PlanetScientificCatalog.EarthOrbitSceneUnits;
+
+    public float DistanceScale => distanceScale;
+
+    public bool IsNearDistance => Mathf.Approximately(distanceScale, NearDistanceScale);
+
+    public void ToggleDistanceScale()
+    {
+        SetDistanceScale(IsNearDistance ? MaxDistanceScale : NearDistanceScale);
+    }
+
+    public void SetDistanceScale(float scale)
+    {
+        distanceScale = scale;
+        ApplyToPlanets(force: true);
+    }
 
     void OnValidate()
     {
