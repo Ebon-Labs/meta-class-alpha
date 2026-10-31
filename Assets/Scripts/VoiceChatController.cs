@@ -41,7 +41,7 @@ public class VoiceChatController : NetworkBehaviour
 
     public override void OnStartLocalPlayer()
     {
-        AudioListener listener = GetComponent<AudioListener>();
+        AudioListener listener = GetComponentInChildren<AudioListener>(true);
         if (listener != null)
             listener.enabled = true;
 

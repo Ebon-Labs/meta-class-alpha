@@ -36,13 +36,15 @@ public class CameraPointerController : NetworkBehaviour
 
         cameraPointerController = this.GetComponentInChildren<CameraPointerController>();
         loggerScript = this.GetComponentInChildren<UILogger>();
+        camera = GetComponentInChildren<Camera>(true);
 
         if (isLocalPlayer)
         {
-            Camera camera = cameraPointerController.GetComponent<Camera>();
-            Canvas canvas = this.GetComponentInChildren<Canvas>();
-            camera.enabled = true;
-            canvas.enabled = true;
+            Canvas canvas = this.GetComponentInChildren<Canvas>(true);
+            if (camera != null)
+                camera.enabled = true;
+            if (canvas != null)
+                canvas.enabled = true;
             return;
         }
 
@@ -79,8 +81,12 @@ public class CameraPointerController : NetworkBehaviour
 
         // Casts ray towards camera's forward direction, to detect if a GameObject is being gazed
         // at.
+        if (camera == null)
+            camera = GetComponentInChildren<Camera>(true);
+
+        Transform look = camera != null ? camera.transform : transform;
         RaycastHit hit;
-        if (Physics.Raycast(transform.position, transform.forward, out hit, _maxDistance, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore))
+        if (Physics.Raycast(look.position, look.forward, out hit, _maxDistance, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore))
         {
             GameObject hitObject = hit.transform.gameObject;
             bool isTeleportable = IsTeleportable(hitObject);
