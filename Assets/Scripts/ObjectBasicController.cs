@@ -79,6 +79,17 @@ public class ObjectBasicController : MonoBehaviour
         SetMaterial(_isGazedAt);
     }
 
+    /// <summary>
+    /// Tints the live inactive and gazed copies. Source materials stay unchanged.
+    /// </summary>
+    public void SetColor(Color color)
+    {
+        if (_inactiveInstance != null)
+            _inactiveInstance.color = color;
+        if (_gazedInstance != null)
+            _gazedInstance.color = color;
+    }
+
     /// Sets this instance's material according to gazedAt status.
     /// Value `true` if this object is being gazed at, `false` otherwise.
     private void SetMaterial(bool gazedAt)

@@ -19,6 +19,10 @@ public class SolarSystemMotionController : MonoBehaviour
     [Tooltip("Shows or hides every PlanetLabel under this SolarSystem.")]
     [SerializeField] bool showPlanetLabels = true;
 
+    /// <summary>Factor applied by OrbitButton to leave the default pace.</summary>
+    public const float IncreasedTimeScaleMultiplier = 1000f;
+
+    float _defaultTimeScale = 4320f;
     float _appliedTimeScale = -1f;
     float _appliedDistanceScale = -1f;
     bool _appliedShowInteractionOrbs;
@@ -43,6 +47,41 @@ public class SolarSystemMotionController : MonoBehaviour
     {
         distanceScale = scale;
         ApplyToPlanets(force: true);
+    }
+
+    public bool ShowInteractionOrbs => showInteractionOrbs;
+
+    public void ToggleShowInteractionOrbs()
+    {
+        SetShowInteractionOrbs(!showInteractionOrbs);
+    }
+
+    public void SetShowInteractionOrbs(bool show)
+    {
+        showInteractionOrbs = show;
+        ApplyToPlanets(force: true);
+    }
+
+    public float TimeScale => timeScale;
+
+    public bool IsIncreasedTimeScale => !Mathf.Approximately(timeScale, _defaultTimeScale);
+
+    public void ToggleTimeScale()
+    {
+        SetTimeScale(IsIncreasedTimeScale
+            ? _defaultTimeScale
+            : _defaultTimeScale * IncreasedTimeScaleMultiplier);
+    }
+
+    public void SetTimeScale(float scale)
+    {
+        timeScale = scale;
+        ApplyToPlanets(force: true);
+    }
+
+    void Awake()
+    {
+        _defaultTimeScale = timeScale;
     }
 
     void OnValidate()
