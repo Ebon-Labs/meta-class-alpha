@@ -129,7 +129,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ObjectBasicController
   InactiveMaterial: {fileID: 2100000, guid: ae32f0609a5e9453b95ec3b9e28c2ac8, type: 2}
-  GazedAtMaterial: {fileID: -876546973899608171, guid: b7d4e1758864ee726870c28f6a7b4c1f, type: 3}
+  GazedAtMaterial: {fileID: 2100000, guid: e4218d5466c01bd43b4f55ab2325b0d3, type: 2}
 --- !u!114 &8123456789012345678
 MonoBehaviour:
   m_ObjectHideFlags: 0

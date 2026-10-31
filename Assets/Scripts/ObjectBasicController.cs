@@ -8,13 +8,16 @@ public class ObjectBasicController : MonoBehaviour
     private Renderer _myRenderer;
     private Material _inactiveInstance;
     private Material _gazedInstance;
+    private bool _isGazedAt;
 
     void Start()
     {
         _myRenderer = GetComponent<Renderer>();
+        SyncInactiveMaterialFromRenderer();
+
         if (_inactiveInstance == null || _gazedInstance == null)
             CreateMaterialInstances();
-        SetMaterial(false);
+        SetMaterial(_isGazedAt);
     }
 
     void OnDestroy()
@@ -23,6 +26,24 @@ public class ObjectBasicController : MonoBehaviour
             Destroy(_inactiveInstance);
         if (_gazedInstance != null)
             Destroy(_gazedInstance);
+    }
+
+    /// <summary>
+    /// Planet/control buttons often override only the MeshRenderer material in the scene
+    /// while leaving InactiveMaterial as the Button prefab default. Prefer the renderer
+    /// material in that case so Start() does not wipe the visible icon.
+    /// </summary>
+    void SyncInactiveMaterialFromRenderer()
+    {
+        if (_myRenderer == null)
+            return;
+
+        Material current = _myRenderer.sharedMaterial;
+        if (current == null)
+            return;
+
+        if (InactiveMaterial == null || InactiveMaterial != current)
+            InactiveMaterial = current;
     }
 
     void CreateMaterialInstances()
@@ -35,6 +56,7 @@ public class ObjectBasicController : MonoBehaviour
 
     /// <summary>
     /// Recreates material instances after InactiveMaterial / GazedAtMaterial change.
+    /// Preserves current gaze highlight when possible.
     /// </summary>
     public void RefreshMaterials()
     {
@@ -54,19 +76,27 @@ public class ObjectBasicController : MonoBehaviour
         }
 
         CreateMaterialInstances();
-        SetMaterial(false);
+        SetMaterial(_isGazedAt);
     }
 
     /// Sets this instance's material according to gazedAt status.
     /// Value `true` if this object is being gazed at, `false` otherwise.
     private void SetMaterial(bool gazedAt)
     {
-        if (_myRenderer == null || _inactiveInstance == null || _gazedInstance == null)
+        _isGazedAt = gazedAt;
+
+        if (_myRenderer == null)
             return;
 
-        // Use the same material instances every time so Shader Graph Time/Emission
-        // pulse keeps running across repeated gaze enter/exit.
-        _myRenderer.sharedMaterial = gazedAt ? _gazedInstance : _inactiveInstance;
+        if (gazedAt)
+        {
+            if (_gazedInstance != null)
+                _myRenderer.sharedMaterial = _gazedInstance;
+            return;
+        }
+
+        if (_inactiveInstance != null)
+            _myRenderer.sharedMaterial = _inactiveInstance;
     }
 
     /// This method is called by the Main Camera when it starts gazing at this GameObject.

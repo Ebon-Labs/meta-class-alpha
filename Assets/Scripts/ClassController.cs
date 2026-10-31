@@ -24,6 +24,20 @@ public class ClassController : MonoBehaviour
     public bool MuteGuests => muteGuests;
     public bool HideFloorAreas => hideFloorAreas;
 
+    public void ToggleMuteGuests()
+    {
+        SetMuteGuests(!muteGuests);
+    }
+
+    public void SetMuteGuests(bool mute)
+    {
+        if (muteGuests == mute)
+            return;
+
+        muteGuests = mute;
+        ApplyControls(force: true);
+    }
+
     public void ToggleHideFloorAreas()
     {
         SetHideFloorAreas(!hideFloorAreas);
