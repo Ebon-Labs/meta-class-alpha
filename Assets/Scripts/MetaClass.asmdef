@@ -1,0 +1,19 @@
+{
+    "name": "MetaClass",
+    "rootNamespace": "",
+    "references": [
+        "Mirror",
+        "Unity.TextMeshPro",
+        "UnityEngine.UI",
+        "Google.XR.Cardboard"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

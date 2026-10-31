@@ -147,13 +147,39 @@ Abra `Assets/Scenes/TheRoom.unity`. É a única cena incluída no build.
 3. No Editor, `CameraEditorController` permite olhar ao redor com o mouse (somente jogador local)
 4. Para testar **dois jogadores** no mesmo PC, use **ParrelSync → Clones Manager** e abra um clone do projeto
 
-### 4. Testar em dispositivo Android
+### 4. Testes unitários
+
+A suíte é de **Edit Mode**, no assembly `MetaClass.EditModeTests`. Os arquivos ficam em pastas `Editor/` ao lado de cada script em `Assets/Scripts/` e não entram no build do player. Não é preciso abrir nem dar Play na cena.
+
+**No Editor**
+
+1. Abra o projeto no Unity **6000.3.6f1**.
+2. Vá em **Window → General → Test Runner**.
+3. Na aba **EditMode**, selecione `MetaClass.EditModeTests` e clique em **Run All**.
+
+**Pelo terminal**
+
+Feche o Editor antes. Uma segunda instância do Unity no mesmo projeto é recusada enquanto ele estiver aberto.
+
+```bash
+/home/ive/Unity/Hub/Editor/6000.3.6f1/Editor/Unity \
+  -batchmode -nographics \
+  -projectPath "$(pwd)" \
+  -runTests -testPlatform EditMode \
+  -assemblyNames MetaClass.EditModeTests \
+  -testResults /tmp/meta-class-editmode-results.xml \
+  -logFile /tmp/meta-class-editmode.log
+```
+
+O caminho do executável é o do Unity Hub para a versão **6000.3.6f1**. O resumo da execução fica em `/tmp/meta-class-editmode-results.xml`; o log do Editor, em `/tmp/meta-class-editmode.log`. O processo termina sozinho ao final dos testes.
+
+### 5. Testar em dispositivo Android
 
 Siga o guia completo em **[BUILD_ANDROID_pt.md](BUILD_ANDROID_pt.md)**.
 
 Resumo: troque a plataforma para Android, desative App Bundle se quiser APK, e faça **Build** ou **Build And Run**.
 
-### 5. Multiplayer em rede local
+### 6. Multiplayer em rede local
 
 1. Anote o IP da máquina que hospeda o servidor
 2. No cliente, configure o endereço no `NetworkManager` (ou via UI, se exposta)
