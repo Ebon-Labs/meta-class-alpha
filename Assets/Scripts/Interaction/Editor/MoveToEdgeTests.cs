@@ -9,9 +9,10 @@ public class MoveToEdgeTests
     }
 
     [Test]
-    public void Shell_IsVisibleOnlyWhileTraveling()
+    public void HoldKinematic_StaysKinematicWhileTraveling()
     {
-        Assert.IsTrue(MoveToEdge.ShellVisible(true));
-        Assert.IsFalse(MoveToEdge.ShellVisible(false));
+        Assert.IsTrue(MoveToEdge.HoldKinematic(traveling: true, wasKinematic: false));
+        Assert.IsFalse(MoveToEdge.HoldKinematic(traveling: false, wasKinematic: false));
+        Assert.IsTrue(MoveToEdge.HoldKinematic(traveling: false, wasKinematic: true));
     }
 }

@@ -18,6 +18,26 @@ public static class EdgeApproach
     public static Vector3 Position(Vector3 start, Bounds bounds, Vector3 fallbackForward, float elapsed, float duration)
     {
         Vector3 edge = TeleportPlacement.EdgePosition(bounds, start, fallbackForward);
-        return Vector3.Lerp(start, edge, Ease(Progress(elapsed, duration)));
+        return Move(start, edge, elapsed, duration);
+    }
+
+    public static Vector3 Move(Vector3 start, Vector3 end, float elapsed, float duration)
+    {
+        return Vector3.Lerp(start, end, Ease(Progress(elapsed, duration)));
+    }
+
+    public static Vector3 RestOn(Vector3 position, float bottomOffset, float groundTop, float clearance)
+    {
+        return new Vector3(position.x, groundTop + clearance + bottomOffset, position.z);
+    }
+
+    public static Vector3 AboveGround(Vector3 position, float bottomOffset, float groundTop, float clearance)
+    {
+        float floor = groundTop + clearance;
+        float bottom = position.y - bottomOffset;
+        if (bottom >= floor)
+            return position;
+
+        return new Vector3(position.x, floor + bottomOffset, position.z);
     }
 }
