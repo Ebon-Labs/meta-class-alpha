@@ -12,7 +12,8 @@ public class ObjectBasicController : MonoBehaviour
     void Start()
     {
         _myRenderer = GetComponent<Renderer>();
-        CreateMaterialInstances();
+        if (_inactiveInstance == null || _gazedInstance == null)
+            CreateMaterialInstances();
         SetMaterial(false);
     }
 
@@ -30,6 +31,30 @@ public class ObjectBasicController : MonoBehaviour
             _inactiveInstance = new Material(InactiveMaterial);
         if (GazedAtMaterial != null)
             _gazedInstance = new Material(GazedAtMaterial);
+    }
+
+    /// <summary>
+    /// Recreates material instances after InactiveMaterial / GazedAtMaterial change.
+    /// </summary>
+    public void RefreshMaterials()
+    {
+        if (_myRenderer == null)
+            _myRenderer = GetComponent<Renderer>();
+
+        if (_inactiveInstance != null)
+        {
+            Destroy(_inactiveInstance);
+            _inactiveInstance = null;
+        }
+
+        if (_gazedInstance != null)
+        {
+            Destroy(_gazedInstance);
+            _gazedInstance = null;
+        }
+
+        CreateMaterialInstances();
+        SetMaterial(false);
     }
 
     /// Sets this instance's material according to gazedAt status.
