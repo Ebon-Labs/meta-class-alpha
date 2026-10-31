@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using UnityEngine;
 
 public class MoveToEdge : MonoBehaviour
@@ -7,22 +6,52 @@ public class MoveToEdge : MonoBehaviour
     public const string PassengerTag = "Player";
     public const string GroundName = "Ground";
 
+    public const float OriginTolerance = 0.05f;
+
     public static bool HoldKinematic(bool traveling, bool wasKinematic)
     {
         return traveling || wasKinematic;
     }
 
+    public static bool IsAtOrigin(Vector3 position, Vector3 origin, float tolerance)
+    {
+        float limit = Mathf.Max(0f, tolerance);
+        return (position - origin).sqrMagnitude <= limit * limit;
+    }
+
+    public static bool IsAvailable(bool atOrigin)
+    {
+        return !atOrigin;
+    }
+
     [SerializeField] GameObject subject;
     [SerializeField] GameObject destination;
     [SerializeField] GameObject ground;
+    [SerializeField] bool returnHome;
     [SerializeField] float duration = DefaultDuration;
 
-    readonly List<Passenger> passengers = new List<Passenger>();
+    readonly PassengerHold passengers = new PassengerHold();
+    Vector3 origin;
     Vector3 start;
     Vector3 fallbackForward;
     float bottomOffset;
     float elapsed;
+    bool originCaptured;
     bool moving;
+    Collider block;
+    ObjectBasicController appearance;
+
+    void Awake()
+    {
+        if (!returnHome || subject == null)
+            return;
+
+        origin = subject.transform.position;
+        originCaptured = true;
+        block = GetComponent<Collider>();
+        appearance = GetComponent<ObjectBasicController>();
+        ApplyAvailability();
+    }
 
     public void OnPointerClick()
     {
@@ -31,14 +60,21 @@ public class MoveToEdge : MonoBehaviour
 
     public void Begin()
     {
+        if (returnHome)
+        {
+            BeginReturn();
+            return;
+        }
+
         if (subject == null || destination == null)
             return;
         if (!BodyBounds.TryGet(destination.transform, out _))
             return;
 
+        TravelClaim.Claim(this, CancelTravel);
         bottomOffset = BottomOffset(subject);
         if (!moving)
-            HoldPassengers();
+            passengers.Hold(subject.transform, PassengerTag);
 
         start = subject.transform.position;
         fallbackForward = subject.transform.forward;
@@ -48,6 +84,12 @@ public class MoveToEdge : MonoBehaviour
 
     void Update()
     {
+        if (returnHome)
+        {
+            UpdateReturn();
+            return;
+        }
+
         if (!moving)
             return;
         if (subject == null || destination == null || !BodyBounds.TryGet(destination.transform, out Bounds bounds))
@@ -70,53 +112,58 @@ public class MoveToEdge : MonoBehaviour
             Finish();
     }
 
+    void BeginReturn()
+    {
+        if (subject == null || !originCaptured || AtOrigin())
+            return;
+
+        TravelClaim.Claim(this, CancelTravel);
+        if (!moving)
+            passengers.Hold(subject.transform, PassengerTag);
+
+        start = subject.transform.position;
+        elapsed = 0f;
+        moving = true;
+    }
+
+    void UpdateReturn()
+    {
+        if (moving && subject != null)
+        {
+            elapsed += Time.deltaTime;
+            subject.transform.position = EdgeApproach.Move(start, origin, elapsed, duration);
+            if (duration <= 0f || elapsed >= duration)
+                Finish();
+        }
+
+        ApplyAvailability();
+    }
+
+    bool AtOrigin()
+    {
+        return subject != null && originCaptured && IsAtOrigin(subject.transform.position, origin, OriginTolerance);
+    }
+
+    void ApplyAvailability()
+    {
+        bool next = IsAvailable(AtOrigin());
+        if (block != null)
+            block.enabled = next;
+        if (appearance != null)
+            appearance.SetColor(next ? Color.white : new Color(0.35f, 0.35f, 0.35f, 1f));
+    }
+
+    void CancelTravel()
+    {
+        if (moving)
+            Finish();
+    }
+
     void Finish()
     {
         moving = false;
-        ReleasePassengers();
-    }
-
-    void HoldPassengers()
-    {
-        GameObject[] players = GameObject.FindGameObjectsWithTag(PassengerTag);
-        for (int i = 0; i < players.Length; i++)
-        {
-            Transform player = players[i].transform;
-            if (player == subject.transform)
-                continue;
-
-            Rigidbody body = players[i].GetComponent<Rigidbody>();
-            bool wasKinematic = body != null && body.isKinematic;
-            if (body != null)
-            {
-                body.linearVelocity = Vector3.zero;
-                body.angularVelocity = Vector3.zero;
-                body.isKinematic = HoldKinematic(traveling: true, wasKinematic);
-            }
-
-            passengers.Add(new Passenger(player, player.parent, body, wasKinematic));
-            player.SetParent(subject.transform, true);
-        }
-    }
-
-    void ReleasePassengers()
-    {
-        for (int i = 0; i < passengers.Count; i++)
-        {
-            Passenger passenger = passengers[i];
-            if (passenger.Transform == null)
-                continue;
-
-            passenger.Transform.SetParent(passenger.Parent, true);
-            if (passenger.Body == null)
-                continue;
-
-            passenger.Body.linearVelocity = Vector3.zero;
-            passenger.Body.angularVelocity = Vector3.zero;
-            passenger.Body.isKinematic = HoldKinematic(traveling: false, passenger.WasKinematic);
-        }
-
-        passengers.Clear();
+        passengers.Release();
+        TravelClaim.Release(this);
     }
 
     Vector3 RestOnGround(Vector3 position)
@@ -134,21 +181,5 @@ public class MoveToEdge : MonoBehaviour
             return 0f;
 
         return body.transform.position.y - bounds.min.y;
-    }
-
-    readonly struct Passenger
-    {
-        public Passenger(Transform transform, Transform parent, Rigidbody body, bool wasKinematic)
-        {
-            Transform = transform;
-            Parent = parent;
-            Body = body;
-            WasKinematic = wasKinematic;
-        }
-
-        public Transform Transform { get; }
-        public Transform Parent { get; }
-        public Rigidbody Body { get; }
-        public bool WasKinematic { get; }
     }
 }

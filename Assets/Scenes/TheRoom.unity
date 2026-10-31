@@ -8119,6 +8119,26 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1591309561}
     m_Modifications:
+    - target: {fileID: -171929055249147387, guid: 13c82b8ab87216fce9b156e217899d37, type: 3}
+      propertyPath: subject
+      value: 
+      objectReference: {fileID: 107057019}
+    - target: {fileID: -171929055249147387, guid: 13c82b8ab87216fce9b156e217899d37, type: 3}
+      propertyPath: returnHome
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1318772135488474084, guid: 13c82b8ab87216fce9b156e217899d37, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 512365567619452133, guid: 13c82b8ab87216fce9b156e217899d37, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: b7e1c4a90d2f4e6a8c3b5d7f1a9e0c32, type: 2}
+    - target: {fileID: 5915386850733922592, guid: 13c82b8ab87216fce9b156e217899d37, type: 3}
+      propertyPath: InactiveMaterial
+      value: 
+      objectReference: {fileID: 2100000, guid: b7e1c4a90d2f4e6a8c3b5d7f1a9e0c32, type: 2}
     - target: {fileID: 2016921900275569820, guid: 13c82b8ab87216fce9b156e217899d37, type: 3}
       propertyPath: m_Mesh
       value: 
@@ -8179,7 +8199,8 @@ PrefabInstance:
       propertyPath: m_Name
       value: BackButton
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 8123456789012345678, guid: 13c82b8ab87216fce9b156e217899d37, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
