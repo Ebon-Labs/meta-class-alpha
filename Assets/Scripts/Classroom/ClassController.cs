@@ -47,6 +47,11 @@ public class ClassController : MonoBehaviour
         return anchor + Vector3.up * eyeHeight;
     }
 
+    public static Transform AreaForRole(bool isHost, Transform hostArea, Transform guestArea)
+    {
+        return isHost ? hostArea : guestArea;
+    }
+
     public void ToggleMuteGuests()
     {
         SetMuteGuests(!muteGuests);
@@ -108,11 +113,25 @@ public class ClassController : MonoBehaviour
             return;
 
         ResolveAreas();
-        Transform area = isHost ? hostArea : guestArea;
+        Transform area = AreaForRole(isHost, hostArea, guestArea);
         if (area == null)
             return;
 
-        player.SetPositionAndRotation(GetStandPosition(area), area.rotation);
+        Vector3 stand = GetStandPosition(area);
+        Quaternion rotation = area.rotation;
+        player.SetPositionAndRotation(stand, rotation);
+
+        Rigidbody body = player.GetComponent<Rigidbody>();
+        if (body == null)
+            return;
+
+        body.position = stand;
+        body.rotation = rotation;
+        if (body.isKinematic)
+            return;
+
+        body.linearVelocity = Vector3.zero;
+        body.angularVelocity = Vector3.zero;
     }
 
     public bool ShouldMuteGuestMicrophone(bool isHostPlayer)

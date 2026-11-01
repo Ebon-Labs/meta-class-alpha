@@ -56,6 +56,11 @@ public class CameraPointerController : NetworkBehaviour
         classController.PlacePlayer(transform, IsHostPlayer());
     }
 
+    public void ReturnToClassArea()
+    {
+        PlaceAtClassArea();
+    }
+
     bool IsHostPlayer()
     {
         if (!NetworkServer.active)
@@ -194,6 +199,13 @@ public class CameraPointerController : NetworkBehaviour
 
     void HandlePointerClick(GameObject target)
     {
+        if (GoHomeOrb.IsTarget(target != null ? target.transform : null))
+        {
+            ReturnToClassArea();
+            DisablePointerForTarget(target);
+            return;
+        }
+
         if (IsTeleportable(target))
         {
             Debug.Log("handlePointerClick: " + target.tag);
