@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 public class MoveToEdgeTests
 {
@@ -31,5 +32,52 @@ public class MoveToEdgeTests
     {
         Assert.IsFalse(MoveToEdge.IsAvailable(atOrigin: true));
         Assert.IsTrue(MoveToEdge.IsAvailable(atOrigin: false));
+    }
+
+    [Test]
+    public void Radius_IsHalfTheWidestSide()
+    {
+        Bounds bounds = new Bounds(Vector3.zero, new Vector3(4f, 10f, 2f));
+
+        Assert.AreEqual(5f, MoveToEdge.Radius(bounds), 0.0001f);
+    }
+
+    [Test]
+    public void Landing_OffsetsByTheRadiusInAllAxes()
+    {
+        Vector3 end = MoveToEdge.Landing(Vector3.zero, 5f, new Vector3(0f, 3f, 4f), 0f, 0f);
+
+        Assert.AreEqual(0f, end.x, 0.0001f);
+        Assert.AreEqual(3f, end.y, 0.0001f);
+        Assert.AreEqual(4f, end.z, 0.0001f);
+    }
+
+    [Test]
+    public void Landing_DoesNotSinkBelowTheGround()
+    {
+        Vector3 end = MoveToEdge.Landing(Vector3.zero, 5f, new Vector3(0f, -3f, 4f), 0f, 1f);
+
+        Assert.AreEqual(0f, end.x, 0.0001f);
+        Assert.AreEqual(1f, end.y, 0.0001f);
+        Assert.AreEqual(4f, end.z, 0.0001f);
+    }
+
+    [Test]
+    public void Center_IsTheChildTaggedClassCenter()
+    {
+        GameObject body = new GameObject("class");
+        GameObject center = new GameObject("Class Center");
+        try
+        {
+            center.tag = MoveToEdge.CenterTag;
+            center.transform.SetParent(body.transform, false);
+            center.transform.localPosition = new Vector3(1f, 2f, 3f);
+
+            Assert.AreEqual(center.transform, MoveToEdge.FindCenter(body.transform));
+        }
+        finally
+        {
+            Object.DestroyImmediate(body);
+        }
     }
 }

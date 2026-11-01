@@ -5,6 +5,7 @@ public class MoveToEdge : MonoBehaviour
     public const float DefaultDuration = 7f;
     public const string PassengerTag = "Player";
     public const string GroundName = "Ground";
+    public const string CenterTag = "Class Center";
 
     public const float OriginTolerance = 0.05f;
 
@@ -24,6 +25,43 @@ public class MoveToEdge : MonoBehaviour
         return !atOrigin;
     }
 
+    public static float Radius(Bounds bounds)
+    {
+        return Mathf.Max(bounds.extents.x, Mathf.Max(bounds.extents.y, bounds.extents.z));
+    }
+
+    public static Transform FindCenter(Transform subject)
+    {
+        if (subject == null)
+            return null;
+
+        Transform[] children = subject.GetComponentsInChildren<Transform>(true);
+        for (int i = 0; i < children.Length; i++)
+        {
+            Transform child = children[i];
+            if (child != subject && child.CompareTag(CenterTag))
+                return child;
+        }
+
+        return null;
+    }
+
+    public static Vector3 Landing(Vector3 center, float radius, Vector3 from, float groundTop, float bottomOffset)
+    {
+        Vector3 outward = from - center;
+        if (outward.sqrMagnitude < 0.0001f)
+            outward = Vector3.up;
+        else
+            outward.Normalize();
+
+        Vector3 point = center + outward * radius;
+        float floor = groundTop + bottomOffset;
+        if (point.y < floor)
+            point.y = floor;
+
+        return point;
+    }
+
     [SerializeField] GameObject subject;
     [SerializeField] GameObject destination;
     [SerializeField] GameObject ground;
@@ -33,7 +71,10 @@ public class MoveToEdge : MonoBehaviour
     readonly PassengerHold passengers = new PassengerHold();
     Vector3 origin;
     Vector3 start;
-    Vector3 fallbackForward;
+    Transform referencePoint;
+    Vector3 destinationCenter;
+    float destinationRadius;
+    float groundTop;
     float bottomOffset;
     float elapsed;
     bool originCaptured;
@@ -46,7 +87,8 @@ public class MoveToEdge : MonoBehaviour
         if (!returnHome || subject == null)
             return;
 
-        origin = subject.transform.position;
+        referencePoint = FindCenter(subject.transform);
+        origin = ReferencePosition();
         originCaptured = true;
         block = GetComponent<Collider>();
         appearance = GetComponent<ObjectBasicController>();
@@ -68,16 +110,18 @@ public class MoveToEdge : MonoBehaviour
 
         if (subject == null || destination == null)
             return;
-        if (!BodyBounds.TryGet(destination.transform, out _))
+        if (!BodyBounds.TryGet(destination.transform, out Bounds bounds))
             return;
 
+        destinationCenter = bounds.center;
+        destinationRadius = Radius(bounds);
+        groundTop = CaptureGroundTop();
+
         TravelClaim.Claim(this, CancelTravel);
-        bottomOffset = BottomOffset(subject);
         if (!moving)
             passengers.Hold(subject.transform, PassengerTag);
 
-        start = subject.transform.position;
-        fallbackForward = subject.transform.forward;
+        PlaceSubject();
         elapsed = 0f;
         moving = true;
     }
@@ -92,16 +136,15 @@ public class MoveToEdge : MonoBehaviour
 
         if (!moving)
             return;
-        if (subject == null || destination == null || !BodyBounds.TryGet(destination.transform, out Bounds bounds))
+        if (subject == null)
         {
             Finish();
             return;
         }
 
         elapsed += Time.deltaTime;
-        Vector3 end = TeleportPlacement.EdgePosition(bounds, start, fallbackForward);
-        end = RestOnGround(end);
-        subject.transform.position = EdgeApproach.Move(start, end, elapsed, duration);
+        Vector3 end = Landing(destinationCenter, destinationRadius, start, groundTop, bottomOffset);
+        MoveSubject(EdgeApproach.Move(start, end, elapsed, duration));
         if (duration <= 0f || elapsed >= duration)
             Finish();
     }
@@ -114,16 +157,47 @@ public class MoveToEdge : MonoBehaviour
 
     void BeginReturn()
     {
-        if (subject == null || !originCaptured || AtOrigin())
+        if (subject == null || !originCaptured)
+            return;
+
+        referencePoint = FindCenter(subject.transform);
+        if (AtOrigin())
             return;
 
         TravelClaim.Claim(this, CancelTravel);
         if (!moving)
             passengers.Hold(subject.transform, PassengerTag);
 
-        start = subject.transform.position;
+        PlaceSubject();
         elapsed = 0f;
         moving = true;
+    }
+
+    void PlaceSubject()
+    {
+        referencePoint = FindCenter(subject.transform);
+        Vector3 reference = ReferencePosition();
+        start = reference;
+        bottomOffset = BottomOffset(reference, subject.transform);
+        if (referencePoint != null)
+            referencePoint.position = reference;
+        MoveSubject(reference);
+    }
+
+    Vector3 ReferencePosition()
+    {
+        if (referencePoint == null)
+            referencePoint = FindCenter(subject.transform);
+        if (referencePoint != null)
+            return referencePoint.position;
+
+        return subject.transform.position;
+    }
+
+    void MoveSubject(Vector3 reference)
+    {
+        Vector3 offset = subject.transform.position - ReferencePosition();
+        subject.transform.position = reference + offset;
     }
 
     void UpdateReturn()
@@ -131,7 +205,7 @@ public class MoveToEdge : MonoBehaviour
         if (moving && subject != null)
         {
             elapsed += Time.deltaTime;
-            subject.transform.position = EdgeApproach.Move(start, origin, elapsed, duration);
+            MoveSubject(EdgeApproach.Move(start, origin, elapsed, duration));
             if (duration <= 0f || elapsed >= duration)
                 Finish();
         }
@@ -141,7 +215,7 @@ public class MoveToEdge : MonoBehaviour
 
     bool AtOrigin()
     {
-        return subject != null && originCaptured && IsAtOrigin(subject.transform.position, origin, OriginTolerance);
+        return subject != null && originCaptured && IsAtOrigin(ReferencePosition(), origin, OriginTolerance);
     }
 
     void ApplyAvailability()
@@ -166,20 +240,20 @@ public class MoveToEdge : MonoBehaviour
         TravelClaim.Release(this);
     }
 
-    Vector3 RestOnGround(Vector3 position)
+    float CaptureGroundTop()
     {
         GameObject floor = ground != null ? ground : GameObject.Find(GroundName);
-        if (floor == null || !BodyBounds.TryGet(floor.transform, out Bounds groundBounds))
-            return position;
+        if (floor != null && BodyBounds.TryGet(floor.transform, out Bounds groundBounds))
+            return groundBounds.max.y;
 
-        return EdgeApproach.RestOn(position, bottomOffset, groundBounds.max.y, 0f);
+        return destinationCenter.y;
     }
 
-    static float BottomOffset(GameObject body)
+    static float BottomOffset(Vector3 reference, Transform body)
     {
-        if (body == null || !BodyBounds.TryGet(body.transform, out Bounds bounds))
+        if (body == null || !BodyBounds.TryGet(body, out Bounds bounds))
             return 0f;
 
-        return body.transform.position.y - bounds.min.y;
+        return reference.y - bounds.min.y;
     }
 }
