@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 public class CameraPointerControllerTests
 {
@@ -31,5 +32,27 @@ public class CameraPointerControllerTests
         Assert.AreEqual(0f, edge.x, 0.0001f);
         Assert.AreEqual(1f, edge.y, 0.0001f);
         Assert.AreEqual(1f + TeleportPlacement.EdgeMargin, edge.z, 0.0001f);
+    }
+
+    [Test]
+    public void GoHomeOrb_IncludesTheOrbAndItsChildren()
+    {
+        GameObject orb = new GameObject("GoHomeOrb");
+        GameObject child = new GameObject("label");
+        GameObject other = new GameObject("Sun");
+        try
+        {
+            child.transform.SetParent(orb.transform, false);
+
+            Assert.IsTrue(GoHomeOrb.IsTarget(orb.transform));
+            Assert.IsTrue(GoHomeOrb.IsTarget(child.transform));
+            Assert.IsFalse(GoHomeOrb.IsTarget(other.transform));
+            Assert.IsFalse(GoHomeOrb.IsTarget(null));
+        }
+        finally
+        {
+            Object.DestroyImmediate(orb);
+            Object.DestroyImmediate(other);
+        }
     }
 }

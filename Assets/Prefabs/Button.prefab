@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 1318772135488474084}
   - component: {fileID: 5915386850733922592}
   - component: {fileID: 8123456789012345678}
+  - component: {fileID: -171929055249147387}
   m_Layer: 0
   m_Name: Button
   m_TagString: Interactive
@@ -143,3 +144,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ScreenControlButton
   action: 0
+--- !u!114 &-171929055249147387
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8896481115595345485}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e6a0c3d29f41508c1d5e7f903b2c4d6e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: MetaClass::MoveToEdge
+  subject: {fileID: 0}
+  destination: {fileID: 0}
+  duration: 7

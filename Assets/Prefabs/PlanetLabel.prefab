@@ -134,11 +134,11 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 200
-  m_fontSizeBase: 200
+  m_fontSize: 100
+  m_fontSizeBase: 100
   m_fontWeight: 400
   m_enableAutoSizing: 0
-  m_fontSizeMin: 200
+  m_fontSizeMin: 50
   m_fontSizeMax: 500
   m_fontStyle: 0
   m_HorizontalAlignment: 2

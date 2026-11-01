@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 public class ClassControllerTests
 {
@@ -36,5 +37,22 @@ public class ClassControllerTests
     public void ResolveExisting_UsesTheLocatedControllerWhenThereIsNoInstance()
     {
         Assert.IsNull(ClassController.ResolveExisting(null));
+    }
+
+    [Test]
+    public void HostGoesToHostAreaAndClientGoesToGuestArea()
+    {
+        Transform host = new GameObject("HostArea").transform;
+        Transform guest = new GameObject("GuestArea").transform;
+        try
+        {
+            Assert.AreEqual(host, ClassController.AreaForRole(isHost: true, host, guest));
+            Assert.AreEqual(guest, ClassController.AreaForRole(isHost: false, host, guest));
+        }
+        finally
+        {
+            Object.DestroyImmediate(host.gameObject);
+            Object.DestroyImmediate(guest.gameObject);
+        }
     }
 }

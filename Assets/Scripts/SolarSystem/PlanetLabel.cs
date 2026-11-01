@@ -35,7 +35,7 @@ public class PlanetLabel : MonoBehaviour
         // Keep authored transform rotation — facing is done in the billboard shader.
         ApplyLocalPose();
 
-        float fontSize = label != null ? Mathf.Max(1f, label.fontSize) : 200f;
+        float fontSize = label != null ? Mathf.Max(1f, label.fontSize) : 100f;
         float distance = Mathf.Max(0.01f, Vector3.Distance(_cameraTransform.position, transform.position));
         float parentScale = transform.parent != null
             ? Mathf.Max(0.0001f, Mathf.Abs(transform.parent.lossyScale.x))
