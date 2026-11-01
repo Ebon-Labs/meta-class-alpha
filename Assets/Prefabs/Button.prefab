@@ -158,5 +158,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: MetaClass::MoveToEdge
   subject: {fileID: 0}
   destination: {fileID: 0}
-  ground: {fileID: 0}
   duration: 7

@@ -43,23 +43,18 @@ public class MoveToEdgeTests
     }
 
     [Test]
-    public void Landing_OffsetsByTheRadiusInAllAxes()
+    public void Landing_ParksAtHeightEight()
     {
-        Vector3 end = MoveToEdge.Landing(Vector3.zero, 5f, new Vector3(0f, 3f, 4f), 0f, 0f);
+        Vector3 above = MoveToEdge.Landing(Vector3.zero, 5f, new Vector3(0f, 3f, 4f));
+        Vector3 below = MoveToEdge.Landing(Vector3.zero, 5f, new Vector3(0f, -3f, 4f));
 
-        Assert.AreEqual(0f, end.x, 0.0001f);
-        Assert.AreEqual(3f, end.y, 0.0001f);
-        Assert.AreEqual(4f, end.z, 0.0001f);
-    }
-
-    [Test]
-    public void Landing_DoesNotSinkBelowTheGround()
-    {
-        Vector3 end = MoveToEdge.Landing(Vector3.zero, 5f, new Vector3(0f, -3f, 4f), 0f, 1f);
-
-        Assert.AreEqual(0f, end.x, 0.0001f);
-        Assert.AreEqual(1f, end.y, 0.0001f);
-        Assert.AreEqual(4f, end.z, 0.0001f);
+        Assert.AreEqual(8f, MoveToEdge.AstroParkHeight, 0.0001f);
+        Assert.AreEqual(0f, above.x, 0.0001f);
+        Assert.AreEqual(8f, above.y, 0.0001f);
+        Assert.AreEqual(4f, above.z, 0.0001f);
+        Assert.AreEqual(0f, below.x, 0.0001f);
+        Assert.AreEqual(8f, below.y, 0.0001f);
+        Assert.AreEqual(4f, below.z, 0.0001f);
     }
 
     [Test]

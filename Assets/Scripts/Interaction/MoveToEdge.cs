@@ -3,8 +3,8 @@ using UnityEngine;
 public class MoveToEdge : MonoBehaviour
 {
     public const float DefaultDuration = 7f;
+    public const float AstroParkHeight = 8f;
     public const string PassengerTag = "Player";
-    public const string GroundName = "Ground";
     public const string CenterTag = "Class Center";
 
     public const float OriginTolerance = 0.05f;
@@ -39,7 +39,7 @@ public class MoveToEdge : MonoBehaviour
         return center.transform;
     }
 
-    public static Vector3 Landing(Vector3 center, float radius, Vector3 from, float groundTop, float bottomOffset)
+    public static Vector3 Landing(Vector3 center, float radius, Vector3 from)
     {
         Vector3 outward = from - center;
         if (outward.sqrMagnitude < 0.0001f)
@@ -48,16 +48,12 @@ public class MoveToEdge : MonoBehaviour
             outward.Normalize();
 
         Vector3 point = center + outward * radius;
-        float floor = groundTop + bottomOffset;
-        if (point.y < floor)
-            point.y = floor;
-
+        point.y = AstroParkHeight;
         return point;
     }
 
     [SerializeField] GameObject subject;
     [SerializeField] GameObject destination;
-    [SerializeField] GameObject ground;
     [SerializeField] bool returnHome;
     [SerializeField] float duration = DefaultDuration;
 
@@ -67,8 +63,6 @@ public class MoveToEdge : MonoBehaviour
     Transform referencePoint;
     Vector3 destinationCenter;
     float destinationRadius;
-    float groundTop;
-    float bottomOffset;
     float elapsed;
     bool originCaptured;
     bool moving;
@@ -108,7 +102,6 @@ public class MoveToEdge : MonoBehaviour
 
         destinationCenter = bounds.center;
         destinationRadius = Radius(bounds);
-        groundTop = CaptureGroundTop();
 
         TravelClaim.Claim(this, CancelTravel);
         if (!moving)
@@ -136,7 +129,7 @@ public class MoveToEdge : MonoBehaviour
         }
 
         elapsed += Time.deltaTime;
-        Vector3 end = Landing(destinationCenter, destinationRadius, start, groundTop, bottomOffset);
+        Vector3 end = Landing(destinationCenter, destinationRadius, start);
         MoveSubject(EdgeApproach.Move(start, end, elapsed, duration));
         if (duration <= 0f || elapsed >= duration)
             Finish();
@@ -171,7 +164,6 @@ public class MoveToEdge : MonoBehaviour
         referencePoint = FindCenter();
         Vector3 reference = ReferencePosition();
         start = reference;
-        bottomOffset = BottomOffset(reference, subject.transform);
         if (referencePoint != null)
             referencePoint.position = reference;
         MoveSubject(reference);
@@ -231,22 +223,5 @@ public class MoveToEdge : MonoBehaviour
         moving = false;
         passengers.Release();
         TravelClaim.Release(this);
-    }
-
-    float CaptureGroundTop()
-    {
-        GameObject floor = ground != null ? ground : GameObject.Find(GroundName);
-        if (floor != null && BodyBounds.TryGet(floor.transform, out Bounds groundBounds))
-            return groundBounds.max.y;
-
-        return destinationCenter.y;
-    }
-
-    static float BottomOffset(Vector3 reference, Transform body)
-    {
-        if (body == null || !BodyBounds.TryGet(body, out Bounds bounds))
-            return 0f;
-
-        return reference.y - bounds.min.y;
     }
 }
