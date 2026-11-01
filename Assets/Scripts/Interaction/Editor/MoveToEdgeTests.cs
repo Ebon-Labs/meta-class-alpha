@@ -63,21 +63,18 @@ public class MoveToEdgeTests
     }
 
     [Test]
-    public void Center_IsTheChildTaggedClassCenter()
+    public void Center_IsTheObjectTaggedClassCenter()
     {
-        GameObject body = new GameObject("class");
         GameObject center = new GameObject("Class Center");
         try
         {
             center.tag = MoveToEdge.CenterTag;
-            center.transform.SetParent(body.transform, false);
-            center.transform.localPosition = new Vector3(1f, 2f, 3f);
 
-            Assert.AreEqual(center.transform, MoveToEdge.FindCenter(body.transform));
+            Assert.AreEqual(center.transform, MoveToEdge.FindCenter());
         }
         finally
         {
-            Object.DestroyImmediate(body);
+            Object.DestroyImmediate(center);
         }
     }
 }

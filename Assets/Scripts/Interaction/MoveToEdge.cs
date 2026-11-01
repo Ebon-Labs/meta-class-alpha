@@ -30,20 +30,13 @@ public class MoveToEdge : MonoBehaviour
         return Mathf.Max(bounds.extents.x, Mathf.Max(bounds.extents.y, bounds.extents.z));
     }
 
-    public static Transform FindCenter(Transform subject)
+    public static Transform FindCenter()
     {
-        if (subject == null)
+        GameObject center = GameObject.FindWithTag(CenterTag);
+        if (center == null)
             return null;
 
-        Transform[] children = subject.GetComponentsInChildren<Transform>(true);
-        for (int i = 0; i < children.Length; i++)
-        {
-            Transform child = children[i];
-            if (child != subject && child.CompareTag(CenterTag))
-                return child;
-        }
-
-        return null;
+        return center.transform;
     }
 
     public static Vector3 Landing(Vector3 center, float radius, Vector3 from, float groundTop, float bottomOffset)
@@ -87,7 +80,7 @@ public class MoveToEdge : MonoBehaviour
         if (!returnHome || subject == null)
             return;
 
-        referencePoint = FindCenter(subject.transform);
+        referencePoint = FindCenter();
         origin = ReferencePosition();
         originCaptured = true;
         block = GetComponent<Collider>();
@@ -160,7 +153,7 @@ public class MoveToEdge : MonoBehaviour
         if (subject == null || !originCaptured)
             return;
 
-        referencePoint = FindCenter(subject.transform);
+        referencePoint = FindCenter();
         if (AtOrigin())
             return;
 
@@ -175,7 +168,7 @@ public class MoveToEdge : MonoBehaviour
 
     void PlaceSubject()
     {
-        referencePoint = FindCenter(subject.transform);
+        referencePoint = FindCenter();
         Vector3 reference = ReferencePosition();
         start = reference;
         bottomOffset = BottomOffset(reference, subject.transform);
@@ -187,7 +180,7 @@ public class MoveToEdge : MonoBehaviour
     Vector3 ReferencePosition()
     {
         if (referencePoint == null)
-            referencePoint = FindCenter(subject.transform);
+            referencePoint = FindCenter();
         if (referencePoint != null)
             return referencePoint.position;
 
