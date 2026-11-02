@@ -101,7 +101,7 @@ public class PlanetLabel : MonoBehaviour
             : null;
         string resolved = ResolveLabelText(overrideText, orbitingProfile, fallbackProfile, motions.Length > 0 && motions[0] != null);
         if (resolved != null)
-            label.text = resolved;
+            label.text = ScreenText.Name(resolved);
     }
 
     public static string ResolveLabelText(string overrideText, string orbitingProfile, string fallbackProfile, bool hasFallbackProfile)
