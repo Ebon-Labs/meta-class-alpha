@@ -32,6 +32,25 @@ public class ScreenTextTests
     }
 
     [Test]
+    public void InteractiveControls_UsePortugueseNames()
+    {
+        Assert.AreEqual("Vênus", ScreenText.Name("VenusButton"));
+        Assert.AreEqual("Júpiter", ScreenText.Name("JupterButton"));
+        Assert.AreEqual("Voltar", ScreenText.Name("BackButton"));
+        Assert.AreEqual("Silenciar", ScreenText.Name("MuteButton"));
+        Assert.AreEqual("Órbita", ScreenText.Name("OrbitButton"));
+        Assert.AreEqual("Distância", ScreenText.Name("DistanceButton"));
+        Assert.AreEqual("Marcadores", ScreenText.Name("MarkerButton"));
+        Assert.AreEqual("Chão", ScreenText.Name("GroundButton"));
+        Assert.AreEqual("Reproduzir", ScreenText.Name("PlayButton"));
+        Assert.AreEqual("Pausar", ScreenText.Name("PauseButton"));
+        Assert.AreEqual("Parar", ScreenText.Name("StopButton"));
+        Assert.AreEqual("Voltar à sala", ScreenText.Name("GoHomeOrb"));
+        Assert.AreEqual("Marcador", ScreenText.Name("InteractionMarkerOrb"));
+        Assert.AreEqual("Clique em: Sol", ScreenText.Format("gaze.click", ScreenText.Name("SunButton")));
+    }
+
+    [Test]
     public void UnknownWords_StayAsWritten()
     {
         Assert.AreEqual("Portal", ScreenText.Name(" Portal "));

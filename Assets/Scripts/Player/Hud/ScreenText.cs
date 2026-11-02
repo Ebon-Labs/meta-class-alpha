@@ -20,7 +20,30 @@ public static class ScreenText
         { "body.Neptune", "Netuno" },
         { "body.Moon", "Lua" },
         { "body.Sun", "Sol" },
-        { "body.Planet", "Planeta" }
+        { "body.Planet", "Planeta" },
+        { "body.Jupter", "Júpiter" },
+        { "control.MercuryButton", "Mercúrio" },
+        { "control.VenusButton", "Vênus" },
+        { "control.EarthButton", "Terra" },
+        { "control.MarsButton", "Marte" },
+        { "control.JupiterButton", "Júpiter" },
+        { "control.JupterButton", "Júpiter" },
+        { "control.SaturnButton", "Saturno" },
+        { "control.UranusButton", "Urano" },
+        { "control.NeptuneButton", "Netuno" },
+        { "control.SunButton", "Sol" },
+        { "control.MoonButton", "Lua" },
+        { "control.BackButton", "Voltar" },
+        { "control.MuteButton", "Silenciar" },
+        { "control.OrbitButton", "Órbita" },
+        { "control.DistanceButton", "Distância" },
+        { "control.MarkerButton", "Marcadores" },
+        { "control.GroundButton", "Chão" },
+        { "control.PlayButton", "Reproduzir" },
+        { "control.PauseButton", "Pausar" },
+        { "control.StopButton", "Parar" },
+        { "control.GoHomeOrb", "Voltar à sala" },
+        { "control.InteractionMarkerOrb", "Marcador" }
     };
 
     public static void Use(string language)
@@ -58,9 +81,13 @@ public static class ScreenText
             return "";
 
         string trimmed = source.Trim();
-        string key = "body." + trimmed;
-        if (Contains(key))
-            return Phrase(key);
+        string body = "body." + trimmed;
+        if (Contains(body))
+            return Phrase(body);
+
+        string control = "control." + trimmed;
+        if (Contains(control))
+            return Phrase(control);
 
         return trimmed;
     }
