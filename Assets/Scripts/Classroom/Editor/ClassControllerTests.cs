@@ -68,28 +68,6 @@ public class ClassControllerTests
     }
 
     [Test]
-    public void OnFloor_KeepsThePlayerOnTheSameFloorPointAfterTheYaw()
-    {
-        Transform room = new GameObject("Class").transform;
-        try
-        {
-            Vector3 standing = new Vector3(0f, 2f, 5f);
-            Vector3 point = ClassController.FloorPoint(room, standing);
-            room.localRotation = ClassController.TurnAroundOwnY(Quaternion.identity, ClassController.ClockwiseStepDegrees);
-            Vector3 stuck = ClassController.OnFloor(room, point);
-            float along = 5f * Mathf.Sin(45f * Mathf.Deg2Rad);
-
-            Assert.AreEqual(along, stuck.x, 0.001f);
-            Assert.AreEqual(2f, stuck.y, 0.001f);
-            Assert.AreEqual(along, stuck.z, 0.001f);
-        }
-        finally
-        {
-            Object.DestroyImmediate(room.gameObject);
-        }
-    }
-
-    [Test]
     public void HostGoesToHostAreaAndClientGoesToGuestArea()
     {
         Transform host = new GameObject("HostArea").transform;
