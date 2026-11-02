@@ -25,8 +25,9 @@ public class ClassController : MonoBehaviour
     bool appliedHideFloorAreas = true;
 
     readonly PassengerHold passengers = new PassengerHold();
-    Quaternion turnFrom = Quaternion.identity;
-    Quaternion turnTo = Quaternion.identity;
+    Vector3 pivot;
+    Vector3 positionFrom;
+    Quaternion rotationFrom = Quaternion.identity;
     float turnElapsed;
     bool turning;
 
@@ -66,18 +67,30 @@ public class ClassController : MonoBehaviour
         return localRotation * Quaternion.AngleAxis(-Mathf.Abs(degrees), Vector3.up);
     }
 
+    public static Quaternion ClockwiseYaw(float degrees)
+    {
+        return Quaternion.AngleAxis(-Mathf.Abs(degrees), Vector3.up);
+    }
+
     public static Quaternion TurnStep(Quaternion from, Quaternion to, float elapsed, float duration)
     {
         return Quaternion.Slerp(from, to, EdgeApproach.Ease(EdgeApproach.Progress(elapsed, duration)));
     }
 
+    public static Vector3 Orbit(Vector3 position, Vector3 pivot, Quaternion yaw)
+    {
+        return pivot + yaw * (position - pivot);
+    }
+
     public void TurnClockwise()
     {
+        ResolveAreas();
         if (!turning)
             passengers.Hold(transform, MoveToEdge.PassengerTag);
 
-        turnFrom = transform.localRotation;
-        turnTo = TurnAroundOwnY(turnFrom, ClockwiseStepDegrees);
+        pivot = hostArea != null ? hostArea.position : transform.position;
+        positionFrom = transform.position;
+        rotationFrom = transform.rotation;
         turnElapsed = 0f;
         turning = true;
     }
@@ -141,9 +154,9 @@ public class ClassController : MonoBehaviour
             return;
 
         turnElapsed += Time.deltaTime;
-        bool done = turnElapsed >= TurnDuration;
-        transform.localRotation = done ? turnTo : TurnStep(turnFrom, turnTo, turnElapsed, TurnDuration);
-        if (!done)
+        Quaternion yaw = TurnStep(Quaternion.identity, ClockwiseYaw(ClockwiseStepDegrees), turnElapsed, TurnDuration);
+        transform.SetPositionAndRotation(Orbit(positionFrom, pivot, yaw), yaw * rotationFrom);
+        if (turnElapsed < TurnDuration)
             return;
 
         turning = false;

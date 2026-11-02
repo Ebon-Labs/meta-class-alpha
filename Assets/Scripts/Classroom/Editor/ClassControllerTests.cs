@@ -68,6 +68,26 @@ public class ClassControllerTests
     }
 
     [Test]
+    public void Orbit_TurnsAroundTheHostAreaAndLeavesThatPointStill()
+    {
+        Vector3 pivot = new Vector3(2f, 1f, 3f);
+        Quaternion yaw = ClassController.ClockwiseYaw(ClassController.ClockwiseStepDegrees);
+        Vector3 still = ClassController.Orbit(pivot, pivot, yaw);
+
+        Assert.AreEqual(pivot.x, still.x, 0.001f);
+        Assert.AreEqual(pivot.y, still.y, 0.001f);
+        Assert.AreEqual(pivot.z, still.z, 0.001f);
+
+        Vector3 room = pivot + new Vector3(0f, 0f, 4f);
+        Vector3 swung = ClassController.Orbit(room, pivot, yaw);
+        float along = 4f * Mathf.Sin(45f * Mathf.Deg2Rad);
+
+        Assert.AreEqual(pivot.x + along, swung.x, 0.001f);
+        Assert.AreEqual(pivot.y, swung.y, 0.001f);
+        Assert.AreEqual(pivot.z + along, swung.z, 0.001f);
+    }
+
+    [Test]
     public void HostGoesToHostAreaAndClientGoesToGuestArea()
     {
         Transform host = new GameObject("HostArea").transform;
