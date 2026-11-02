@@ -1,8 +1,12 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 [DisallowMultipleComponent]
 public class ClassController : MonoBehaviour
 {
+    public const float ClockwiseStepDegrees = 45f;
+    public const float TurnDuration = 3f;
+
     public static ClassController Instance { get; private set; }
 
     [Header("Areas")]
@@ -20,6 +24,12 @@ public class ClassController : MonoBehaviour
 
     bool appliedMuteGuests;
     bool appliedHideFloorAreas = true;
+
+    readonly FloorHold floor = new FloorHold();
+    Quaternion turnFrom = Quaternion.identity;
+    Quaternion turnTo = Quaternion.identity;
+    float turnElapsed;
+    bool turning;
 
     public bool MuteGuests => muteGuests;
     public bool HideFloorAreas => hideFloorAreas;
@@ -50,6 +60,37 @@ public class ClassController : MonoBehaviour
     public static Transform AreaForRole(bool isHost, Transform hostArea, Transform guestArea)
     {
         return isHost ? hostArea : guestArea;
+    }
+
+    public static Quaternion TurnAroundOwnY(Quaternion localRotation, float degrees)
+    {
+        return localRotation * Quaternion.AngleAxis(-Mathf.Abs(degrees), Vector3.up);
+    }
+
+    public static Quaternion TurnStep(Quaternion from, Quaternion to, float elapsed, float duration)
+    {
+        return Quaternion.Slerp(from, to, EdgeApproach.Ease(EdgeApproach.Progress(elapsed, duration)));
+    }
+
+    public static Vector3 FloorPoint(Transform room, Vector3 worldPosition)
+    {
+        return room.InverseTransformPoint(worldPosition);
+    }
+
+    public static Vector3 OnFloor(Transform room, Vector3 floorPoint)
+    {
+        return room.TransformPoint(floorPoint);
+    }
+
+    public void TurnClockwise()
+    {
+        if (!turning)
+            floor.Hold(transform, MoveToEdge.PassengerTag);
+
+        turnFrom = transform.localRotation;
+        turnTo = TurnAroundOwnY(turnFrom, ClockwiseStepDegrees);
+        turnElapsed = 0f;
+        turning = true;
     }
 
     public void ToggleMuteGuests()
@@ -89,6 +130,9 @@ public class ClassController : MonoBehaviour
 
     void OnDestroy()
     {
+        if (turning)
+            floor.Release();
+
         if (Instance == this)
             Instance = null;
     }
@@ -102,8 +146,27 @@ public class ClassController : MonoBehaviour
             ApplyFloorVisibility();
     }
 
+    void Update()
+    {
+        if (!turning)
+            return;
+
+        turnElapsed += Time.deltaTime;
+        bool done = turnElapsed >= TurnDuration;
+        transform.localRotation = done ? turnTo : TurnStep(turnFrom, turnTo, turnElapsed, TurnDuration);
+        floor.Stick(transform);
+        if (!done)
+            return;
+
+        turning = false;
+        floor.Release();
+    }
+
     void LateUpdate()
     {
+        if (turning)
+            floor.Stick(transform);
+
         ApplyControls(force: false);
     }
 
@@ -211,6 +274,90 @@ public class ClassController : MonoBehaviour
         {
             if (renderers[i] != null)
                 renderers[i].enabled = visible;
+        }
+    }
+
+    sealed class FloorHold
+    {
+        readonly List<Rider> riders = new List<Rider>();
+
+        public void Hold(Transform room, string passengerTag)
+        {
+            if (room == null)
+                return;
+
+            GameObject[] players = GameObject.FindGameObjectsWithTag(passengerTag);
+            for (int i = 0; i < players.Length; i++)
+            {
+                Transform player = players[i].transform;
+                if (player == room)
+                    continue;
+
+                Rigidbody body = players[i].GetComponent<Rigidbody>();
+                bool wasKinematic = body != null && body.isKinematic;
+                if (body != null && !wasKinematic)
+                {
+                    body.linearVelocity = Vector3.zero;
+                    body.angularVelocity = Vector3.zero;
+                    body.isKinematic = true;
+                }
+
+                riders.Add(new Rider(player, body, wasKinematic, FloorPoint(room, player.position)));
+            }
+        }
+
+        public void Stick(Transform room)
+        {
+            if (room == null)
+                return;
+
+            for (int i = 0; i < riders.Count; i++)
+            {
+                Rider rider = riders[i];
+                if (rider.Transform == null)
+                    continue;
+
+                Vector3 position = OnFloor(room, rider.Point);
+                rider.Transform.position = position;
+                if (rider.Body != null)
+                    rider.Body.position = position;
+            }
+        }
+
+        public void Release()
+        {
+            for (int i = 0; i < riders.Count; i++)
+            {
+                Rider rider = riders[i];
+                if (rider.Body == null)
+                    continue;
+
+                bool kinematic = MoveToEdge.HoldKinematic(traveling: false, rider.WasKinematic);
+                rider.Body.isKinematic = kinematic;
+                if (kinematic)
+                    continue;
+
+                rider.Body.linearVelocity = Vector3.zero;
+                rider.Body.angularVelocity = Vector3.zero;
+            }
+
+            riders.Clear();
+        }
+
+        readonly struct Rider
+        {
+            public Rider(Transform transform, Rigidbody body, bool wasKinematic, Vector3 point)
+            {
+                Transform = transform;
+                Body = body;
+                WasKinematic = wasKinematic;
+                Point = point;
+            }
+
+            public Transform Transform { get; }
+            public Rigidbody Body { get; }
+            public bool WasKinematic { get; }
+            public Vector3 Point { get; }
         }
     }
 }

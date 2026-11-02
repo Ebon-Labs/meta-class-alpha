@@ -206,6 +206,13 @@ public class CameraPointerController : NetworkBehaviour
             return;
         }
 
+        if (RotateClassButton.IsTarget(target != null ? target.transform : null))
+        {
+            RotateClassButton.Turn();
+            DisablePointerForTarget(target);
+            return;
+        }
+
         if (IsTeleportable(target))
         {
             Debug.Log("handlePointerClick: " + target.tag);
