@@ -5,7 +5,15 @@ public class PointerLogTests
     [Test]
     public void PlanetParent_UsesTheParentName()
     {
-        Assert.AreEqual("Planeta: Earth", PointerLog.FocusName("Portal", "Earth", true));
+        Assert.AreEqual("Planeta: Terra", PointerLog.FocusName("Portal", "Earth", true));
+    }
+
+    [Test]
+    public void SunAndMoon_OmitThePlanetPrefix()
+    {
+        Assert.AreEqual("Sol", PointerLog.FocusName("Button", "Sun", true));
+        Assert.AreEqual("Lua", PointerLog.FocusName("Button", "Moon", true));
+        Assert.AreEqual("Sol", PointerLog.FocusName("Button", "SUN", true));
     }
 
     [Test]

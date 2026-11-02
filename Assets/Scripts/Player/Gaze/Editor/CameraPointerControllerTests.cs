@@ -55,4 +55,26 @@ public class CameraPointerControllerTests
             Object.DestroyImmediate(other);
         }
     }
+
+    [Test]
+    public void RotateClassButton_IncludesTheButtonAndItsChildren()
+    {
+        GameObject button = new GameObject(RotateClassButton.ObjectName);
+        GameObject child = new GameObject("icon");
+        GameObject other = new GameObject("MuteButton");
+        try
+        {
+            child.transform.SetParent(button.transform, false);
+
+            Assert.IsTrue(RotateClassButton.IsTarget(button.transform));
+            Assert.IsTrue(RotateClassButton.IsTarget(child.transform));
+            Assert.IsFalse(RotateClassButton.IsTarget(other.transform));
+            Assert.IsFalse(RotateClassButton.IsTarget(null));
+        }
+        finally
+        {
+            Object.DestroyImmediate(button);
+            Object.DestroyImmediate(other);
+        }
+    }
 }

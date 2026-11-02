@@ -40,6 +40,54 @@ public class ClassControllerTests
     }
 
     [Test]
+    public void TurnAroundOwnY_SpinsFortyFiveDegreesOnLocalUp()
+    {
+        Vector3 facing = ClassController.TurnAroundOwnY(Quaternion.identity, ClassController.ClockwiseStepDegrees) * Vector3.forward;
+        float axis = Mathf.Sin(45f * Mathf.Deg2Rad);
+
+        Assert.AreEqual(45f, ClassController.ClockwiseStepDegrees);
+        Assert.AreEqual(axis, facing.x, 0.0001f);
+        Assert.AreEqual(0f, facing.y, 0.0001f);
+        Assert.AreEqual(axis, facing.z, 0.0001f);
+    }
+
+    [Test]
+    public void TurnStep_ReachesTheStepInThreeSeconds()
+    {
+        Quaternion from = Quaternion.identity;
+        Quaternion to = ClassController.TurnAroundOwnY(from, ClassController.ClockwiseStepDegrees);
+        float axis = Mathf.Sin(45f * Mathf.Deg2Rad);
+
+        Assert.AreEqual(3f, ClassController.TurnDuration);
+        Assert.AreEqual(0f, Quaternion.Angle(ClassController.TurnStep(from, to, 0f, ClassController.TurnDuration), from), 0.001f);
+
+        Vector3 facing = ClassController.TurnStep(from, to, ClassController.TurnDuration, ClassController.TurnDuration) * Vector3.forward;
+        Assert.AreEqual(axis, facing.x, 0.001f);
+        Assert.AreEqual(0f, facing.y, 0.001f);
+        Assert.AreEqual(axis, facing.z, 0.001f);
+    }
+
+    [Test]
+    public void Orbit_TurnsAroundTheHostAreaAndLeavesThatPointStill()
+    {
+        Vector3 pivot = new Vector3(2f, 1f, 3f);
+        Quaternion yaw = ClassController.ClockwiseYaw(ClassController.ClockwiseStepDegrees);
+        Vector3 still = ClassController.Orbit(pivot, pivot, yaw);
+
+        Assert.AreEqual(pivot.x, still.x, 0.001f);
+        Assert.AreEqual(pivot.y, still.y, 0.001f);
+        Assert.AreEqual(pivot.z, still.z, 0.001f);
+
+        Vector3 room = pivot + new Vector3(0f, 0f, 4f);
+        Vector3 swung = ClassController.Orbit(room, pivot, yaw);
+        float along = 4f * Mathf.Sin(45f * Mathf.Deg2Rad);
+
+        Assert.AreEqual(pivot.x + along, swung.x, 0.001f);
+        Assert.AreEqual(pivot.y, swung.y, 0.001f);
+        Assert.AreEqual(pivot.z + along, swung.z, 0.001f);
+    }
+
+    [Test]
     public void HostGoesToHostAreaAndClientGoesToGuestArea()
     {
         Transform host = new GameObject("HostArea").transform;

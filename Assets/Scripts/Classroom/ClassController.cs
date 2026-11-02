@@ -3,6 +3,9 @@ using UnityEngine;
 [DisallowMultipleComponent]
 public class ClassController : MonoBehaviour
 {
+    public const float ClockwiseStepDegrees = 45f;
+    public const float TurnDuration = 3f;
+
     public static ClassController Instance { get; private set; }
 
     [Header("Areas")]
@@ -20,6 +23,13 @@ public class ClassController : MonoBehaviour
 
     bool appliedMuteGuests;
     bool appliedHideFloorAreas = true;
+
+    readonly PassengerHold passengers = new PassengerHold();
+    Vector3 pivot;
+    Vector3 positionFrom;
+    Quaternion rotationFrom = Quaternion.identity;
+    float turnElapsed;
+    bool turning;
 
     public bool MuteGuests => muteGuests;
     public bool HideFloorAreas => hideFloorAreas;
@@ -50,6 +60,39 @@ public class ClassController : MonoBehaviour
     public static Transform AreaForRole(bool isHost, Transform hostArea, Transform guestArea)
     {
         return isHost ? hostArea : guestArea;
+    }
+
+    public static Quaternion TurnAroundOwnY(Quaternion localRotation, float degrees)
+    {
+        return localRotation * Quaternion.AngleAxis(-Mathf.Abs(degrees), Vector3.up);
+    }
+
+    public static Quaternion ClockwiseYaw(float degrees)
+    {
+        return Quaternion.AngleAxis(-Mathf.Abs(degrees), Vector3.up);
+    }
+
+    public static Quaternion TurnStep(Quaternion from, Quaternion to, float elapsed, float duration)
+    {
+        return Quaternion.Slerp(from, to, EdgeApproach.Ease(EdgeApproach.Progress(elapsed, duration)));
+    }
+
+    public static Vector3 Orbit(Vector3 position, Vector3 pivot, Quaternion yaw)
+    {
+        return pivot + yaw * (position - pivot);
+    }
+
+    public void TurnClockwise()
+    {
+        ResolveAreas();
+        if (!turning)
+            passengers.Hold(transform, MoveToEdge.PassengerTag);
+
+        pivot = hostArea != null ? hostArea.position : transform.position;
+        positionFrom = transform.position;
+        rotationFrom = transform.rotation;
+        turnElapsed = 0f;
+        turning = true;
     }
 
     public void ToggleMuteGuests()
@@ -89,6 +132,9 @@ public class ClassController : MonoBehaviour
 
     void OnDestroy()
     {
+        if (turning)
+            passengers.Release();
+
         if (Instance == this)
             Instance = null;
     }
@@ -100,6 +146,21 @@ public class ClassController : MonoBehaviour
             ApplyControls(force: true);
         else
             ApplyFloorVisibility();
+    }
+
+    void Update()
+    {
+        if (!turning)
+            return;
+
+        turnElapsed += Time.deltaTime;
+        Quaternion yaw = TurnStep(Quaternion.identity, ClockwiseYaw(ClockwiseStepDegrees), turnElapsed, TurnDuration);
+        transform.SetPositionAndRotation(Orbit(positionFrom, pivot, yaw), yaw * rotationFrom);
+        if (turnElapsed < TurnDuration)
+            return;
+
+        turning = false;
+        passengers.Release();
     }
 
     void LateUpdate()
