@@ -6,9 +6,11 @@ Experiência multiplayer em realidade virtual para **Google Cardboard**, onde jo
 
 ## Sobre o jogo
 
-O jogador entra na cena **The Room** com um visor Cardboard e pode:
+O build abre na cena **Menu**. Dali o anfitrião cria a sala e o Mirror carrega **The Room**. No visor, o jogador pode:
 
 - Observar e interagir com objetos no ambiente
+- Girar a sala 45° no sentido horário em torno da área do anfitrião
+- Viajar com a sala até um corpo celeste e voltar
 - Teleportar-se para a superfície de corpos celestes marcados como teleportáveis
 - Conversar por voz com outros jogadores em tempo real
 - Navegar por portais esféricos e cilíndricos no cenário
@@ -24,7 +26,8 @@ A experiência combina exploração espacial, interação sem mãos (apenas com 
 | **Interação por gaze** | `CameraPointerController` — raycast a partir da câmera, clique por permanência (~3 s) |
 | **Voice chat** | `VoiceChatController` — captura de microfone, streaming PCM16 via Mirror (canal unreliable) |
 | **Teste local multiplayer** | [ParrelSync](https://github.com/VeriorPies/ParrelSync) — clones do projeto no Editor |
-| **UI** | TextMesh Pro + slider de progresso do gaze |
+| **UI** | TextMesh Pro + slider de progresso do gaze. O menu usa **Montserrat Bold** |
+| **Menu** | `CarouselMenu` — toque na tela gira o menu 90° em 1,5 s |
 
 ### Tags importantes
 
@@ -54,7 +57,8 @@ Câmera (direção do olhar)
 ```
 meta-class-alpha/
 ├── Assets/
-│   ├── Scenes/TheRoom.unity      # Cena principal (única no build)
+│   ├── Scenes/Menu.unity         # Primeira cena do build
+│   ├── Scenes/TheRoom.unity      # Sala de aula, carregada como cena online
 │   ├── Scripts/                  # Lógica do jogo
 │   ├── Prefabs/                  # Player, portais, tesouros
 │   ├── Models/                   # SolarSystem.fbx, avatar (Male_002)
@@ -80,10 +84,16 @@ meta-class-alpha/
 | `VoiceChatController` | Captura e reprodução espacial de voz (`NetworkBehaviour`) |
 | `SunLightController` | Luz pontual seguindo o Sol no sistema solar |
 | `UILogger` | Mensagens de interação na tela (TMP) |
+| `CarouselMenu` | Faces do menu: Criar Sala, Buscar Sala e Voltar, por toque na tela |
+| `MenuBackdrop` | Ajusta o fundo do menu à câmera ortográfica |
+| `ClassController` | Gira a sala 45° em torno da `HostArea` em 3 s e posiciona os jogadores |
+| `RotateClassButton` | Clique de olhar que inicia essa rotação |
 
 ### Rede (Mirror)
 
-- **NetworkManager** na cena `TheRoom`, porta **7777**, máximo **4** conexões
+- **NetworkManager** na cena `Menu`, porta **7777**, máximo **4** conexões. Permanece com `dontDestroyOnLoad`
+- **Cena offline** `Menu`, **cena online** `TheRoom`. The Room não contém um segundo manager
+- O HUD do Mirror no canto continua criando a sala. Os rótulos Criar Sala e Buscar Sala só giram o carrossel
 - **Player prefab** (`Assets/Prefabs/Player.prefab`): câmera, canvas, gaze, voz e identidade de rede
 - Servidor inicia automaticamente em builds (`autoStartServerBuild`)
 - Cliente conecta manualmente (host `localhost` por padrão no Editor)
@@ -103,15 +113,23 @@ flowchart TB
         TP[Telepathy :7777]
     end
 
-    subgraph Scene["TheRoom.unity"]
-        SS[SolarSystem]
-        Portals[Portais]
-        Treasures[Tesouros]
+    subgraph Menu["Menu.unity"]
+        Carousel[CarouselMenu]
+        HUD[NetworkManagerHUD]
     end
 
-    Cam -->|gaze / teleporte| Scene
+    subgraph Scene["TheRoom.unity"]
+        SS[SolarSystem]
+        Class[Class]
+        Portals[Portais]
+    end
+
+    HUD -->|Host / Client| NM
+    Carousel -->|giro de 90°| Menu
+    Cam -->|gaze / teleporte / giro da sala| Scene
     Voice -->|PCM16 unreliable| NM
     NM --> TP
+    NM -->|cena online| Scene
     Cardboard --> Cam
 ```
 
@@ -138,7 +156,7 @@ Abra a pasta no **Unity Hub** com o editor **6000.3.6f1**.
 
 ### 2. Cena de trabalho
 
-Abra `Assets/Scenes/TheRoom.unity`. É a única cena incluída no build.
+Abra `Assets/Scenes/Menu.unity` e dê Play a partir dela. É a primeira cena habilitada no build. `TheRoom.unity` entra quando a sala fica online. O Play usa a cena aberta, então começar o Play dentro de The Room pula o menu.
 
 ### 3. Testar no Editor
 
@@ -222,7 +240,7 @@ Extensões atuais: C#, Unity Tools, Unity Debug, DocComment.
 
 ## Documentação adicional
 
-- [docs/arquitetura.md](docs/arquitetura.md) — arquitetura: funcionalidades genéricas e aplicação na cena The Room
+- [docs/arquitetura.md](docs/arquitetura.md) — arquitetura: funcionalidades genéricas, a cena Menu e a aplicação em The Room
 - [docs/seguranca.md](docs/seguranca.md) — riscos de rede, voz e manifesto Android, com a mitigação de cada um
 - [docs/TDD-sala-observacao-controle.md](docs/TDD-sala-observacao-controle.md) — TDD da sala de observação e controle (painel descritivo feito; sala e portal de retorno a fazer)
 - [BUILD_ANDROID_pt.md](BUILD_ANDROID_pt.md) — gerar e instalar APK ([EN](BUILD_ANDROID.md))
@@ -235,3 +253,4 @@ Extensões atuais: C#, Unity Tools, Unity Debug, DocComment.
 - **Empresa:** EbonLabs
 - **Produto:** meta-class-alpha
 - Bibliotecas de terceiros: Mirror, Google Cardboard XR, ParrelSync, TextMesh Pro
+- Fonte do menu: [Montserrat](https://github.com/JulietaUla/Montserrat) Bold, SIL Open Font License (`Assets/Fonts/OFL.txt`)

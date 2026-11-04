@@ -1,8 +1,8 @@
 # Documento de Arquitetura
 
 **Projeto:** meta-class-alpha  
-**Cena de build:** `Assets/Scenes/TheRoom.unity`  
-**Escopo:** funcionalidades implementadas e a forma como a cena The Room as compõe  
+**Cenas de build:** `Assets/Scenes/Menu.unity` (primeira), depois `Assets/Scenes/TheRoom.unity`  
+**Escopo:** funcionalidades implementadas e a forma como o menu e a cena The Room as compõem  
 **Fora de escopo:** sala de controle e portal de retorno descritos em [TDD-sala-observacao-controle.md](TDD-sala-observacao-controle.md), que ainda não estão implementados. O painel descritivo desse TDD está feito (`InfoArea` e `SceneInfoPanel`, seções 2.13 e 3).
 
 Este documento separa duas camadas. A primeira descreve capacidades genéricas: scripts e contratos que não conhecem a sala, os planetas nem o enredo da experiência. A segunda descreve como The Room instancia essas capacidades, qual é a hierarquia da cena e como os objetos se relacionam em runtime.
@@ -74,7 +74,7 @@ A rede usa Mirror com transporte Telepathy. O contrato genérico é:
 - posição e rotação do dono seguem para o servidor (`NetworkTransform` com `SyncDirection.ClientToServer`) e dali para os demais clientes;
 - câmera, canvas e listener existem no prefab, mas só o jogador local os liga.
 
-Parâmetros atuais do manager, reutilizáveis como padrão do projeto: porta **7777**, no máximo **4** conexões, `dontDestroyOnLoad`, `autoStartServerBuild` ligado e `autoConnectClientBuild` desligado. O endereço padrão no Editor é `localhost`.
+Parâmetros atuais do manager, reutilizáveis como padrão do projeto: porta **7777**, no máximo **4** conexões, `dontDestroyOnLoad`, `autoStartServerBuild` ligado e `autoConnectClientBuild` desligado. O endereço padrão no Editor é `localhost`. O manager vive na cena Menu, com cena offline `Menu` e cena online `TheRoom`. The Room não carrega um segundo `NetworkManager`. O HUD de canto do Mirror continua sendo o controle que cria a sala.
 
 `CameraPointerController.OnStartClient` posiciona o jogador local numa área aleatória próxima da origem (`x` e `z` entre 0 e 3, `y = 1`) e habilita câmera e canvas somente quando `isLocalPlayer` é verdadeiro.
 
@@ -188,11 +188,40 @@ Definidas em `ProjectSettings/TagManager.asset`. A lógica genérica depende del
 
 O campo `body` é o texto mostrado. O valor padrão do prefab é uma frase de Lorem ipsum. A cena substitui esse texto pelo parágrafo de cada corpo.
 
+### 2.14 Sala de aula em movimento
+
+`ClassController` gira o objeto da sala e posiciona os jogadores nas áreas. `MoveToEdge` leva o mesmo sujeito até um corpo celeste. Os dois prendem os objetos com tag `Player` em `PassengerHold` durante o deslocamento e os soltam no fim. A rotação do jogador não é escrita à parte: ela acompanha o pai.
+
+| Ação | Comportamento |
+|------|----------------|
+| `RotateClassButton` | Clique de olhar. A sala gira **45°** no sentido horário em torno da posição mundial da `HostArea` capturada no clique. Dura **3 s**, com SmoothStep (`EdgeApproach`). Sem `HostArea`, o pivô é o próprio transform da sala |
+| Viagem ao astro | `MoveToEdge` leva o centro da sala (`Class Center`) até a borda do destino, estacionando em **Y = 8**. Duração padrão **7 s**. A volta para casa conserva a altura de origem capturada |
+| `GoHomeOrb` | O anfitrião volta para `HostArea`; o cliente, para `GuestArea`. O texto do HUD é "Voltar à sala" |
+
+O sentido horário do projeto é yaw negativo: `Quaternion.AngleAxis` com ângulo negativo no eixo Y.
+
+### 2.15 Menu anterior à sala
+
+A cena Menu é a primeira do build. Ela não tem jogador local, então o gaze não dirige os cliques. O toque é na tela (`TouchPhase.Ended`; no Editor, o mouse solto quando não há toque).
+
+`CarouselMenu` fica no pai das três faces (`MainMenu`, `CreateMenu`, `EnterMenu`). Um toque gira esse pai **90°** em **1,5 s**:
+
+| Objeto | Rótulo | Passo |
+|--------|--------|-------|
+| `Create` | Criar Sala | +90° |
+| `CreateBack` | Voltar | −90° |
+| `Enter` | Buscar Sala | −90° |
+| `EnterBack` | Voltar | +90° |
+
+O acerto usa os limites visíveis do renderer, com **48 px** de folga, e escolhe o rótulo cujo centro na tela está mais perto do toque. Cantos atrás da câmera são ignorados. Esses rótulos não chamam `StartHost` nem `StartClient`.
+
+O fundo é `eduverso_logo_bg_menu.png` no shader `Custom/MenuBackdrop`. `MenuBackdrop` cobre a câmera ortográfica em 16:9. O objeto `Logo` é uma Image em canvas World Space com `eduverso_logo.png`. Na face de criar, `SolarSystemThumb` é outra Image, com `solar_system_thumb`. Os TextMeshPro do menu usam o atlas `Montserrat-Bold SDF`. O material das letras e o da miniatura `SolarSystemThumb` usam Cull Back (`_CullMode` 2), então as costas ficam ocultas.
+
 ---
 
 ## 3. Aplicação na cena The Room
 
-The Room é a única cena do build. Ela não adiciona regras novas de interação: compõe as capacidades da seção 2 em três grupos — infraestrutura de sessão, sala próxima ao jogador e sistema solar em escala.
+The Room é a cena online. O build começa no Menu e o Mirror a carrega quando a sala fica online. Ela compõe as capacidades da seção 2 em três grupos — infraestrutura de sessão, sala próxima ao jogador e sistema solar em escala.
 
 ### 3.1 O que a cena é
 
@@ -204,7 +233,6 @@ Raízes da cena:
 
 ```
 TheRoom
-├── NetworkManager          sessão Mirror (não é geometria)
 ├── EventSystem             UI
 ├── SpaceSphere             esfera de fundo, escala 50000
 ├── Interactive             objetos da sala
@@ -273,7 +301,9 @@ Player                        tag Player
 | Funcionalidade genérica | Onde vive em The Room |
 |-------------------------|------------------------|
 | Sessão VR | `InitCardboard` no `Plane`, com o material de skybox estrelado |
-| Presença em rede | `NetworkManager` na raiz; jogadores spawnados a partir de `Player.prefab` |
+| Presença em rede | O `NetworkManager` veio do Menu e permanece com `dontDestroyOnLoad`. Jogadores spawnados a partir de `Player.prefab` |
+| Giro da sala | `ClassController` na Class; `RotateClassButton` dispara os 45° em torno da `HostArea` |
+| Volta à sala | `GoHomeOrb`; anfitrião em `HostArea`, cliente em `GuestArea` |
 | Olhar e teleporte | `CameraPointerController` no Player. Alvos reais de teleporte são os portais, não as malhas dos planetas |
 | Feedback de foco | `ObjectBasicController` em `Sphere Portal`, `Cylinder Portal` e `Treasure` |
 | HUD | Canvas do Player, à frente da câmera em World Space |
@@ -334,7 +364,7 @@ sequenceDiagram
     Card->>Card: skybox, brilho, parâmetros do visor
     Boot->>World: Awake dos wrappers e dos corpos
     World->>World: grava pose dos orbes e o offset até o Sol
-    Boot->>Net: servidor sobe na build (porta 7777)
+    Boot->>Net: manager já veio do Menu (porta 7777)
     Net->>Player: spawn do prefab
     Player->>Player: posição aleatória, câmera e canvas locais
     Player->>Gaze: Update só se isLocalPlayer
@@ -375,30 +405,50 @@ Dois componentes estão no objeto `Environment` e os scripts correspondentes nã
 
 ---
 
-## 4. Mapa de código
+## 4. Cena Menu
+
+Raízes usadas pelo fluxo:
+
+```
+Menu
+├── Main Camera             ortográfica, tamanho 5
+│   └── CarouselMenu
+│       ├── MainMenu        Menu, Criar Sala, Buscar Sala
+│       ├── CreateMenu      Criar, miniatura do sistema solar, Voltar
+│       └── EnterMenu       Buscar Sala, lista, Voltar
+├── MenuBackground          eduverso_logo_bg_menu.png, MenuBackdrop
+├── Logo                    Image World Space, eduverso_logo.png
+├── NetworkManager          HUD de canto, offline Menu, online TheRoom
+└── EventSystem
+```
+
+Os TextMeshPro do menu e a miniatura `SolarSystemThumb` usam Cull Back (`_CullMode` 2), então as costas dessas malhas ficam ocultas.
+
+## 5. Mapa de código
 
 ```
 Assets/Scripts/
-├── InitCardboard.cs                 sessão VR
-├── CameraPointerController.cs       olhar, permanência, teleporte
-├── CameraEditorController.cs        mouse no Editor
-├── ObjectBasicController.cs         material de foco
-├── UILogger.cs                      texto do HUD
-├── SceneInfoPanel.cs                painel descritivo do jogador local
-├── InfoArea.cs                      volume esférico que mostra e esconde o painel
-├── VoiceChatController.cs           voz PCM16
-├── SunLightController.cs            luz pontual no Sol
-├── SolarSystemSunReplacer.cs        troca da malha do Sol
-├── PlanetCloudLayer.cs              casca de nuvens
-├── PlanetLabel.cs                   rótulo com tamanho aparente
-└── PlanetaryMotion/
-    ├── SolarPlanetId.cs
-    ├── PlanetScientificData.cs      catálogo
-    ├── PlanetOrbitCalculator.cs
-    ├── PlanetSpinCalculator.cs
-    ├── SolarSystemLocator.cs
-    ├── PlanetOrbitMotion.cs
-    └── SolarSystemMotionController.cs
+├── Cardboard/InitCardboard.cs
+├── Menu/
+│   ├── CarouselMenu.cs              giro de 90° por toque na tela
+│   └── MenuTextButton.cs
+├── Classroom/
+│   ├── ClassController.cs           giro de 45° e áreas
+│   ├── RotateClassButton.cs
+│   ├── GoHomeOrb.cs
+│   ├── MenuBackdrop.cs
+│   └── MainScreen.cs
+├── Interaction/
+│   ├── MoveToEdge.cs                viagem ao astro, 7 s, Y = 8
+│   ├── PassengerHold.cs
+│   └── EdgeApproach.cs              SmoothStep compartilhado
+├── Player/
+│   ├── Gaze/CameraPointerController.cs
+│   ├── Hud/ScreenText.cs            frases em pt-BR
+│   └── Voice/VoiceChatController.cs
+└── SolarSystem/                     órbita, rótulos, luz, nuvens
 ```
+
+Fontes do menu: `Assets/Fonts/Montserrat-Bold.ttf` e o atlas `Assets/Fonts/Montserrat-Bold SDF.asset`. Imagens: `Assets/Materials/eduverso_logo.png`, `eduverso_logo_bg_menu.png` e `solar_system_thumb.jpg`.
 
 Bibliotecas que a arquitetura assume e não reimplementa: Mirror (identidade, spawn, transform, comandos de voz), Google Cardboard XR Plugin (parâmetros do visor e pose rastreada no Player) e TextMesh Pro (HUD e rótulos).
