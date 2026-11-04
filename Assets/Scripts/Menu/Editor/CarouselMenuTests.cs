@@ -44,8 +44,52 @@ public class CarouselMenuTests
         Assert.AreEqual(CarouselMenu.StepDegrees, CarouselMenu.SignedStep(CarouselMenu.CreateName));
         Assert.AreEqual(-CarouselMenu.StepDegrees, CarouselMenu.SignedStep(CarouselMenu.CreateBackName));
         Assert.AreEqual(-CarouselMenu.StepDegrees, CarouselMenu.SignedStep(CarouselMenu.EnterName));
-        Assert.AreEqual(CarouselMenu.StepDegrees, CarouselMenu.SignedStep(CarouselMenu.EnterBackName));
+        Assert.AreEqual(CarouselMenu.SignedStep(CarouselMenu.CreateName), CarouselMenu.SignedStep(CarouselMenu.EnterBackName));
         Assert.AreEqual(0f, CarouselMenu.SignedStep("Title"));
+    }
+
+    [Test]
+    public void BackButtons_KeepTheirDirectionFromAnyYaw()
+    {
+        Quaternion tilted = Quaternion.Euler(0f, 40f, 0f);
+
+        Quaternion enterBack = tilted * Quaternion.AngleAxis(CarouselMenu.SignedStep(CarouselMenu.EnterBackName), Vector3.up);
+        Quaternion createBack = tilted * Quaternion.AngleAxis(CarouselMenu.SignedStep(CarouselMenu.CreateBackName), Vector3.up);
+
+        Quaternion create = tilted * Quaternion.AngleAxis(CarouselMenu.SignedStep(CarouselMenu.CreateName), Vector3.up);
+        Assert.AreEqual(0f, Quaternion.Angle(enterBack, create), 0.001f);
+        Assert.AreEqual(0f, Quaternion.Angle(createBack, CarouselMenu.Clockwise(tilted)), 0.001f);
+    }
+
+    [Test]
+    public void SignedStep_IgnoresALabelTurnedAwayFromTheCamera()
+    {
+        var viewObject = new GameObject("CarouselView");
+        var label = new GameObject(CarouselMenu.EnterBackName);
+        try
+        {
+            Camera view = viewObject.AddComponent<Camera>();
+            view.orthographic = true;
+            view.orthographicSize = 5f;
+            view.pixelRect = new Rect(0f, 0f, 200f, 100f);
+            view.transform.SetPositionAndRotation(new Vector3(0f, 0f, -10f), Quaternion.identity);
+
+            var rect = label.AddComponent<RectTransform>();
+            rect.sizeDelta = new Vector2(40f, 10f);
+            label.transform.SetPositionAndRotation(new Vector3(0f, 0f, 5f), Quaternion.Euler(0f, 90f, 0f));
+
+            Vector2 screen = view.WorldToScreenPoint(label.transform.position);
+            Assert.AreEqual(0f, CarouselMenu.SignedStep(screen, view, label));
+
+            label.transform.rotation = Quaternion.identity;
+            screen = view.WorldToScreenPoint(label.transform.position);
+            Assert.AreEqual(CarouselMenu.SignedStep(CarouselMenu.CreateName), CarouselMenu.SignedStep(screen, view, label));
+        }
+        finally
+        {
+            Object.DestroyImmediate(label);
+            Object.DestroyImmediate(viewObject);
+        }
     }
 
     [Test]

@@ -209,11 +209,11 @@ A cena Menu é a primeira do build. Ela não tem jogador local, então o gaze n�
 | Objeto | Rótulo | Passo |
 |--------|--------|-------|
 | `Create` | Criar Sala | +90° |
-| `CreateBack` | Voltar | −90° |
+| `CreateBack` | Voltar | −90° horário, direita para a esquerda |
 | `Enter` | Buscar Sala | −90° |
-| `EnterBack` | Voltar | +90° |
+| `EnterBack` | Voltar | +90° horário, mesmo sentido de Create |
 
-O acerto usa os limites visíveis do renderer, com **48 px** de folga, e escolhe o rótulo cujo centro na tela está mais perto do toque. Cantos atrás da câmera são ignorados. Esses rótulos não chamam `StartHost` nem `StartClient`. O toque em `SolarSystemThumb` chama `NetworkManager.StartHost()`, a mesma ação do botão Host (Server + Client) do HUD, e só enquanto não há sessão ativa. O anfitrião anuncia a sala na rede local. `RoomList` escuta essas salas e cria um TextMeshPro por sala, com endereço e porta. O toque num item chama `StartClient` com o endereço e a porta dessa sala, a mesma ação do botão Client do HUD.
+O acerto usa os limites visíveis do renderer, com **48 px** de folga, e escolhe o rótulo cujo centro na tela está mais perto do toque. Só entra o rótulo virado para a câmera. Cantos atrás da câmera são ignorados. Esses rótulos não chamam `StartHost` nem `StartClient`. O toque em `SolarSystemThumb` chama `NetworkManager.StartHost()`, a mesma ação do botão Host (Server + Client) do HUD, e só enquanto não há sessão ativa. O anfitrião anuncia a sala na rede local. `RoomList` escuta essas salas e cria um TextMeshPro por sala, com endereço e porta. O toque num item chama `StartClient` com o endereço e a porta dessa sala, a mesma ação do botão Client do HUD.
 
 O fundo é `eduverso_logo_bg_menu.png` no shader `Custom/MenuBackdrop`. `MenuBackdrop` cobre a câmera ortográfica em 16:9. O objeto `Logo` é uma Image em canvas World Space com `eduverso_logo.png`. Na face de criar, `SolarSystemThumb` é outra Image, com `solar_system_thumb`. Os TextMeshPro do menu usam o atlas `Montserrat-Bold SDF`. O material das letras e o da miniatura `SolarSystemThumb` usam Cull Back (`_CullMode` 2), então as costas ficam ocultas.
 

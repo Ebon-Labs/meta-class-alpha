@@ -99,7 +99,10 @@ public class CarouselMenu : MonoBehaviour
 
     static void Consider(Vector2 screen, Camera view, GameObject target, ref float chosen, ref float nearest)
     {
-        if (target == null || !TryScreenBounds(target, view, out Vector2 min, out Vector2 max, out Vector2 center))
+        if (target == null || view == null || !SolarSystemThumbHost.FacesCamera(target.transform.forward, view.transform.forward))
+            return;
+
+        if (!TryScreenBounds(target, view, out Vector2 min, out Vector2 max, out Vector2 center))
             return;
 
         Vector2 padding = new Vector2(48f, 48f);
@@ -146,9 +149,9 @@ public class CarouselMenu : MonoBehaviour
         Vector3 e = bounds.extents;
         int i = 0;
         for (int x = -1; x <= 1; x += 2)
-        for (int y = -1; y <= 1; y += 2)
-        for (int z = -1; z <= 1; z += 2)
-            corners[i++] = c + Vector3.Scale(e, new Vector3(x, y, z));
+            for (int y = -1; y <= 1; y += 2)
+                for (int z = -1; z <= 1; z += 2)
+                    corners[i++] = c + Vector3.Scale(e, new Vector3(x, y, z));
 
         return ScreenBounds(view, corners, out min, out max, out center);
     }
@@ -200,7 +203,7 @@ public class CarouselMenu : MonoBehaviour
     void Begin(float signedDegrees)
     {
         rotationFrom = transform.localRotation;
-        rotationTo = rotationFrom * Quaternion.AngleAxis(signedDegrees, Vector3.up);
+        rotationTo = signedDegrees > 0f ? CounterClockwise(rotationFrom) : Clockwise(rotationFrom);
         elapsed = 0f;
         turning = true;
     }
