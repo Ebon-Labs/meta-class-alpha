@@ -6,6 +6,13 @@ using UnityEngine;
 public class RoomListTests
 {
     [Test]
+    public void Fresh_KeepsARoomThatAnsweredInsideTheTimeout()
+    {
+        Assert.IsTrue(RoomList.Fresh(10f, 16f, RoomList.RoomTimeout));
+        Assert.IsFalse(RoomList.Fresh(10f, 18f, RoomList.RoomTimeout));
+    }
+
+    [Test]
     public void Label_UsesTheRoomHostAndPort()
     {
         Assert.AreEqual("192.168.0.8:7777", RoomList.Label(new Uri("tcp://192.168.0.8:7777")));

@@ -9,12 +9,15 @@ using UnityEngine;
 public class RoomList : MonoBehaviour
 {
     public const float HitPadding = 48f;
+    public const float RoomTimeout = 7f;
     public const string EmptyLabel = "...";
     public const string ItemName = "RoomItem";
 
     public static RoomList Instance { get; private set; }
 
     readonly Dictionary<long, ServerResponse> rooms = new Dictionary<long, ServerResponse>();
+    readonly Dictionary<long, float> seenAt = new Dictionary<long, float>();
+    readonly List<long> expired = new List<long>();
     readonly List<ServerResponse> shown = new List<ServerResponse>();
     TextMeshPro template;
     NetworkDiscovery discovery;
@@ -59,6 +62,11 @@ public class RoomList : MonoBehaviour
         return chosen;
     }
 
+    public static bool Fresh(float seenAt, float now, float timeout)
+    {
+        return now - seenAt <= timeout;
+    }
+
     public static bool JoinPressed(Vector2 screen, Camera view)
     {
         return Instance != null && Instance.TryJoin(screen, view);
@@ -73,8 +81,13 @@ public class RoomList : MonoBehaviour
             return;
 
         discovery.OnServerFound.AddListener(Remember);
-        if (!NetworkServer.active && !NetworkClient.active && NetworkDiscovery.SupportedOnThisPlatform)
-            discovery.StartDiscovery();
+        LanRoomBeacon.Ensure(discovery);
+    }
+
+    void Update()
+    {
+        if (Prune(Time.unscaledTime))
+            Rebuild();
     }
 
     void OnDisable()
@@ -88,11 +101,32 @@ public class RoomList : MonoBehaviour
 
     void Remember(ServerResponse response)
     {
-        if (rooms.TryGetValue(response.serverId, out ServerResponse existing) && existing.uri == response.uri)
-            return;
-
+        bool changed = !rooms.TryGetValue(response.serverId, out ServerResponse existing) || existing.uri != response.uri;
         rooms[response.serverId] = response;
-        Rebuild();
+        seenAt[response.serverId] = Time.unscaledTime;
+        if (changed)
+            Rebuild();
+    }
+
+    bool Prune(float now)
+    {
+        expired.Clear();
+        foreach (KeyValuePair<long, float> pair in seenAt)
+        {
+            if (!Fresh(pair.Value, now, RoomTimeout))
+                expired.Add(pair.Key);
+        }
+
+        if (expired.Count == 0)
+            return false;
+
+        for (int i = 0; i < expired.Count; i++)
+        {
+            rooms.Remove(expired[i]);
+            seenAt.Remove(expired[i]);
+        }
+
+        return true;
     }
 
     public bool TryJoin(Vector2 screen, Camera view)
