@@ -61,9 +61,9 @@ public class OrbitControlButton : MonoBehaviour
     {
         SolarSystemMotionController motion = ResolveMotion();
 
-        // Icon matches the current pace: common at the default, increased after the multiplier.
+        // Icon is the opposite of the current pace: fast shows the common icon.
         bool increased = motion != null && motion.IsIncreasedTimeScale;
-        Material icon = ControlButtonAppearance.Select(ShowsIncreasedIcon(increased), commonMaterial, increasedMaterial);
+        Material icon = ControlButtonAppearance.Select(ShowsIncreasedIcon(increased), increasedMaterial, commonMaterial);
         ControlButtonAppearance.Apply(appearance, GetComponent<Renderer>(), icon, createInstances);
     }
 

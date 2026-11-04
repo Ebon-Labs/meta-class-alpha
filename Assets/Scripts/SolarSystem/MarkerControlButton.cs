@@ -40,9 +40,9 @@ public class MarkerControlButton : MonoBehaviour
     {
         SolarSystemMotionController motion = ResolveMotion();
 
-        // Icon matches whether interaction orbs are visible.
+        // Icon is the opposite of the orbs: visible markers show the hidden icon.
         bool shown = ShowsVisibleIcon(motion == null, motion != null && motion.ShowInteractionOrbs);
-        Material icon = ControlButtonAppearance.Select(!shown, shownMaterial, hiddenMaterial);
+        Material icon = ControlButtonAppearance.Select(shown, shownMaterial, hiddenMaterial);
         ControlButtonAppearance.Apply(appearance, GetComponent<Renderer>(), icon, createInstances);
     }
 

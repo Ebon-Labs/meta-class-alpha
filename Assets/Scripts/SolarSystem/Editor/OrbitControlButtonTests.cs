@@ -4,10 +4,11 @@ using UnityEngine;
 public class OrbitControlButtonTests
 {
     [Test]
-    public void IncreasedPace_SelectsTheFastIcon()
+    public void IncreasedPace_ShowsTheCommonIcon()
     {
         Assert.IsTrue(OrbitControlButton.ShowsIncreasedIcon(true));
-        Assert.AreEqual("fast", ControlButtonAppearance.Select(OrbitControlButton.ShowsIncreasedIcon(true), "common", "fast"));
+        Assert.AreEqual("common", ControlButtonAppearance.Select(OrbitControlButton.ShowsIncreasedIcon(true), "fast", "common"));
+        Assert.AreEqual("fast", ControlButtonAppearance.Select(OrbitControlButton.ShowsIncreasedIcon(false), "fast", "common"));
     }
 
     [Test]
