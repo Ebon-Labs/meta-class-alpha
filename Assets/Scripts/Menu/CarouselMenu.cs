@@ -58,7 +58,10 @@ public class CarouselMenu : MonoBehaviour
             return;
 
         Camera view = Camera.main;
-        if (SolarSystemThumbHost.Press(screen, view) || RoomList.JoinPressed(screen, view))
+        if (RoomList.JoinPressed(screen, view))
+            return;
+
+        if (SolarSystemThumbHost.Press(screen, view))
             return;
 
         Press(screen);

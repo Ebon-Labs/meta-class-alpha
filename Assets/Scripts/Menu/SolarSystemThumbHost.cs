@@ -34,7 +34,7 @@ public class SolarSystemThumbHost : MonoBehaviour
 
     public static bool Hits(GameObject target, Vector2 screen, Camera view)
     {
-        if (target == null || view == null)
+        if (target == null || view == null || !FacesCamera(target.transform.forward, view.transform.forward))
             return false;
 
         RectTransform rect = target.GetComponent<RectTransform>();

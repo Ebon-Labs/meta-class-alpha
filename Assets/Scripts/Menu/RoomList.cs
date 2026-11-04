@@ -67,6 +67,11 @@ public class RoomList : MonoBehaviour
         return now - seenAt <= timeout;
     }
 
+    public static bool CanJoinAsGuest(bool serverActive, bool clientActive)
+    {
+        return !serverActive && !clientActive;
+    }
+
     public static bool JoinPressed(Vector2 screen, Camera view)
     {
         return Instance != null && Instance.TryJoin(screen, view);
@@ -160,7 +165,10 @@ public class RoomList : MonoBehaviour
     public void Join(ServerResponse response)
     {
         NetworkManager manager = NetworkManager.singleton;
-        if (manager == null || response.uri == null || NetworkClient.active)
+        if (manager == null || response.uri == null)
+            return;
+
+        if (!CanJoinAsGuest(NetworkServer.active, NetworkClient.active))
             return;
 
         if (discovery != null)

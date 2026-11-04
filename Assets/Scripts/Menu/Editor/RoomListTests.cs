@@ -6,6 +6,15 @@ using UnityEngine;
 public class RoomListTests
 {
     [Test]
+    public void CanJoinAsGuest_StaysClientOnly()
+    {
+        Assert.IsTrue(RoomList.CanJoinAsGuest(serverActive: false, clientActive: false));
+        Assert.IsFalse(RoomList.CanJoinAsGuest(serverActive: true, clientActive: false));
+        Assert.IsFalse(RoomList.CanJoinAsGuest(serverActive: true, clientActive: true));
+        Assert.IsFalse(RoomList.CanJoinAsGuest(serverActive: false, clientActive: true));
+    }
+
+    [Test]
     public void Fresh_KeepsARoomThatAnsweredInsideTheTimeout()
     {
         Assert.IsTrue(RoomList.Fresh(10f, 16f, RoomList.RoomTimeout));
