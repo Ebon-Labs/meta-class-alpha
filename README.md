@@ -88,6 +88,10 @@ meta-class-alpha/
 | `MenuBackdrop` | Cover-fits the menu background to the orthographic camera |
 | `ClassController` | Turns the classroom 45° around `HostArea` in 3 s and places players |
 | `RotateClassButton` | Gaze click that starts that turn |
+| `SolarSystemThumbHost` | A touch on the thumbnail starts the room, same as the HUD Host button |
+| `RoomList` | Lists open rooms on the local network; a touch joins as client only |
+| `LanRoomBeacon` | Advertises while a server is running and searches while the menu is idle |
+| `LogoBounce` | Slight logo motion while the menu scene is active |
 
 ### Networking (Mirror)
 
@@ -199,9 +203,10 @@ Summary: switch platform to Android, disable App Bundle if you want an APK, then
 
 ### 6. Local network multiplayer
 
-1. Note the IP of the machine hosting the server
-2. On the client, set the address on `NetworkManager` (or via UI if exposed)
-3. Ensure port **7777** is open in the firewall
+1. Both devices stay on the same LAN, with the Menu scene open on the search face
+2. Whoever starts the room (thumbnail or HUD Host) advertises it. The other device's list shows `address:port` within about 3 s
+3. A touch on that item joins as client. The host does not see its own room, and an item disappears after about 7 s without a fresh advertisement
+4. Port **7777** must be open in the firewall. Two processes on the same machine may not see each other, because the advertisement is not looped back to the sender
 
 ## Prefab structure
 
@@ -241,6 +246,7 @@ Current extensions: C#, Unity Tools, Unity Debug, DocComment.
 ## Additional documentation
 
 - [docs/arquitetura.md](docs/arquitetura.md) — architecture: generic features, the Menu scene, and how The Room applies them (PT)
+- [docs/codigo-limpo.md](docs/codigo-limpo.md) — agent reference for architecture, Clean Code, SOLID, and tests (PT)
 - [docs/seguranca.md](docs/seguranca.md) — network, voice, and Android manifest risks, with a mitigation for each (PT)
 - [docs/TDD-sala-observacao-controle.md](docs/TDD-sala-observacao-controle.md) — TDD for the observation and control room (descriptive panel done; control room and return portal still to do, PT)
 - [BUILD_ANDROID.md](BUILD_ANDROID.md) — build and install APK ([PT](BUILD_ANDROID_pt.md))

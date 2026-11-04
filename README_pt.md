@@ -88,6 +88,10 @@ meta-class-alpha/
 | `MenuBackdrop` | Ajusta o fundo do menu à câmera ortográfica |
 | `ClassController` | Gira a sala 45° em torno da `HostArea` em 3 s e posiciona os jogadores |
 | `RotateClassButton` | Clique de olhar que inicia essa rotação |
+| `SolarSystemThumbHost` | Toque na miniatura cria a sala, como o Host do HUD |
+| `RoomList` | Lista salas abertas na rede local; o toque entra só como cliente |
+| `LanRoomBeacon` | Anuncia a sala enquanto há servidor e busca salas enquanto o menu está ocioso |
+| `LogoBounce` | Oscilação leve da logo enquanto o menu está ativo |
 
 ### Rede (Mirror)
 
@@ -199,9 +203,10 @@ Resumo: troque a plataforma para Android, desative App Bundle se quiser APK, e f
 
 ### 6. Multiplayer em rede local
 
-1. Anote o IP da máquina que hospeda o servidor
-2. No cliente, configure o endereço no `NetworkManager` (ou via UI, se exposta)
-3. Garanta que a porta **7777** esteja liberada no firewall
+1. Os dois aparelhos ficam na mesma rede local, com a cena Menu aberta na face Buscar Sala
+2. Quem cria a sala (miniatura ou Host do HUD) anuncia em broadcast. A lista do outro aparelho mostra `endereço:porta` em até cerca de 3 s
+3. O toque no item entra como cliente nessa sala. O anfitrião não vê a própria sala, e um item some depois de cerca de 7 s sem anúncio novo
+4. A porta **7777** precisa estar liberada no firewall. Dois processos na mesma máquina podem não se ver, porque o anúncio não volta para o remetente
 
 ## Estrutura de prefabs
 
@@ -241,6 +246,7 @@ Extensões atuais: C#, Unity Tools, Unity Debug, DocComment.
 ## Documentação adicional
 
 - [docs/arquitetura.md](docs/arquitetura.md) — arquitetura: funcionalidades genéricas, a cena Menu e a aplicação em The Room
+- [docs/codigo-limpo.md](docs/codigo-limpo.md) — consulta para agentes: arquitetura, Clean Code, SOLID e testes
 - [docs/seguranca.md](docs/seguranca.md) — riscos de rede, voz e manifesto Android, com a mitigação de cada um
 - [docs/TDD-sala-observacao-controle.md](docs/TDD-sala-observacao-controle.md) — TDD da sala de observação e controle (painel descritivo feito; sala e portal de retorno a fazer)
 - [BUILD_ANDROID_pt.md](BUILD_ANDROID_pt.md) — gerar e instalar APK ([EN](BUILD_ANDROID.md))

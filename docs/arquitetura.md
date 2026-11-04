@@ -3,7 +3,8 @@
 **Projeto:** meta-class-alpha  
 **Cenas de build:** `Assets/Scenes/Menu.unity` (primeira), depois `Assets/Scenes/TheRoom.unity`  
 **Escopo:** funcionalidades implementadas e a forma como o menu e a cena The Room as compõem  
-**Fora de escopo:** sala de controle e portal de retorno descritos em [TDD-sala-observacao-controle.md](TDD-sala-observacao-controle.md), que ainda não estão implementados. O painel descritivo desse TDD está feito (`InfoArea` e `SceneInfoPanel`, seções 2.13 e 3).
+**Fora de escopo:** sala de controle e portal de retorno descritos em [TDD-sala-observacao-controle.md](TDD-sala-observacao-controle.md), que ainda não estão implementados. O painel descritivo desse TDD está feito (`InfoArea` e `SceneInfoPanel`, seções 2.13 e 3).  
+**Código novo:** [codigo-limpo.md](codigo-limpo.md) — arquitetura, Clean Code, SOLID e testes.
 
 Este documento separa duas camadas. A primeira descreve capacidades genéricas: scripts e contratos que não conhecem a sala, os planetas nem o enredo da experiência. A segunda descreve como The Room instancia essas capacidades, qual é a hierarquia da cena e como os objetos se relacionam em runtime.
 
@@ -14,6 +15,8 @@ Este documento separa duas camadas. A primeira descreve capacidades genéricas: 
 O projeto é uma experiência de realidade virtual para Google Cardboard, com presença compartilhada via Mirror. A interação do jogador é o olhar: um raycast sai da câmera, um tempo de permanência confirma a ação e o resultado depende da tag do objeto atingido.
 
 A simulação do mundo (órbita, rotação, rótulos, luz) roda em cada cliente a partir dos mesmos parâmetros. Só a presença do jogador e a voz atravessam a rede. Isso mantém os sistemas de cena independentes do transporte e limita o que precisa ser autoritativo.
+
+O projeto também pode ser uma plataforma aberta para o ensino de computação gráfica, modelagem 3D e programação, por exemplo um curso de Unity. Um dos objetivos é que jovens iniciantes colaborem com novas salas usando o projeto como framework e como caso de uso. Assim aprendem enquanto contribuem com um jogo real, já em produção e disponível para a comunidade.
 
 ```mermaid
 flowchart LR
@@ -123,7 +126,7 @@ No Android, o script pede permissão de microfone antes de gravar. O `AudioListe
 
 ### 2.8 Simulação orbital
 
-O movimento celeste está em `Assets/Scripts/PlanetaryMotion/` e não depende de rede.
+O movimento celeste está em `Assets/Scripts/SolarSystem/` e não depende de rede.
 
 | Tipo | Responsabilidade |
 |------|------------------|
@@ -145,6 +148,8 @@ Dois eixos de movimento ficam em objetos diferentes de propósito. Órbita e rot
 A escala de distância é a da órbita da Terra em unidades de cena. O catálogo fixa o máximo em **300**. Os outros planetas mantêm a proporção em unidades astronômicas (`semiMajorAxisAu * earthOrbitSceneUnits`). O `timeScale` padrão **4320** comprime um dia sideral da Terra para cerca de 20 segundos reais.
 
 `useSolarDistanceScale` começa ligado: o wrapper acompanha o `distanceScale` do controlador. Uma lua desliga o flag. O raio gravado em volta do planeta permanece, em vez de ser reescrito como se fosse um semi-eixo em unidades astronômicas. O `orbitCenter` é qualquer transform. Nos planetas é o Sol; numa lua é o centro do planeta. `SolarSystemMotionController` só chama `SetOrbitDistanceScale` quando a órbita está ligada e o flag também.
+
+O centro da malha não coincide com o pivô do wrapper. `PlanetOrbitMotion` mede esse deslocamento no renderer do filho que só gira e coloca o wrapper em `PivotForVisualCenter`, para o centro visível permanecer sobre o círculo. Com `ensureOrbitClearsSun` ligado, o raio mínimo é `(raio do Sol + raio do corpo) × 1,35`. O raio do Sol vem do `SphereCollider` vezes a maior escala; sem collider, dos limites do renderer. A Lua deixa esse flag desligado.
 
 `SolarSystemMotionController` observa os próprios campos e só reaplica o que mudou: `timeScale`, `distanceScale`, `showInteractionOrbs` e `showPlanetLabels`. Orbes são objetos filhos cujo nome começa com `InteractionOrb`. Rótulos são componentes `PlanetLabel`. A ordem de execução é `-100`, antes do movimento (`1000`) e dos rótulos (`1100`).
 
@@ -208,14 +213,29 @@ A cena Menu é a primeira do build. Ela não tem jogador local, então o gaze n�
 
 | Objeto | Rótulo | Passo |
 |--------|--------|-------|
-| `Create` | Criar Sala | +90° |
-| `CreateBack` | Voltar | −90° horário, direita para a esquerda |
+| `Create` | Criar Sala | +90° horário |
+| `CreateBack` | Voltar | −90° |
 | `Enter` | Buscar Sala | −90° |
 | `EnterBack` | Voltar | +90° horário, mesmo sentido de Create |
 
-O acerto usa os limites visíveis do renderer, com **48 px** de folga, e escolhe o rótulo cujo centro na tela está mais perto do toque. Só entra o rótulo virado para a câmera. Cantos atrás da câmera são ignorados. Esses rótulos não chamam `StartHost` nem `StartClient`. O toque em `SolarSystemThumb` chama `NetworkManager.StartHost()`, a mesma ação do botão Host (Server + Client) do HUD, e só enquanto não há sessão ativa. O anfitrião anuncia a sala na rede local. `RoomList` escuta essas salas e cria um TextMeshPro por sala, com endereço e porta. O toque num item chama `StartClient` com o endereço e a porta dessa sala, a mesma ação do botão Client do HUD.
+O acerto usa os limites visíveis do renderer, com **48 px** de folga, e escolhe o rótulo cujo centro na tela está mais perto do toque. Só entra o rótulo virado para a câmera. Cantos atrás da câmera são ignorados. Esses rótulos não chamam `StartHost` nem `StartClient`. O toque em `SolarSystemThumb` chama `NetworkManager.StartHost()`, a mesma ação do botão Host (Server + Client) do HUD, e só enquanto não há sessão ativa. A miniatura também precisa estar virada para a câmera, para não criar sala a partir da face de busca. O clique numa sala da lista é testado antes da miniatura.
 
-O fundo é `eduverso_logo_bg_menu.png` no shader `Custom/MenuBackdrop`. `MenuBackdrop` cobre a câmera ortográfica em 16:9. O objeto `Logo` é uma Image em canvas World Space com `eduverso_logo.png`. Na face de criar, `SolarSystemThumb` é outra Image, com `solar_system_thumb`. Os TextMeshPro do menu usam o atlas `Montserrat-Bold SDF`. O material das letras e o da miniatura `SolarSystemThumb` usam Cull Back (`_CullMode` 2), então as costas ficam ocultas.
+`LanRoomBeacon` nasce em runtime no `NetworkDiscovery`, quando `RoomList` liga. Servidor ativo anuncia a sala; cliente que não é servidor para a busca; sem sessão, a busca começa. O anúncio é UDP em broadcast, porta **47777**, a cada **3 s**. `RoomList` guarda cada sala pelo `serverId` e apaga as que ficam mais de **7 s** sem anúncio novo. Cada item é um TextMeshPro com endereço e porta. O toque entra só como cliente (`StartClient` com o URI da sala) e não cria outra sala. O anfitrião não lista a própria sala.
+
+O fundo é `eduverso_logo_bg_menu.png` no shader `Custom/MenuBackdrop`. `MenuBackdrop` cobre a câmera ortográfica em 16:9. O objeto `Logo` é uma Image em canvas World Space com `eduverso_logo.png` e oscila na vertical enquanto a cena está ativa (`LogoBounce`, amplitude **0,35**, período **1,6 s**). Na face de criar, `SolarSystemThumb` é outra Image, com `solar_system_thumb`. Os TextMeshPro do menu usam o atlas `Montserrat-Bold SDF`. O material das letras e o da miniatura `SolarSystemThumb` usam Cull Back (`_CullMode` 2), então as costas ficam ocultas.
+
+### 2.16 Botões da sala
+
+O clique continua sendo o de olhar. O ícone de marcadores, voz, ritmo da órbita e distância mostra o estado oposto ao atual. O do chão mostra a ação seguinte: chão oculto exibe revelar; chão visível exibe ocultar.
+
+| Botão | Clique | Ícone |
+|-------|--------|-------|
+| `MarkerControlButton` | Alterna os orbes de interação | Orbes visíveis mostram o ícone de ocultos |
+| `MuteControlButton` | Alterna o silêncio dos convidados. O anfitrião não entra nesse silêncio | Convidados silenciados mostram o ícone de voz |
+| `OrbitControlButton` | Alterna o `timeScale` | Ritmo acelerado mostra o ícone do ritmo comum. Na distância próxima o botão trava, o collider desliga e a cor cai para cinza 0,55 |
+| `DistanceControlButton` | Alterna a escala de distância | Escala próxima mostra o ícone da escala comum |
+| `GroundControlButton` | Alterna a ocultação das áreas de chão | Chão oculto mostra revelar |
+| `ScreenControlButton` | `Play`, `Pause` ou `Stop` no `MainScreen` pai | Sem troca de ícone |
 
 ---
 
@@ -309,7 +329,8 @@ Player                        tag Player
 | HUD | Canvas do Player, à frente da câmera em World Space |
 | Olhar no Editor | `CameraEditorController` no Player, sensibilidade cerca de 10 |
 | Voz | `VoiceChatController` e `AudioSource` no Player; os outros ouvem na posição do avatar |
-| Órbita | `PlanetOrbitMotion` em cada `*Wrapper`, centro no Sol, `SolarSystemMotionController` na raiz do FBX. A Lua orbita `EarthCenter` e não segue o `distanceScale` solar |
+| Órbita | `PlanetOrbitMotion` em cada `*Wrapper`, centro no Sol, `SolarSystemMotionController` na raiz do FBX. O wrapper se desloca para o centro da malha ficar no círculo. A folga contra o Sol vale para os planetas; a Lua orbita `EarthCenter`, não segue o `distanceScale` solar e não aplica essa folga |
+| Botões da sala | Marcadores, voz, ritmo, distância, chão e tela. O ícone dos quatro primeiros é o oposto do estado atual |
 | Rotação | `PlanetOrbitMotion` na malha de cada planeta e na Lua, com o perfil científico correspondente. Na Lua o perfil não é reaplicado no `Awake` |
 | Rótulos | Uma instância de `PlanetLabel.prefab` por wrapper de planeta e mais uma no `MoonWrapper`, com `overrideText` igual ao nome do corpo |
 | Painel descritivo | `SceneInfo` no Canvas do Player. Uma `InfoArea` em cada wrapper de planeta, no `MoonWrapper` e no Sol |
@@ -341,7 +362,7 @@ Vênus e Urano usam dia sideral negativo: a rotação do corpo é retrógrada. O
 - `Chair` — instância de `Cylinder Portal`. O prefab nasce com tag `Teleportable` e `ObjectBasicController`, então o olhar sustentado move o jogador para a borda do cilindro.
 - `Sphere Portal` — o mesmo contrato, em forma de esfera, solto na sala.
 
-No sistema solar o mesmo prefab `Sphere Portal` é reutilizado com o nome `Portal`. Há um portal filho de cada malha de planeta, um na Lua e mais um no `Sun Sphere`. Como o pai tem tag `Planet`, o HUD mostra `Planeta: <nome>` enquanto o olhar está no portal do corpo. No portal da Lua o pai se chama `Moon`, então a mensagem é `Planeta: Moon`. O teleporte coloca o jogador na superfície do volume do portal, não no centro da malha do planeta. Em seguida o ponteiro ignora esse portal até o olhar sair, para o clique não se repetir no mesmo alvo.
+No sistema solar o mesmo prefab `Sphere Portal` é reutilizado com o nome `Portal`. Há um portal filho de cada malha de planeta, um na Lua e mais um no `Sun Sphere`. Como o pai tem tag `Planet`, o HUD mostra `Planeta: <nome>` enquanto o olhar está no portal do corpo. Sol e Lua ficam fora desse prefixo: o texto é só "Sol" ou "Lua". O teleporte coloca o jogador na superfície do volume do portal, não no centro da malha do planeta. Em seguida o ponteiro ignora esse portal até o olhar sair, para o clique não se repetir no mesmo alvo.
 
 `InteractionOrb` é visual. O prefab não tem collider de jogo nem tag de interação; o travamento de pose no wrapper existe para o marcador continuar no lugar autoral enquanto o wrapper orbita. `SolarSystemMotionController` liga e desliga todos eles juntos.
 
@@ -412,13 +433,13 @@ Raízes usadas pelo fluxo:
 ```
 Menu
 ├── Main Camera             ortográfica, tamanho 5
-│   └── CarouselMenu
-│       ├── MainMenu        Menu, Criar Sala, Buscar Sala
-│       ├── CreateMenu      Criar, miniatura do sistema solar, Voltar
-│       └── EnterMenu       Buscar Sala, lista, Voltar
+├── CarouselMenu            raiz; pai das três faces
+│   ├── MainMenu            Menu, Criar Sala, Buscar Sala
+│   ├── CreateMenu          miniatura do sistema solar, Voltar
+│   └── EnterMenu           lista de salas, Voltar
 ├── MenuBackground          eduverso_logo_bg_menu.png, MenuBackdrop
-├── Logo                    Image World Space, eduverso_logo.png
-├── NetworkManager          HUD de canto, offline Menu, online TheRoom
+├── Logo                    Image World Space, eduverso_logo.png, LogoBounce
+├── NetworkManager          HUD de canto, NetworkDiscovery, offline Menu, online TheRoom
 └── EventSystem
 ```
 
@@ -431,22 +452,33 @@ Assets/Scripts/
 ├── Cardboard/InitCardboard.cs
 ├── Menu/
 │   ├── CarouselMenu.cs              giro de 90° por toque na tela
-│   └── MenuTextButton.cs
+│   ├── SolarSystemThumbHost.cs      toque na miniatura cria a sala
+│   ├── RoomList.cs                  salas abertas e entrada como cliente
+│   ├── LanRoomBeacon.cs             anúncio ou busca conforme a sessão
+│   └── LogoBounce.cs
 ├── Classroom/
 │   ├── ClassController.cs           giro de 45° e áreas
 │   ├── RotateClassButton.cs
 │   ├── GoHomeOrb.cs
+│   ├── MuteControlButton.cs
+│   ├── GroundControlButton.cs
+│   ├── ScreenControlButton.cs
+│   ├── GuestMutePolicy.cs
 │   ├── MenuBackdrop.cs
 │   └── MainScreen.cs
 ├── Interaction/
 │   ├── MoveToEdge.cs                viagem ao astro, 7 s, Y = 8
 │   ├── PassengerHold.cs
-│   └── EdgeApproach.cs              SmoothStep compartilhado
+│   ├── EdgeApproach.cs              SmoothStep compartilhado
+│   └── ControlButtonAppearance.cs
 ├── Player/
 │   ├── Gaze/CameraPointerController.cs
 │   ├── Hud/ScreenText.cs            frases em pt-BR
 │   └── Voice/VoiceChatController.cs
-└── SolarSystem/                     órbita, rótulos, luz, nuvens
+└── SolarSystem/                     órbita pelo centro da malha, rótulos, luz, nuvens
+    ├── MarkerControlButton.cs
+    ├── DistanceControlButton.cs
+    └── OrbitControlButton.cs
 ```
 
 Fontes do menu: `Assets/Fonts/Montserrat-Bold.ttf` e o atlas `Assets/Fonts/Montserrat-Bold SDF.asset`. Imagens: `Assets/Materials/eduverso_logo.png`, `eduverso_logo_bg_menu.png` e `solar_system_thumb.jpg`.
