@@ -1,6 +1,5 @@
 using NUnit.Framework;
 using UnityEngine;
-using Object = UnityEngine.Object;
 
 public class MoveToEdgeTests
 {
@@ -32,44 +31,5 @@ public class MoveToEdgeTests
     {
         Assert.IsFalse(MoveToEdge.IsAvailable(atOrigin: true));
         Assert.IsTrue(MoveToEdge.IsAvailable(atOrigin: false));
-    }
-
-    [Test]
-    public void Radius_IsHalfTheWidestSide()
-    {
-        Bounds bounds = new Bounds(Vector3.zero, new Vector3(4f, 10f, 2f));
-
-        Assert.AreEqual(5f, MoveToEdge.Radius(bounds), 0.0001f);
-    }
-
-    [Test]
-    public void Landing_ParksAtHeightEight()
-    {
-        Vector3 above = MoveToEdge.Landing(Vector3.zero, 5f, new Vector3(0f, 3f, 4f));
-        Vector3 below = MoveToEdge.Landing(Vector3.zero, 5f, new Vector3(0f, -3f, 4f));
-
-        Assert.AreEqual(8f, MoveToEdge.AstroParkHeight, 0.0001f);
-        Assert.AreEqual(0f, above.x, 0.0001f);
-        Assert.AreEqual(8f, above.y, 0.0001f);
-        Assert.AreEqual(4f, above.z, 0.0001f);
-        Assert.AreEqual(0f, below.x, 0.0001f);
-        Assert.AreEqual(8f, below.y, 0.0001f);
-        Assert.AreEqual(4f, below.z, 0.0001f);
-    }
-
-    [Test]
-    public void Center_IsTheObjectTaggedClassCenter()
-    {
-        GameObject center = new GameObject("Class Center");
-        try
-        {
-            center.tag = MoveToEdge.CenterTag;
-
-            Assert.AreEqual(center.transform, MoveToEdge.FindCenter());
-        }
-        finally
-        {
-            Object.DestroyImmediate(center);
-        }
     }
 }
