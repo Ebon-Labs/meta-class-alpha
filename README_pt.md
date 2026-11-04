@@ -93,7 +93,7 @@ meta-class-alpha/
 
 - **NetworkManager** na cena `Menu`, porta **7777**, máximo **4** conexões. Permanece com `dontDestroyOnLoad`
 - **Cena offline** `Menu`, **cena online** `TheRoom`. The Room não contém um segundo manager
-- O HUD do Mirror no canto continua criando a sala. Os rótulos Criar Sala e Buscar Sala só giram o carrossel
+- O HUD do Mirror no canto continua criando a sala. Os rótulos Criar Sala e Buscar Sala só giram o carrossel. O toque em SolarSystemThumb chama a mesma ação Host (Server + Client). RoomList mostra as salas abertas na rede local, e o toque numa delas entra como Client nessa sala
 - **Player prefab** (`Assets/Prefabs/Player.prefab`): câmera, canvas, gaze, voz e identidade de rede
 - Servidor inicia automaticamente em builds (`autoStartServerBuild`)
 - Cliente conecta manualmente (host `localhost` por padrão no Editor)

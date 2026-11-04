@@ -327,6 +327,7 @@ GameObject:
   - component: {fileID: 100025}
   - component: {fileID: 100024}
   - component: {fileID: 100023}
+  - component: {fileID: 100026}
   m_Layer: 0
   m_Name: NetworkManager
   m_TagString: Untagged
@@ -415,6 +416,27 @@ MonoBehaviour:
   playerSpawnMethod: 0
   spawnPrefabs: []
   timeInterpolationGui: 0
+--- !u!114 &100026
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 100021}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c761308e733c51245b2e8bb4201f46dc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Mirror::Mirror.Discovery.NetworkDiscovery
+  secretHandshake: 7481926354012
+  serverBroadcastListenPort: 47777
+  enableActiveDiscovery: 1
+  ActiveDiscoveryInterval: 3
+  BroadcastAddress: 
+  transport: {fileID: 100023}
+  OnServerFound:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &573607283
 GameObject:
   m_ObjectHideFlags: 0
@@ -1582,6 +1604,7 @@ GameObject:
   - component: {fileID: 1430260674}
   - component: {fileID: 1430260676}
   - component: {fileID: 1430260675}
+  - component: {fileID: 1430260677}
   m_Layer: 0
   m_Name: RoomList
   m_TagString: Untagged
@@ -1703,6 +1726,18 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_renderer: {fileID: 1430260676}
   m_maskType: 0
+--- !u!114 &1430260677
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1430260673}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b4e7c2a19d3f48a6b5e0c8d91f04dd55, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: MetaClass::RoomList
 --- !u!23 &1430260676
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -2483,6 +2518,7 @@ GameObject:
   - component: {fileID: 2100001104}
   - component: {fileID: 2100001105}
   - component: {fileID: 2100001106}
+  - component: {fileID: 2100001107}
   m_Layer: 5
   m_Name: SolarSystemThumb
   m_TagString: Untagged
@@ -2594,6 +2630,18 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &2100001107
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2100001101}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f1a8c3e74b2d49a6b5e0c8d91f04bb21, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: MetaClass::SolarSystemThumbHost
 --- !u!114 &2100001201
 MonoBehaviour:
   m_ObjectHideFlags: 0

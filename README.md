@@ -93,7 +93,7 @@ meta-class-alpha/
 
 - **NetworkManager** in the `Menu` scene, port **7777**, max **4** connections. It persists with `dontDestroyOnLoad`
 - **Offline scene** `Menu`, **online scene** `TheRoom`. The Room does not contain a second manager
-- The corner Mirror HUD still creates the room. The Portuguese labels Criar Sala and Buscar Sala only turn the carousel
+- The corner Mirror HUD still creates the room. The Portuguese labels Criar Sala and Buscar Sala only turn the carousel. A screen touch on SolarSystemThumb calls the same Host (Server + Client) action. RoomList shows open rooms on the local network, and a touch on one joins it as Client
 - **Player prefab** (`Assets/Prefabs/Player.prefab`): camera, canvas, gaze, voice, and network identity
 - Server starts automatically in builds (`autoStartServerBuild`)
 - Client connects manually (`localhost` by default in Editor)

@@ -54,8 +54,14 @@ public class CarouselMenu : MonoBehaviour
             }
         }
 
-        if (TryPress(out Vector2 screen))
-            Press(screen);
+        if (!TryPress(out Vector2 screen))
+            return;
+
+        Camera view = Camera.main;
+        if (SolarSystemThumbHost.Press(screen, view) || RoomList.JoinPressed(screen, view))
+            return;
+
+        Press(screen);
     }
 
     public void Press(Vector2 screen)
@@ -196,7 +202,7 @@ public class CarouselMenu : MonoBehaviour
         turning = true;
     }
 
-    static bool TryPress(out Vector2 screen)
+    public static bool TryPress(out Vector2 screen)
     {
         for (int i = 0; i < Input.touchCount; i++)
         {
