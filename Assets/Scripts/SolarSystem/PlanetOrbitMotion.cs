@@ -36,6 +36,8 @@ public class PlanetOrbitMotion : MonoBehaviour
     [SerializeField] float timeScale = 4320f;
 
     Vector3 _orbitOffsetFromCenter;
+    Vector3 _visualCenterOffset;
+    float _clearanceRadius;
     float _orbitAngleDegrees;
     float _spinAngleDegrees;
     Quaternion _baseLocalRotation;
@@ -188,23 +190,97 @@ public class PlanetOrbitMotion : MonoBehaviour
 
     void CacheOrbitOffsetAroundSun()
     {
-        // Keep the exact scene placement so InteractionMarkerOrb/planet local poses stay valid.
-        Vector3 toPlanet = transform.position - orbitCenter.position;
-        _orbitOffsetFromCenter = toPlanet.sqrMagnitude < 0.0001f
-            ? Vector3.right * Mathf.Max(0.01f, orbitRadius)
-            : toPlanet;
+        _visualCenterOffset = VisualCenterOffset();
+        _clearanceRadius = ensureOrbitClearsSun ? ClearanceRadius() : 0f;
+
+        Vector3 visualCenter = transform.position + _visualCenterOffset;
+        Vector3 toBody = visualCenter - orbitCenter.position;
+        float radius = PlanetOrbitCalculator.ResolveRadius(
+            orbitRadius,
+            toBody.magnitude,
+            _clearanceRadius,
+            ensureOrbitClearsSun);
+        _orbitOffsetFromCenter = PlanetOrbitCalculator.BuildOffsetFromCenter(toBody, radius);
         orbitRadius = _orbitOffsetFromCenter.magnitude;
         _orbitInitialized = true;
+        ApplyOrbitPosition();
     }
 
     void RefreshOrbitOffsetMagnitude()
     {
-        // Never re-apply sun clearance after init — that jumps the Wrapper and breaks
-        // authored InteractionMarkerOrb local placement under scaled parents.
+        float radius = PlanetOrbitCalculator.ResolveRadius(
+            orbitRadius,
+            orbitRadius,
+            _clearanceRadius,
+            ensureOrbitClearsSun);
+        orbitRadius = radius;
+
         if (_orbitOffsetFromCenter.sqrMagnitude < 0.0001f)
             _orbitOffsetFromCenter = Vector3.right * orbitRadius;
         else
             _orbitOffsetFromCenter = _orbitOffsetFromCenter.normalized * orbitRadius;
+    }
+
+    Vector3 VisualCenterOffset()
+    {
+        Renderer body = BodyRenderer();
+        if (body == null)
+            return Vector3.zero;
+
+        return body.bounds.center - transform.position;
+    }
+
+    float ClearanceRadius()
+    {
+        float centerRadius = CenterRadius(orbitCenter);
+        float bodyRadius = 0f;
+        Renderer body = BodyRenderer();
+        if (body != null)
+        {
+            bodyRadius = PlanetOrbitCalculator.RadiusFromBounds(
+                body.bounds.center,
+                body.bounds.center,
+                body.bounds.extents);
+        }
+
+        return PlanetOrbitCalculator.MinimumClearRadius(centerRadius, bodyRadius, sunClearanceMultiplier);
+    }
+
+    Renderer BodyRenderer()
+    {
+        PlanetOrbitMotion[] motions = GetComponentsInChildren<PlanetOrbitMotion>(true);
+        for (int i = 0; i < motions.Length; i++)
+        {
+            PlanetOrbitMotion motion = motions[i];
+            if (motion == null || motion == this || motion.IsOrbitEnabled)
+                continue;
+
+            Renderer renderer = motion.GetComponent<Renderer>();
+            if (renderer != null)
+                return renderer;
+        }
+
+        return GetComponent<Renderer>();
+    }
+
+    static float CenterRadius(Transform center)
+    {
+        if (center == null)
+            return 0f;
+
+        SphereCollider sphere = center.GetComponent<SphereCollider>();
+        if (sphere != null)
+        {
+            Vector3 scale = center.lossyScale;
+            float largest = Mathf.Max(Mathf.Abs(scale.x), Mathf.Max(Mathf.Abs(scale.y), Mathf.Abs(scale.z)));
+            return sphere.radius * largest;
+        }
+
+        Renderer renderer = center.GetComponent<Renderer>();
+        if (renderer == null)
+            return 0f;
+
+        return PlanetOrbitCalculator.RadiusFromBounds(center.position, renderer.bounds.center, renderer.bounds.extents);
     }
 
     void UpdateOrbit(float dt)
@@ -216,14 +292,15 @@ public class PlanetOrbitMotion : MonoBehaviour
 
     void ApplyOrbitPosition()
     {
-        Vector3 nextPosition = PlanetOrbitCalculator.EvaluatePosition(
+        Vector3 orbitPoint = PlanetOrbitCalculator.EvaluatePosition(
             orbitCenter.position,
             _orbitOffsetFromCenter,
             _orbitAngleDegrees,
             orbitAxis);
 
+        // The mesh center, not the wrapper pivot, stays on the circle.
         // Translation only — never touch rotation so RectTransform children keep locals.
-        transform.position = nextPosition;
+        transform.position = PlanetOrbitCalculator.PivotForVisualCenter(orbitPoint, _visualCenterOffset);
     }
 
     void UpdateSpin(float dt)
