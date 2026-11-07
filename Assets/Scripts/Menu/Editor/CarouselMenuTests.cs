@@ -42,6 +42,7 @@ public class CarouselMenuTests
     public void SignedStep_CreateGoesClockwiseAndCreateBackGoesBack()
     {
         Assert.AreEqual(CarouselMenu.StepDegrees, CarouselMenu.SignedStep(CarouselMenu.CreateName));
+        Assert.AreEqual(CarouselMenu.StepDegrees, CarouselMenu.SignedStep(SolarSystemThumbHost.ObjectName));
         Assert.AreEqual(-CarouselMenu.StepDegrees, CarouselMenu.SignedStep(CarouselMenu.CreateBackName));
         Assert.AreEqual(-CarouselMenu.StepDegrees, CarouselMenu.SignedStep(CarouselMenu.EnterName));
         Assert.AreEqual(CarouselMenu.SignedStep(CarouselMenu.CreateName), CarouselMenu.SignedStep(CarouselMenu.EnterBackName));

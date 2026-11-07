@@ -32,7 +32,7 @@ public class CarouselMenu : MonoBehaviour
 
     public static float SignedStep(string objectName)
     {
-        if (objectName == CreateName || objectName == EnterBackName)
+        if (objectName == CreateName || objectName == EnterBackName || objectName == SolarSystemThumbHost.ObjectName)
             return StepDegrees;
 
         if (objectName == CreateBackName || objectName == EnterName)
@@ -62,7 +62,10 @@ public class CarouselMenu : MonoBehaviour
             return;
 
         if (SolarSystemThumbHost.Press(screen, view))
+        {
+            Begin(SignedStep(SolarSystemThumbHost.ObjectName));
             return;
+        }
 
         Press(screen);
     }

@@ -87,12 +87,7 @@ public class SolarSystemThumbHost : MonoBehaviour
 
     public static bool Press(Vector2 screen, Camera view)
     {
-        GameObject target = GameObject.Find(ObjectName);
-        if (!Hits(target, screen, view))
-            return false;
-
-        StartHostSession();
-        return true;
+        return Hits(GameObject.Find(ObjectName), screen, view);
     }
 
     public static void StartHostSession()
