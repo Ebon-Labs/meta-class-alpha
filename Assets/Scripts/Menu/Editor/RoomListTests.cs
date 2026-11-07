@@ -30,6 +30,16 @@ public class RoomListTests
     }
 
     [Test]
+    public void Label_PrefersTheRoomAlias()
+    {
+        Uri uri = new Uri("tcp://192.168.0.8:7777");
+
+        Assert.AreEqual("Sala Norte", RoomList.Label("Sala Norte", uri));
+        Assert.AreEqual("192.168.0.8:7777", RoomList.Label("", uri));
+        Assert.AreEqual("192.168.0.8:7777", RoomList.Label(null, uri));
+    }
+
+    [Test]
     public void ItemPosition_StacksEachRoomDownward()
     {
         Assert.AreEqual(new Vector2(0f, 0f), RoomList.ItemPosition(0, 5f));

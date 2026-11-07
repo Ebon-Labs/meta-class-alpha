@@ -55,11 +55,16 @@ public class CarouselMenu : MonoBehaviour
             }
         }
 
+        CreateRoomButton.Refresh();
+
         if (!TryPress(out Vector2 screen))
             return;
 
         Camera view = Camera.main;
         if (RoomList.JoinPressed(screen, view))
+            return;
+
+        if (CreateRoomButton.Press(screen, view))
             return;
 
         if (SolarSystemThumbHost.Press(screen, view))

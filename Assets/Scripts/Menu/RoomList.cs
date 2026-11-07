@@ -33,6 +33,14 @@ public class RoomList : MonoBehaviour
         return uri.Host + ":" + uri.Port;
     }
 
+    public static string Label(string alias, Uri uri)
+    {
+        if (!string.IsNullOrEmpty(alias))
+            return alias;
+
+        return Label(uri);
+    }
+
     public static Vector2 ItemPosition(int index, float lineHeight)
     {
         return new Vector2(0f, -Mathf.Max(0, index) * Mathf.Max(0f, lineHeight));
@@ -106,7 +114,9 @@ public class RoomList : MonoBehaviour
 
     void Remember(ServerResponse response)
     {
-        bool changed = !rooms.TryGetValue(response.serverId, out ServerResponse existing) || existing.uri != response.uri;
+        bool changed = !rooms.TryGetValue(response.serverId, out ServerResponse existing)
+            || existing.uri != response.uri
+            || existing.alias != response.alias;
         rooms[response.serverId] = response;
         seenAt[response.serverId] = Time.unscaledTime;
         if (changed)
@@ -202,7 +212,7 @@ public class RoomList : MonoBehaviour
         item.transform.SetParent(transform, false);
 
         TextMeshPro text = item.AddComponent<TextMeshPro>();
-        text.text = Label(room.uri);
+        text.text = Label(room.alias, room.uri);
         text.raycastTarget = false;
         if (template == null)
             return;

@@ -16,6 +16,8 @@ namespace Mirror.Discovery
 
         public long ServerId { get; private set; }
 
+        public string roomAlias = "";
+
         [Tooltip("Transport to be advertised during discovery")]
         public Transport transport;
 
@@ -59,7 +61,8 @@ namespace Mirror.Discovery
                 return new ServerResponse
                 {
                     serverId = ServerId,
-                    uri = transport.ServerUri()
+                    uri = transport.ServerUri(),
+                    alias = roomAlias
                 };
             }
             catch (NotImplementedException)
