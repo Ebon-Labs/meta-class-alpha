@@ -40,6 +40,28 @@ public class PlanetOrbitCalculatorTests
     }
 
     [Test]
+    public void MinimumClearRadius_KeepsTheBodyOutsideTheSun()
+    {
+        float radius = PlanetOrbitCalculator.MinimumClearRadius(79.55f, 1.27f, 1.35f);
+        Assert.AreEqual((79.55f + 1.27f) * 1.35f, radius, 0.01f);
+    }
+
+    [Test]
+    public void PivotForVisualCenter_KeepsTheGlobeOnTheOrbit()
+    {
+        Vector3 radial = new Vector3(116.1f, 0f, 0f);
+        Vector3 meshOffset = new Vector3(0f, 0f, -88.4f);
+
+        Vector3 parked = PlanetOrbitCalculator.PivotForVisualCenter(radial, meshOffset);
+        Assert.AreEqual(116.1f, (parked + meshOffset).magnitude, 0.01f);
+
+        Vector3 turned = PlanetOrbitCalculator.EvaluatePosition(Vector3.zero, radial, 180f, Vector3.up);
+        Vector3 swung = PlanetOrbitCalculator.PivotForVisualCenter(turned, meshOffset);
+        Assert.AreEqual(116.1f, (swung + meshOffset).magnitude, 0.05f);
+        Assert.Greater((swung + meshOffset).magnitude, 80.8f);
+    }
+
+    [Test]
     public void EvaluatePosition_AtZeroAngle_KeepsTheOffset()
     {
         Vector3 position = PlanetOrbitCalculator.EvaluatePosition(

@@ -6,9 +6,11 @@ Multiplayer virtual reality experience for **Google Cardboard**, where players e
 
 ## About the game
 
-Players enter the **The Room** scene with a Cardboard headset and can:
+The build opens on the **Menu** scene. From there a host starts a room and Mirror loads **The Room**. In the headset, players can:
 
 - Look at and interact with objects in the environment
+- Turn the classroom 45° clockwise around the host area
+- Travel with the classroom toward a celestial body and return to the room
 - Teleport to the surface of celestial bodies marked as teleportable
 - Talk to other players in real time via voice chat
 - Navigate through spherical and cylindrical portals in the scene
@@ -24,7 +26,8 @@ The experience combines spatial exploration, hands-free interaction (gaze only),
 | **Gaze interaction** | `CameraPointerController` — raycast from camera, dwell click (~3 s) |
 | **Voice chat** | `VoiceChatController` — microphone capture, PCM16 streaming via Mirror (unreliable channel) |
 | **Local multiplayer testing** | [ParrelSync](https://github.com/VeriorPies/ParrelSync) — project clones in the Editor |
-| **UI** | TextMesh Pro + gaze progress slider |
+| **UI** | TextMesh Pro + gaze progress slider. The menu uses **Montserrat Bold** |
+| **Menu** | `CarouselMenu` — screen touch rotates the menu 90° in 1.5 s |
 
 ### Important tags
 
@@ -54,7 +57,8 @@ Camera (look direction)
 ```
 meta-class-alpha/
 ├── Assets/
-│   ├── Scenes/TheRoom.unity      # Main scene (only one in build)
+│   ├── Scenes/Menu.unity         # First scene in the build
+│   ├── Scenes/TheRoom.unity      # Classroom, loaded as the online scene
 │   ├── Scripts/                  # Game logic
 │   ├── Prefabs/                  # Player, portals, treasures
 │   ├── Models/                   # SolarSystem.fbx, avatar (Male_002)
@@ -80,10 +84,20 @@ meta-class-alpha/
 | `VoiceChatController` | Spatial voice capture and playback (`NetworkBehaviour`) |
 | `SunLightController` | Point light following the Sun in the solar system |
 | `UILogger` | On-screen interaction messages (TMP) |
+| `CarouselMenu` | Menu faces: Criar Sala, Buscar Sala and Voltar, by screen touch |
+| `MenuBackdrop` | Cover-fits the menu background to the orthographic camera |
+| `ClassController` | Turns the classroom 45° around `HostArea` in 3 s and places players |
+| `RotateClassButton` | Gaze click that starts that turn |
+| `SolarSystemThumbHost` | A touch on the thumbnail starts the room, same as the HUD Host button |
+| `RoomList` | Lists open rooms on the local network; a touch joins as client only |
+| `LanRoomBeacon` | Advertises while a server is running and searches while the menu is idle |
+| `LogoBounce` | Slight logo motion while the menu scene is active |
 
 ### Networking (Mirror)
 
-- **NetworkManager** in `TheRoom` scene, port **7777**, max **4** connections
+- **NetworkManager** in the `Menu` scene, port **7777**, max **4** connections. It persists with `dontDestroyOnLoad`
+- **Offline scene** `Menu`, **online scene** `TheRoom`. The Room does not contain a second manager
+- The corner Mirror HUD still creates the room. The Portuguese labels Criar Sala and Buscar Sala only turn the carousel. A screen touch on SolarSystemThumb calls the same Host (Server + Client) action. RoomList shows open rooms on the local network, and a touch on one joins it as Client
 - **Player prefab** (`Assets/Prefabs/Player.prefab`): camera, canvas, gaze, voice, and network identity
 - Server starts automatically in builds (`autoStartServerBuild`)
 - Client connects manually (`localhost` by default in Editor)
@@ -103,15 +117,23 @@ flowchart TB
         TP[Telepathy :7777]
     end
 
-    subgraph Scene["TheRoom.unity"]
-        SS[SolarSystem]
-        Portals[Portals]
-        Treasures[Treasures]
+    subgraph Menu["Menu.unity"]
+        Carousel[CarouselMenu]
+        HUD[NetworkManagerHUD]
     end
 
-    Cam -->|gaze / teleport| Scene
+    subgraph Scene["TheRoom.unity"]
+        SS[SolarSystem]
+        Class[Class]
+        Portals[Portals]
+    end
+
+    HUD -->|Host / Client| NM
+    Carousel -->|90° face turn| Menu
+    Cam -->|gaze / teleport / class turn| Scene
     Voice -->|PCM16 unreliable| NM
     NM --> TP
+    NM -->|online scene| Scene
     Cardboard --> Cam
 ```
 
@@ -138,7 +160,7 @@ Open the folder in **Unity Hub** with editor **6000.3.6f1**.
 
 ### 2. Working scene
 
-Open `Assets/Scenes/TheRoom.unity`. It is the only scene included in the build.
+Open `Assets/Scenes/Menu.unity` and press Play from there. It is the first enabled scene in the build. `TheRoom.unity` loads when a room becomes online. Play mode uses the open scene, so starting Play inside The Room skips the menu.
 
 ### 3. Test in Editor
 
@@ -181,9 +203,10 @@ Summary: switch platform to Android, disable App Bundle if you want an APK, then
 
 ### 6. Local network multiplayer
 
-1. Note the IP of the machine hosting the server
-2. On the client, set the address on `NetworkManager` (or via UI if exposed)
-3. Ensure port **7777** is open in the firewall
+1. Both devices stay on the same LAN, with the Menu scene open on the search face
+2. Whoever starts the room (thumbnail or HUD Host) advertises it. The other device's list shows `address:port` within about 3 s
+3. A touch on that item joins as client. The host does not see its own room, and an item disappears after about 7 s without a fresh advertisement
+4. Port **7777** must be open in the firewall. Two processes on the same machine may not see each other, because the advertisement is not looped back to the sender
 
 ## Prefab structure
 
@@ -222,7 +245,8 @@ Current extensions: C#, Unity Tools, Unity Debug, DocComment.
 
 ## Additional documentation
 
-- [docs/arquitetura.md](docs/arquitetura.md) — architecture: generic features and how The Room applies them (PT)
+- [docs/arquitetura.md](docs/arquitetura.md) — architecture: generic features, the Menu scene, and how The Room applies them (PT)
+- [docs/codigo-limpo.md](docs/codigo-limpo.md) — agent reference for architecture, Clean Code, SOLID, and tests (PT)
 - [docs/seguranca.md](docs/seguranca.md) — network, voice, and Android manifest risks, with a mitigation for each (PT)
 - [docs/TDD-sala-observacao-controle.md](docs/TDD-sala-observacao-controle.md) — TDD for the observation and control room (descriptive panel done; control room and return portal still to do, PT)
 - [BUILD_ANDROID.md](BUILD_ANDROID.md) — build and install APK ([PT](BUILD_ANDROID_pt.md))
@@ -235,3 +259,4 @@ Current extensions: C#, Unity Tools, Unity Debug, DocComment.
 - **Company:** EbonLabs
 - **Product:** meta-class-alpha
 - Third-party libraries: Mirror, Google Cardboard XR, ParrelSync, TextMesh Pro
+- Menu typeface: [Montserrat](https://github.com/JulietaUla/Montserrat) Bold, SIL Open Font License (`Assets/Fonts/OFL.txt`)

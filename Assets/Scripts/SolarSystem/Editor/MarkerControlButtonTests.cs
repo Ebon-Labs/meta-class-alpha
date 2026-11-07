@@ -14,7 +14,10 @@ public class MarkerControlButtonTests
         Assert.IsTrue(MarkerControlButton.ShowsVisibleIcon(motionMissing: false, orbsEnabled: true));
         Assert.IsFalse(MarkerControlButton.ShowsVisibleIcon(motionMissing: false, orbsEnabled: false));
         Assert.AreEqual(
+            "shown",
+            ControlButtonAppearance.Select(MarkerControlButton.ShowsVisibleIcon(false, false), "shown", "hidden"));
+        Assert.AreEqual(
             "hidden",
-            ControlButtonAppearance.Select(!MarkerControlButton.ShowsVisibleIcon(false, false), "shown", "hidden"));
+            ControlButtonAppearance.Select(MarkerControlButton.ShowsVisibleIcon(false, true), "shown", "hidden"));
     }
 }

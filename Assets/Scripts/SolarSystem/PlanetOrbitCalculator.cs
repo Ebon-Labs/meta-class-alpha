@@ -27,6 +27,23 @@ public static class PlanetOrbitCalculator
         return toPlanet.normalized * radius;
     }
 
+    public static float MinimumClearRadius(float centerRadius, float bodyRadius, float clearanceMultiplier)
+    {
+        float multiplier = clearanceMultiplier < 1f ? 1f : clearanceMultiplier;
+        return (Mathf.Max(0f, centerRadius) + Mathf.Max(0f, bodyRadius)) * multiplier;
+    }
+
+    public static float RadiusFromBounds(Vector3 origin, Vector3 boundsCenter, Vector3 boundsExtents)
+    {
+        float reach = Mathf.Max(boundsExtents.x, Mathf.Max(boundsExtents.y, boundsExtents.z));
+        return Vector3.Distance(origin, boundsCenter) + Mathf.Max(0f, reach);
+    }
+
+    public static Vector3 PivotForVisualCenter(Vector3 orbitPoint, Vector3 visualOffset)
+    {
+        return orbitPoint - visualOffset;
+    }
+
     public static float AdvanceAngle(float currentAngleDegrees, float degreesPerSecond, float deltaTime)
     {
         return Mathf.Repeat(currentAngleDegrees + degreesPerSecond * deltaTime, 360f);

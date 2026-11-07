@@ -40,9 +40,9 @@ public class DistanceControlButton : MonoBehaviour
     {
         SolarSystemMotionController motion = ResolveMotion();
 
-        // Icon matches the current orbit scale: near (3) or common (300).
+        // Icon is the opposite of the current scale: near shows the common icon.
         bool near = motion != null && motion.IsNearDistance;
-        Material icon = ControlButtonAppearance.Select(ShowsNearIcon(near), commonMaterial, nearMaterial);
+        Material icon = ControlButtonAppearance.Select(ShowsNearIcon(near), nearMaterial, commonMaterial);
         ControlButtonAppearance.Apply(appearance, GetComponent<Renderer>(), icon, createInstances);
     }
 

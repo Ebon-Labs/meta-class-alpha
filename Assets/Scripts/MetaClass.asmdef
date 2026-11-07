@@ -3,6 +3,7 @@
     "rootNamespace": "",
     "references": [
         "Mirror",
+        "Mirror.Components",
         "Unity.TextMeshPro",
         "UnityEngine.UI",
         "Google.XR.Cardboard"

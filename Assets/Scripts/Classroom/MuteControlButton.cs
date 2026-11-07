@@ -38,8 +38,9 @@ public class MuteControlButton : MonoBehaviour
     void ApplyIconToAppearance(bool createInstances)
     {
         ClassController classController = ResolveClassController();
+        // Icon is the opposite of the mute: silenced guests show the voice icon.
         bool guestsMuted = classController != null && classController.MuteGuests;
-        Material icon = ControlButtonAppearance.Select(ShowsMutedIcon(guestsMuted), voiceMaterial, muteMaterial);
+        Material icon = ControlButtonAppearance.Select(ShowsMutedIcon(guestsMuted), muteMaterial, voiceMaterial);
         ControlButtonAppearance.Apply(appearance, GetComponent<Renderer>(), icon, createInstances);
     }
 
