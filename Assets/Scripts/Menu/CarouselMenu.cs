@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 
 [DisallowMultipleComponent]
@@ -5,10 +6,10 @@ public class CarouselMenu : MonoBehaviour
 {
     public const float StepDegrees = 90f;
     public const float TurnDuration = 1.5f;
-    public const string CreateName = "Create";
-    public const string CreateBackName = "CreateBack";
-    public const string EnterName = "Enter";
-    public const string EnterBackName = "EnterBack";
+    public const string CreateName = "CreateButton";
+    public const string CreateBackName = "CreateBackButton";
+    public const string EnterName = "EnterButton";
+    public const string EnterBackName = "EnterBackButton";
 
     Quaternion rotationFrom = Quaternion.identity;
     Quaternion rotationTo = Quaternion.identity;
@@ -76,15 +77,35 @@ public class CarouselMenu : MonoBehaviour
         if (view == null)
             return;
 
-        float step = SignedStep(
-            screen,
-            view,
-            GameObject.Find(CreateName),
-            GameObject.Find(CreateBackName),
-            GameObject.Find(EnterName),
-            GameObject.Find(EnterBackName));
+        float step = SignedStep(screen, view, TurnButtons());
         if (step != 0f)
             Begin(step);
+    }
+
+    public static GameObject[] TurnButtons()
+    {
+        TextMeshPro[] labels = Object.FindObjectsByType<TextMeshPro>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
+        int count = 0;
+        for (int i = 0; i < labels.Length; i++)
+            if (Turns(labels[i]))
+                count++;
+
+        GameObject[] matches = new GameObject[count];
+        int written = 0;
+        for (int i = 0; i < labels.Length; i++)
+        {
+            if (!Turns(labels[i]))
+                continue;
+
+            matches[written++] = labels[i].gameObject;
+        }
+
+        return matches;
+    }
+
+    static bool Turns(TextMeshPro label)
+    {
+        return label != null && label.name != SolarSystemThumbHost.ObjectName && SignedStep(label.name) != 0f;
     }
 
     public static float SignedStep(Vector2 screen, Camera view, params GameObject[] targets)

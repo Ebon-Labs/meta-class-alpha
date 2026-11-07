@@ -47,6 +47,7 @@ public class CarouselMenuTests
         Assert.AreEqual(-CarouselMenu.StepDegrees, CarouselMenu.SignedStep(CarouselMenu.EnterName));
         Assert.AreEqual(CarouselMenu.SignedStep(CarouselMenu.CreateName), CarouselMenu.SignedStep(CarouselMenu.EnterBackName));
         Assert.AreEqual(0f, CarouselMenu.SignedStep("Title"));
+        Assert.AreEqual(0f, CarouselMenu.SignedStep("CreteRoomButton"));
     }
 
     [Test]
