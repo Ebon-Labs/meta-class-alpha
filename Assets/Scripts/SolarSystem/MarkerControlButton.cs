@@ -32,7 +32,15 @@ public class MarkerControlButton : MonoBehaviour
         if (motion == null)
             return;
 
+        if (RoomSync.RequestToggleOrbs())
+            return;
+
         motion.ToggleShowInteractionOrbs();
+        ApplyIconToAppearance(createInstances: true);
+    }
+
+    public void RefreshAppearance()
+    {
         ApplyIconToAppearance(createInstances: true);
     }
 

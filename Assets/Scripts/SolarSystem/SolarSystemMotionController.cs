@@ -66,6 +66,8 @@ public class SolarSystemMotionController : MonoBehaviour
 
     public float TimeScale => timeScale;
 
+    public float DefaultTimeScale => _defaultTimeScale;
+
     public bool IsIncreasedTimeScale => Capture().IsIncreasedTimeScale;
 
     public void ToggleTimeScale()

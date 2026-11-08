@@ -53,8 +53,16 @@ public class OrbitControlButton : MonoBehaviour
         if (motion == null || motion.IsNearDistance)
             return;
 
+        if (RoomSync.RequestToggleTime())
+            return;
+
         motion.ToggleTimeScale();
         ApplyIconToAppearance(createInstances: true);
+    }
+
+    public void RefreshAppearance()
+    {
+        ApplySpeedLock(force: true);
     }
 
     void ApplyIconToAppearance(bool createInstances)

@@ -26,9 +26,13 @@ public class ClassController : MonoBehaviour
 
     readonly PassengerHold passengers = new PassengerHold();
     Vector3 pivot;
+    Vector3 restPosition;
+    Vector3 restPivot;
+    Quaternion restRotation = Quaternion.identity;
     Vector3 positionFrom;
     Quaternion rotationFrom = Quaternion.identity;
     float turnElapsed;
+    int appliedTurns;
     bool turning;
 
     public bool MuteGuests => muteGuests;
@@ -95,6 +99,37 @@ public class ClassController : MonoBehaviour
         turning = true;
     }
 
+    public static bool AnimateSingleStep(int applied, int target)
+    {
+        return target == applied + 1;
+    }
+
+    public void MatchTurnCount(int count)
+    {
+        if (count < 0)
+            count = 0;
+        if (count == appliedTurns)
+            return;
+
+        if (AnimateSingleStep(appliedTurns, count))
+        {
+            TurnClockwise();
+            appliedTurns = count;
+            return;
+        }
+
+        ResolveAreas();
+        if (turning)
+        {
+            passengers.Release();
+            turning = false;
+        }
+
+        Quaternion yaw = ClockwiseYaw(ClockwiseStepDegrees * count);
+        transform.SetPositionAndRotation(Orbit(restPosition, restPivot, yaw), yaw * restRotation);
+        appliedTurns = count;
+    }
+
     public void ToggleMuteGuests()
     {
         SetMuteGuests(!muteGuests);
@@ -127,6 +162,9 @@ public class ClassController : MonoBehaviour
     {
         Instance = this;
         ResolveAreas();
+        restPosition = transform.position;
+        restRotation = transform.rotation;
+        restPivot = hostArea != null ? hostArea.position : restPosition;
         ApplyControls(force: true);
     }
 
