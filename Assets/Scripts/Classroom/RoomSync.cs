@@ -18,10 +18,29 @@ public class RoomSync : NetworkBehaviour
         public bool HideFloor;
         public int Turns;
         public int Screen;
+        public bool ScreenArmed;
+        public int Revision;
+        public float Clock;
     }
 
     static ServerState serverState;
     static int appliedScreen = int.MinValue;
+    static RoomSync clockDriver;
+
+    [SyncVar] bool syncedReady;
+    [SyncVar] float syncedTimeScale;
+    [SyncVar] float syncedDistance;
+    [SyncVar] bool syncedOrbs;
+    [SyncVar] bool syncedMute;
+    [SyncVar] bool syncedFloor;
+    [SyncVar] int syncedTurns;
+    [SyncVar] int syncedScreen;
+    [SyncVar] bool syncedScreenArmed;
+    [SyncVar(hook = nameof(OnRevision))] int syncedRevision;
+    [SyncVar(hook = nameof(OnClock))] float syncedClock;
+
+    double clockReceivedAt;
+    bool clockTimed;
 
     public static bool RequestTurn()
     {
@@ -76,7 +95,6 @@ public class RoomSync : NetworkBehaviour
     public override void OnStartLocalPlayer()
     {
         Local = this;
-        CmdPull();
     }
 
     public override void OnStopLocalPlayer()
@@ -87,25 +105,60 @@ public class RoomSync : NetworkBehaviour
 
     public override void OnStartServer()
     {
+        if (clockDriver == null)
+            clockDriver = this;
+        if (this != clockDriver)
+            return;
         if (!EnsureServerState())
             return;
+
+        WriteToSyncVars();
+        RoomSimulationClock.Publish(serverState.Clock);
+        ApplyControls(serverState);
+    }
+
+    public override void OnStartClient()
+    {
+        if (isServer || !syncedReady)
+            return;
+
+        NoteClock();
+        RoomSimulationClock.Publish(syncedClock);
+        ApplyControls(ReadState());
     }
 
     public override void OnStopServer()
     {
+        if (clockDriver == this)
+            clockDriver = null;
         if (NetworkServer.active)
             return;
 
         serverState = default;
         appliedScreen = int.MinValue;
+        RoomSimulationClock.Clear();
     }
 
-    [Command]
-    void CmdPull()
+    public override void OnStopClient()
     {
-        if (!EnsureServerState())
+        if (isServer || !syncedReady)
             return;
-        TargetApply(serverState.TimeScale, serverState.DistanceScale, serverState.Orbs, serverState.Mute, serverState.HideFloor, serverState.Turns, serverState.Screen);
+
+        RoomSimulationClock.Clear();
+    }
+
+    void Update()
+    {
+        if (isServer)
+        {
+            DriveServerClock();
+            return;
+        }
+
+        if (!isClient || !syncedReady)
+            return;
+
+        RoomSimulationClock.Publish(DisplayClock());
     }
 
     [Command]
@@ -114,7 +167,7 @@ public class RoomSync : NetworkBehaviour
         if (!EnsureServerState())
             return;
         serverState.Turns++;
-        Broadcast();
+        Commit();
     }
 
     [Command]
@@ -123,7 +176,7 @@ public class RoomSync : NetworkBehaviour
         if (!EnsureServerState())
             return;
         Store(ToggleTime(Capture()));
-        Broadcast();
+        Commit();
     }
 
     [Command]
@@ -132,7 +185,7 @@ public class RoomSync : NetworkBehaviour
         if (!EnsureServerState())
             return;
         Store(ToggleDistance(Capture()));
-        Broadcast();
+        Commit();
     }
 
     [Command]
@@ -141,7 +194,7 @@ public class RoomSync : NetworkBehaviour
         if (!EnsureServerState())
             return;
         Store(ToggleOrbs(Capture()));
-        Broadcast();
+        Commit();
     }
 
     [Command]
@@ -150,7 +203,7 @@ public class RoomSync : NetworkBehaviour
         if (!EnsureServerState())
             return;
         serverState.Mute = !serverState.Mute;
-        Broadcast();
+        Commit();
     }
 
     [Command]
@@ -159,7 +212,7 @@ public class RoomSync : NetworkBehaviour
         if (!EnsureServerState())
             return;
         serverState.HideFloor = !serverState.HideFloor;
-        Broadcast();
+        Commit();
     }
 
     [Command]
@@ -168,19 +221,21 @@ public class RoomSync : NetworkBehaviour
         if (!EnsureServerState())
             return;
         serverState.Screen = action;
-        Broadcast();
+        serverState.ScreenArmed = true;
+        Commit();
     }
 
-    [ClientRpc]
-    void RpcApply(float timeScale, float distanceScale, bool orbs, bool mute, bool hideFloor, int turns, int screen)
+    void OnRevision(int _, int __)
     {
-        Apply(timeScale, distanceScale, orbs, mute, hideFloor, turns, screen);
+        if (isServer || !syncedReady)
+            return;
+
+        ApplyControls(ReadState());
     }
 
-    [TargetRpc]
-    void TargetApply(float timeScale, float distanceScale, bool orbs, bool mute, bool hideFloor, int turns, int screen)
+    void OnClock(float _, float __)
     {
-        Apply(timeScale, distanceScale, orbs, mute, hideFloor, turns, screen);
+        NoteClock();
     }
 
     static bool Send(System.Action<RoomSync> command)
@@ -203,6 +258,7 @@ public class RoomSync : NetworkBehaviour
 
         ServerState captured = CaptureScene();
         captured.Ready = true;
+        captured.Clock = Time.timeSinceLevelLoad * Mathf.Max(0f, captured.TimeScale);
         serverState = captured;
         return true;
     }
@@ -248,34 +304,97 @@ public class RoomSync : NetworkBehaviour
         serverState.Orbs = snapshot.InteractionOrbsEnabled;
     }
 
-    void Broadcast()
+    void Commit()
     {
-        RpcApply(serverState.TimeScale, serverState.DistanceScale, serverState.Orbs, serverState.Mute, serverState.HideFloor, serverState.Turns, serverState.Screen);
+        serverState.Revision++;
+        ApplyControls(serverState);
+        RoomSimulationClock.Publish(serverState.Clock);
+        if (clockDriver != null)
+            clockDriver.WriteToSyncVars();
     }
 
-    static void Apply(float timeScale, float distanceScale, bool orbs, bool mute, bool hideFloor, int turns, int screen)
+    void DriveServerClock()
+    {
+        if (this != clockDriver)
+            return;
+        if (!EnsureServerState())
+            return;
+
+        serverState.Clock += Time.deltaTime * Mathf.Max(0f, serverState.TimeScale);
+        WriteToSyncVars();
+        RoomSimulationClock.Publish(serverState.Clock);
+    }
+
+    void WriteToSyncVars()
+    {
+        syncedReady = true;
+        syncedTimeScale = serverState.TimeScale;
+        syncedDistance = serverState.DistanceScale;
+        syncedOrbs = serverState.Orbs;
+        syncedMute = serverState.Mute;
+        syncedFloor = serverState.HideFloor;
+        syncedTurns = serverState.Turns;
+        syncedScreen = serverState.Screen;
+        syncedScreenArmed = serverState.ScreenArmed;
+        syncedRevision = serverState.Revision;
+        syncedClock = serverState.Clock;
+    }
+
+    void NoteClock()
+    {
+        clockReceivedAt = Time.timeAsDouble;
+        clockTimed = true;
+    }
+
+    float DisplayClock()
+    {
+        if (!clockTimed)
+            return syncedClock;
+
+        return syncedClock + (float)(Time.timeAsDouble - clockReceivedAt) * Mathf.Max(0f, syncedTimeScale);
+    }
+
+    ServerState ReadState()
+    {
+        return new ServerState
+        {
+            TimeScale = syncedTimeScale,
+            DistanceScale = syncedDistance,
+            Orbs = syncedOrbs,
+            Mute = syncedMute,
+            HideFloor = syncedFloor,
+            Turns = syncedTurns,
+            Screen = syncedScreen,
+            ScreenArmed = syncedScreenArmed
+        };
+    }
+
+    static void ApplyControls(ServerState state)
     {
         SolarSystemMotionController motion = Object.FindFirstObjectByType<SolarSystemMotionController>();
         if (motion != null)
         {
-            motion.SetDistanceScale(distanceScale);
-            motion.SetTimeScale(timeScale);
-            motion.SetShowInteractionOrbs(orbs);
+            if (!Mathf.Approximately(motion.DistanceScale, state.DistanceScale))
+                motion.SetDistanceScale(state.DistanceScale);
+            if (!Mathf.Approximately(motion.TimeScale, state.TimeScale))
+                motion.SetTimeScale(state.TimeScale);
+            if (motion.ShowInteractionOrbs != state.Orbs)
+                motion.SetShowInteractionOrbs(state.Orbs);
         }
 
         ClassController room = ClassController.ResolveExisting(Object.FindFirstObjectByType<ClassController>());
         if (room != null)
         {
-            room.SetMuteGuests(mute);
-            room.SetHideFloorAreas(hideFloor);
-            room.MatchTurnCount(turns);
+            room.SetMuteGuests(state.Mute);
+            room.SetHideFloorAreas(state.HideFloor);
+            room.MatchTurnCount(state.Turns);
         }
 
-        if (screen != appliedScreen)
+        if (state.ScreenArmed && state.Screen != appliedScreen)
         {
-            appliedScreen = screen;
-            if (System.Enum.IsDefined(typeof(ScreenControlButton.Action), screen))
-                ScreenControlButton.Execute((ScreenControlButton.Action)screen, Object.FindFirstObjectByType<MainScreen>());
+            appliedScreen = state.Screen;
+            if (System.Enum.IsDefined(typeof(ScreenControlButton.Action), state.Screen))
+                ScreenControlButton.Execute((ScreenControlButton.Action)state.Screen, Object.FindFirstObjectByType<MainScreen>());
         }
 
         RefreshButtons();

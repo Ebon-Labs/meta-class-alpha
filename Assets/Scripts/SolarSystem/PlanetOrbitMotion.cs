@@ -109,6 +109,12 @@ public class PlanetOrbitMotion : MonoBehaviour
 
     void Update()
     {
+        if (RoomSimulationClock.TryRead(out float clock))
+        {
+            ApplySharedClock(clock);
+            return;
+        }
+
         if (timeScale <= 0f)
             return;
 
@@ -129,6 +135,30 @@ public class PlanetOrbitMotion : MonoBehaviour
         {
             UpdateSpin(dt);
         }
+    }
+
+    void ApplySharedClock(float clock)
+    {
+        if (enableOrbit)
+        {
+            if (orbitCenter == null)
+                ResolveOrbitCenter();
+            if (orbitCenter == null)
+                return;
+            if (!_orbitInitialized)
+                CacheOrbitOffsetAroundSun();
+
+            _orbitAngleDegrees = PlanetOrbitCalculator.AngleAtClock(orbitalPeriodDays, clock);
+            ApplyOrbitPosition();
+            return;
+        }
+
+        if (!enableSpin)
+            return;
+
+        _spinAngleDegrees = PlanetSpinCalculator.AngleAtClock(siderealDayHours, clock);
+        transform.localPosition = _initialLocalPosition;
+        transform.localRotation = PlanetSpinCalculator.EvaluateLocalRotation(_baseLocalRotation, _spinAngleDegrees);
     }
 
     void LateUpdate()

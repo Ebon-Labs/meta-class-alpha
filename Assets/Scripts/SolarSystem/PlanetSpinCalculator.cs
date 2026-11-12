@@ -19,6 +19,11 @@ public static class PlanetSpinCalculator
         return Mathf.Repeat(currentAngleDegrees + degreesPerSecond * deltaTime, 360f);
     }
 
+    public static float AngleAtClock(float siderealDayHours, float clock)
+    {
+        return Mathf.Repeat(DegreesPerSecond(siderealDayHours, 1f) * clock, 360f);
+    }
+
     public static Quaternion ApplyAxialTilt(Quaternion baseLocalRotation, float axialTiltDegrees)
     {
         return Quaternion.Euler(axialTiltDegrees, 0f, 0f) * baseLocalRotation;
