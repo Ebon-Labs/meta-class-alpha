@@ -16,16 +16,16 @@ O código novo entra na arquitetura que já existe. Não cria um segundo caminho
 Antes de editar, leia a seção correspondente de [arquitetura.md](arquitetura.md). A arquitetura tem duas camadas:
 
 - **Genérica.** Scripts e contratos que não conhecem a sala, os planetas nem o enredo. Dependem de tags, nomes de âncora e prefabs.
-- **Cena.** Menu e The Room instanciam esses contratos. Objetos, textos e números de uma cena ficam na cena.
+- **Cena.** Menu e SolarSystem instanciam esses contratos. Objetos, textos e números de uma cena ficam na cena.
 
-Um script genérico não procura um objeto exclusivo de The Room para decidir o que fazer, salvo os nomes de busca já documentados para o Sol e a raiz `SolarSystem`. Uma cena não reimplementa gaze, órbita, voz ou presença em rede.
+Um script genérico não procura um objeto exclusivo de SolarSystem para decidir o que fazer, salvo os nomes de busca já documentados para o Sol e a raiz `SolarSystem`. Uma cena não reimplementa gaze, órbita, voz ou presença em rede.
 
 Contratos que a mudança tem de preservar:
 
 | Contrato | O que permanece |
 |----------|-----------------|
-| Build | A primeira cena é Menu. The Room é a cena online |
-| Rede | Um `NetworkManager`, na cena Menu, com `dontDestroyOnLoad`. The Room não ganha outro |
+| Build | A primeira cena é Menu. SolarSystem é a cena online |
+| Rede | Um `NetworkManager`, na cena Menu, com `dontDestroyOnLoad`. SolarSystem não ganha outro |
 | Menu | Toque na tela. Não é `Physics.Raycast`. Criar Sala e Buscar Sala só giram o carrossel |
 | Sala | O anfitrião nasce do toque em `SolarSystemThumb` ou do Host do HUD. Entrar numa sala da `RoomList` é só cliente |
 | Giro da sala | 45° no sentido horário em torno da `HostArea`, em 3 s. Yaw horário é ângulo negativo em Y |

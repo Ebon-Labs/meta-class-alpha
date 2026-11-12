@@ -406,7 +406,7 @@ MonoBehaviour:
   autoConnectClientBuild: 0
   sendRate: 30
   offlineScene: Assets/Scenes/Menu.unity
-  onlineScene: Assets/Scenes/TheRoom.unity
+  onlineScene: Assets/Scenes/SolarSystem.unity
   transport: {fileID: 100023}
   networkAddress: localhost
   maxConnections: 4

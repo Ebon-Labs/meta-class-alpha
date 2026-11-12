@@ -6,7 +6,7 @@ Experiência multiplayer em realidade virtual para **Google Cardboard**, onde jo
 
 ## Sobre o jogo
 
-O build abre na cena **Menu**. Dali o anfitrião cria a sala e o Mirror carrega **The Room**. No visor, o jogador pode:
+O build abre na cena **Menu**. Dali o anfitrião cria a sala e o Mirror carrega **SolarSystem**. No visor, o jogador pode:
 
 - Observar e interagir com objetos no ambiente
 - Girar a sala 45° no sentido horário em torno da área do anfitrião
@@ -58,7 +58,7 @@ Câmera (direção do olhar)
 meta-class-alpha/
 ├── Assets/
 │   ├── Scenes/Menu.unity         # Primeira cena do build
-│   ├── Scenes/TheRoom.unity      # Sala de aula, carregada como cena online
+│   ├── Scenes/SolarSystem.unity      # Sala de aula, carregada como cena online
 │   ├── Scripts/                  # Lógica do jogo
 │   ├── Prefabs/                  # Player, portais, tesouros
 │   ├── Models/                   # SolarSystem.fbx, avatar (Male_002)
@@ -96,7 +96,7 @@ meta-class-alpha/
 ### Rede (Mirror)
 
 - **NetworkManager** na cena `Menu`, porta **7777**, máximo **4** conexões. Permanece com `dontDestroyOnLoad`
-- **Cena offline** `Menu`, **cena online** `TheRoom`. The Room não contém um segundo manager
+- **Cena offline** `Menu`, **cena online** `SolarSystem`. SolarSystem não contém um segundo manager
 - O HUD do Mirror no canto continua criando a sala. Os rótulos Criar Sala e Buscar Sala só giram o carrossel. O toque em SolarSystemThumb chama a mesma ação Host (Server + Client). RoomList mostra as salas abertas na rede local, e o toque numa delas entra como Client nessa sala
 - **Player prefab** (`Assets/Prefabs/Player.prefab`): câmera, canvas, gaze, voz e identidade de rede
 - Servidor inicia automaticamente em builds (`autoStartServerBuild`)
@@ -122,7 +122,7 @@ flowchart TB
         HUD[NetworkManagerHUD]
     end
 
-    subgraph Scene["TheRoom.unity"]
+    subgraph Scene["SolarSystem.unity"]
         SS[SolarSystem]
         Class[Class]
         Portals[Portais]
@@ -160,7 +160,7 @@ Abra a pasta no **Unity Hub** com o editor **6000.3.6f1**.
 
 ### 2. Cena de trabalho
 
-Abra `Assets/Scenes/Menu.unity` e dê Play a partir dela. É a primeira cena habilitada no build. `TheRoom.unity` entra quando a sala fica online. O Play usa a cena aberta, então começar o Play dentro de The Room pula o menu.
+Abra `Assets/Scenes/Menu.unity` e dê Play a partir dela. É a primeira cena habilitada no build. `SolarSystem.unity` entra quando a sala fica online. O Play usa a cena aberta, então começar o Play dentro de SolarSystem pula o menu.
 
 ### 3. Testar no Editor
 
@@ -245,7 +245,7 @@ Extensões atuais: C#, Unity Tools, Unity Debug, DocComment.
 
 ## Documentação adicional
 
-- [docs/arquitetura.md](docs/arquitetura.md) — arquitetura: funcionalidades genéricas, a cena Menu e a aplicação em The Room
+- [docs/arquitetura.md](docs/arquitetura.md) — arquitetura: funcionalidades genéricas, a cena Menu e a aplicação em SolarSystem
 - [docs/codigo-limpo.md](docs/codigo-limpo.md) — consulta para agentes: arquitetura, Clean Code, SOLID e testes
 - [docs/seguranca.md](docs/seguranca.md) — riscos de rede, voz e manifesto Android, com a mitigação de cada um
 - [docs/TDD-sala-observacao-controle.md](docs/TDD-sala-observacao-controle.md) — TDD da sala de observação e controle (painel descritivo feito; sala e portal de retorno a fazer)
