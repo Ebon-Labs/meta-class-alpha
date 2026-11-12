@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text;
 using Mirror;
 using Mirror.Discovery;
 using TMPro;
@@ -10,8 +11,6 @@ public class RoomList : MonoBehaviour
 {
     public const float HitPadding = 48f;
     public const float RoomTimeout = 7f;
-    public const string EmptyLabel = "...";
-    public const string ItemName = "RoomItem";
 
     public static RoomList Instance { get; private set; }
 
@@ -19,7 +18,9 @@ public class RoomList : MonoBehaviour
     readonly Dictionary<long, float> seenAt = new Dictionary<long, float>();
     readonly List<long> expired = new List<long>();
     readonly List<ServerResponse> shown = new List<ServerResponse>();
-    TextMeshPro template;
+    readonly List<string> labels = new List<string>();
+    TMP_InputField field;
+    TMP_Text body;
     NetworkDiscovery discovery;
 
     public static string Label(Uri uri)
@@ -41,9 +42,21 @@ public class RoomList : MonoBehaviour
         return Label(uri);
     }
 
-    public static Vector2 ItemPosition(int index, float lineHeight)
+    public static string Body(IList<string> labels)
     {
-        return new Vector2(0f, -Mathf.Max(0, index) * Mathf.Max(0f, lineHeight));
+        if (labels == null || labels.Count == 0)
+            return "";
+
+        var text = new StringBuilder();
+        for (int i = 0; i < labels.Count; i++)
+        {
+            if (i > 0)
+                text.Append('\n');
+
+            text.Append(labels[i] ?? "");
+        }
+
+        return text.ToString();
     }
 
     public static int Nearest(Vector2 screen, IList<Vector2> min, IList<Vector2> max, IList<Vector2> centers, float padding)
@@ -88,13 +101,26 @@ public class RoomList : MonoBehaviour
     void OnEnable()
     {
         Instance = this;
-        template = GetComponent<TextMeshPro>();
+        field = GetComponent<TMP_InputField>();
+        body = field != null ? field.textComponent : GetComponentInChildren<TMP_Text>(true);
+        PrepareField();
+        Rebuild();
         discovery = FindFirstObjectByType<NetworkDiscovery>();
         if (discovery == null)
             return;
 
         discovery.OnServerFound.AddListener(Remember);
         LanRoomBeacon.Ensure(discovery);
+    }
+
+    void PrepareField()
+    {
+        if (field == null)
+            return;
+
+        field.readOnly = true;
+        field.resetOnDeActivation = false;
+        field.onFocusSelectAll = false;
     }
 
     void Update()
@@ -146,30 +172,58 @@ public class RoomList : MonoBehaviour
 
     public bool TryJoin(Vector2 screen, Camera view)
     {
-        if (view == null || shown.Count == 0)
+        if (view == null || shown.Count == 0 || body == null)
             return false;
 
-        var min = new List<Vector2>(shown.Count);
-        var max = new List<Vector2>(shown.Count);
-        var centers = new List<Vector2>(shown.Count);
-        var hits = new List<int>(shown.Count);
-        for (int i = 0; i < transform.childCount && i < shown.Count; i++)
+        body.ForceMeshUpdate();
+        int line = LineUnder(body, screen, view, HitPadding);
+        if (line < 0 || line >= shown.Count)
+            return false;
+
+        Join(shown[line]);
+        return true;
+    }
+
+    public static int LineUnder(TMP_Text text, Vector2 screen, Camera view, float padding)
+    {
+        if (text == null || view == null || text.textInfo == null)
+            return -1;
+
+        var min = new List<Vector2>();
+        var max = new List<Vector2>();
+        var centers = new List<Vector2>();
+        var lines = new List<int>();
+        int count = text.textInfo.lineCount;
+        for (int i = 0; i < count; i++)
         {
-            if (!CarouselMenu.TryScreenBounds(transform.GetChild(i).gameObject, view, out Vector2 itemMin, out Vector2 itemMax, out Vector2 center))
+            if (text.textInfo.lineInfo[i].characterCount <= 0)
                 continue;
 
-            hits.Add(i);
+            if (!TryLineBounds(text, i, view, out Vector2 itemMin, out Vector2 itemMax, out Vector2 center))
+                continue;
+
+            lines.Add(i);
             min.Add(itemMin);
             max.Add(itemMax);
             centers.Add(center);
         }
 
-        int chosen = Nearest(screen, min, max, centers, HitPadding);
-        if (chosen < 0)
+        int chosen = Nearest(screen, min, max, centers, padding);
+        return chosen < 0 ? -1 : lines[chosen];
+    }
+
+    public static bool TryLineBounds(TMP_Text text, int line, Camera view, out Vector2 min, out Vector2 max, out Vector2 center)
+    {
+        min = max = center = default;
+        if (text == null || text.textInfo == null || line < 0 || line >= text.textInfo.lineCount)
             return false;
 
-        Join(shown[hits[chosen]]);
-        return true;
+        TMP_LineInfo info = text.textInfo.lineInfo[line];
+        Vector3 bottomLeft = text.rectTransform.TransformPoint(new Vector3(info.lineExtents.min.x, info.lineExtents.min.y, 0f));
+        Vector3 bottomRight = text.rectTransform.TransformPoint(new Vector3(info.lineExtents.max.x, info.lineExtents.min.y, 0f));
+        Vector3 topLeft = text.rectTransform.TransformPoint(new Vector3(info.lineExtents.min.x, info.lineExtents.max.y, 0f));
+        Vector3 topRight = text.rectTransform.TransformPoint(new Vector3(info.lineExtents.max.x, info.lineExtents.max.y, 0f));
+        return CarouselMenu.ScreenBounds(view, new[] { bottomLeft, bottomRight, topLeft, topRight }, out min, out max, out center);
     }
 
     public void Join(ServerResponse response)
@@ -190,44 +244,26 @@ public class RoomList : MonoBehaviour
 
     void Rebuild()
     {
-        for (int i = transform.childCount - 1; i >= 0; i--)
-            Destroy(transform.GetChild(i).gameObject);
-
         shown.Clear();
-        if (template != null)
-            template.text = rooms.Count == 0 ? EmptyLabel : "";
-
-        int index = 0;
+        labels.Clear();
         foreach (ServerResponse room in rooms.Values)
         {
             shown.Add(room);
-            CreateItem(room, index);
-            index++;
+            labels.Add(Label(room.alias, room.uri));
         }
+
+        Show(Body(labels));
     }
 
-    void CreateItem(ServerResponse room, int index)
+    void Show(string text)
     {
-        GameObject item = new GameObject(ItemName);
-        item.transform.SetParent(transform, false);
-
-        TextMeshPro text = item.AddComponent<TextMeshPro>();
-        text.text = Label(room.alias, room.uri);
-        text.raycastTarget = false;
-        if (template == null)
+        if (field != null)
+        {
+            field.text = text;
             return;
+        }
 
-        text.font = template.font;
-        text.fontSharedMaterial = template.fontSharedMaterial;
-        text.fontSize = template.fontSize;
-        text.color = template.color;
-        text.alignment = template.alignment;
-
-        RectTransform rect = text.rectTransform;
-        rect.anchorMin = template.rectTransform.anchorMin;
-        rect.anchorMax = template.rectTransform.anchorMax;
-        rect.pivot = template.rectTransform.pivot;
-        rect.sizeDelta = template.rectTransform.sizeDelta;
-        rect.anchoredPosition = ItemPosition(index, template.rectTransform.sizeDelta.y);
+        if (body != null)
+            body.text = text;
     }
 }

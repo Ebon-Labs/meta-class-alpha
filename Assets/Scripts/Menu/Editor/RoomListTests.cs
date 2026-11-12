@@ -40,11 +40,12 @@ public class RoomListTests
     }
 
     [Test]
-    public void ItemPosition_StacksEachRoomDownward()
+    public void Body_StacksEachRoomOnItsOwnLine()
     {
-        Assert.AreEqual(new Vector2(0f, 0f), RoomList.ItemPosition(0, 5f));
-        Assert.AreEqual(new Vector2(0f, -5f), RoomList.ItemPosition(1, 5f));
-        Assert.AreEqual(new Vector2(0f, -10f), RoomList.ItemPosition(2, 5f));
+        Assert.AreEqual("", RoomList.Body(null));
+        Assert.AreEqual("", RoomList.Body(new List<string>()));
+        Assert.AreEqual("Sala Norte", RoomList.Body(new List<string> { "Sala Norte" }));
+        Assert.AreEqual("Sala Norte\n192.168.0.8:7777", RoomList.Body(new List<string> { "Sala Norte", "192.168.0.8:7777" }));
     }
 
     [Test]

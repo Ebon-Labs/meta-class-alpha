@@ -10,6 +10,7 @@ public class CarouselMenu : MonoBehaviour
     public const string CreateBackName = "CreateBackButton";
     public const string EnterName = "EnterButton";
     public const string EnterBackName = "EnterBackButton";
+    public const string TutorialName = "TutorialButton";
 
     Quaternion rotationFrom = Quaternion.identity;
     Quaternion rotationTo = Quaternion.identity;
@@ -82,24 +83,24 @@ public class CarouselMenu : MonoBehaviour
         if (view == null)
             return;
 
-        float step = SignedStep(screen, view, TurnButtons());
+        float step = SignedStep(screen, view, PressLabels());
         if (step != 0f)
             Begin(step);
     }
 
-    public static GameObject[] TurnButtons()
+    public static GameObject[] PressLabels()
     {
         TextMeshPro[] labels = Object.FindObjectsByType<TextMeshPro>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
         int count = 0;
         for (int i = 0; i < labels.Length; i++)
-            if (Turns(labels[i]))
+            if (AcceptsPress(labels[i]))
                 count++;
 
         GameObject[] matches = new GameObject[count];
         int written = 0;
         for (int i = 0; i < labels.Length; i++)
         {
-            if (!Turns(labels[i]))
+            if (!AcceptsPress(labels[i]))
                 continue;
 
             matches[written++] = labels[i].gameObject;
@@ -108,9 +109,9 @@ public class CarouselMenu : MonoBehaviour
         return matches;
     }
 
-    static bool Turns(TextMeshPro label)
+    static bool AcceptsPress(TextMeshPro label)
     {
-        return label != null && label.name != SolarSystemThumbHost.ObjectName && SignedStep(label.name) != 0f;
+        return label != null && label.name != SolarSystemThumbHost.ObjectName && (SignedStep(label.name) != 0f || label.name == TutorialName);
     }
 
     public static float SignedStep(Vector2 screen, Camera view, params GameObject[] targets)
@@ -141,7 +142,7 @@ public class CarouselMenu : MonoBehaviour
             return;
 
         float step = SignedStep(target.name);
-        if (step == 0f)
+        if (step == 0f && target.name != TutorialName)
             return;
 
         float distance = (screen - center).sqrMagnitude;
