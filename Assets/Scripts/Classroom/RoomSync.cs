@@ -2,6 +2,7 @@ using Mirror;
 using UnityEngine;
 
 [DisallowMultipleComponent]
+[DefaultExecutionOrder(-50)]
 public class RoomSync : NetworkBehaviour
 {
     public static RoomSync Local { get; private set; }
@@ -38,6 +39,13 @@ public class RoomSync : NetworkBehaviour
     [SyncVar] bool syncedScreenArmed;
     [SyncVar(hook = nameof(OnRevision))] int syncedRevision;
     [SyncVar(hook = nameof(OnClock))] float syncedClock;
+    [SyncVar] bool syncedClassPose;
+    [SyncVar] bool syncedTurning;
+    [SyncVar] Vector3 syncedClassPosition;
+    [SyncVar] Quaternion syncedClassRotation = Quaternion.identity;
+    [SyncVar] bool syncedPlayerPose;
+    [SyncVar] Vector3 syncedPlayerPosition;
+    [SyncVar] Quaternion syncedPlayerRotation = Quaternion.identity;
 
     double clockReceivedAt;
     bool clockTimed;
@@ -149,16 +157,98 @@ public class RoomSync : NetworkBehaviour
 
     void Update()
     {
-        if (isServer)
-        {
+        if (isClient && !isServer && syncedClassPose)
+            ApplyClassPose();
+
+        if (isServer && this == clockDriver)
             DriveServerClock();
+
+        if (!isServer && isClient && syncedReady)
+            RoomSimulationClock.Publish(DisplayClock());
+    }
+
+    void LateUpdate()
+    {
+        if (isLocalPlayer)
+            PublishLocalPlayerPose();
+
+        if (isServer && this == clockDriver)
+            PublishClassPose();
+
+        if (isClient && !isServer && !isLocalPlayer && syncedPlayerPose)
+            ApplyRemotePlayerPose();
+    }
+
+    [Command]
+    void CmdPublishPlayerPose(Vector3 position, Quaternion rotation)
+    {
+        WritePlayerPose(position, rotation);
+        ApplyRemotePlayerPose(position, rotation);
+    }
+
+    void PublishLocalPlayerPose()
+    {
+        if (!NetworkClient.active || !NetworkClient.ready)
             return;
+
+        if (isServer)
+            WritePlayerPose(transform.position, transform.rotation);
+        else
+            CmdPublishPlayerPose(transform.position, transform.rotation);
+    }
+
+    void PublishClassPose()
+    {
+        ClassController room = ClassController.ResolveExisting(Object.FindFirstObjectByType<ClassController>());
+        if (room == null)
+            return;
+
+        syncedClassPosition = room.transform.position;
+        syncedClassRotation = room.transform.rotation;
+        syncedTurning = room.IsTurning;
+        syncedClassPose = true;
+    }
+
+    void WritePlayerPose(Vector3 position, Quaternion rotation)
+    {
+        syncedPlayerPosition = position;
+        syncedPlayerRotation = rotation;
+        syncedPlayerPose = true;
+    }
+
+    void ApplyClassPose()
+    {
+        ClassController room = ClassController.ResolveExisting(Object.FindFirstObjectByType<ClassController>());
+        if (room == null)
+            return;
+
+        if (syncedTurning)
+            room.HoldPassengers();
+
+        room.transform.SetPositionAndRotation(syncedClassPosition, syncedClassRotation);
+
+        if (!syncedTurning)
+            room.ReleasePassengers();
+    }
+
+    void ApplyRemotePlayerPose()
+    {
+        ApplyRemotePlayerPose(syncedPlayerPosition, syncedPlayerRotation);
+    }
+
+    void ApplyRemotePlayerPose(Vector3 position, Quaternion rotation)
+    {
+        Rigidbody body = GetComponent<Rigidbody>();
+        if (body != null)
+        {
+            body.linearVelocity = Vector3.zero;
+            body.angularVelocity = Vector3.zero;
+            body.isKinematic = true;
+            body.position = position;
+            body.rotation = rotation;
         }
 
-        if (!isClient || !syncedReady)
-            return;
-
-        RoomSimulationClock.Publish(DisplayClock());
+        transform.SetPositionAndRotation(position, rotation);
     }
 
     [Command]
@@ -308,6 +398,9 @@ public class RoomSync : NetworkBehaviour
     {
         serverState.Revision++;
         ApplyControls(serverState);
+        ClassController room = ClassController.ResolveExisting(Object.FindFirstObjectByType<ClassController>());
+        if (room != null)
+            room.MatchTurnCount(serverState.Turns);
         RoomSimulationClock.Publish(serverState.Clock);
         if (clockDriver != null)
             clockDriver.WriteToSyncVars();
@@ -387,7 +480,6 @@ public class RoomSync : NetworkBehaviour
         {
             room.SetMuteGuests(state.Mute);
             room.SetHideFloorAreas(state.HideFloor);
-            room.MatchTurnCount(state.Turns);
         }
 
         if (state.ScreenArmed && state.Screen != appliedScreen)

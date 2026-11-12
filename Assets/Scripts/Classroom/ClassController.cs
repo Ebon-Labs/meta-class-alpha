@@ -34,6 +34,9 @@ public class ClassController : MonoBehaviour
     float turnElapsed;
     int appliedTurns;
     bool turning;
+    bool passengersHeld;
+
+    public bool IsTurning => turning;
 
     public bool MuteGuests => muteGuests;
     public bool HideFloorAreas => hideFloorAreas;
@@ -89,14 +92,31 @@ public class ClassController : MonoBehaviour
     public void TurnClockwise()
     {
         ResolveAreas();
-        if (!turning)
-            passengers.Hold(transform, MoveToEdge.PassengerTag);
+        HoldPassengers();
 
         pivot = hostArea != null ? hostArea.position : transform.position;
         positionFrom = transform.position;
         rotationFrom = transform.rotation;
         turnElapsed = 0f;
         turning = true;
+    }
+
+    public void HoldPassengers()
+    {
+        if (passengersHeld)
+            return;
+
+        passengers.Hold(transform, MoveToEdge.PassengerTag);
+        passengersHeld = true;
+    }
+
+    public void ReleasePassengers()
+    {
+        if (!passengersHeld)
+            return;
+
+        passengers.Release();
+        passengersHeld = false;
     }
 
     public static bool AnimateSingleStep(int applied, int target)
@@ -120,10 +140,8 @@ public class ClassController : MonoBehaviour
 
         ResolveAreas();
         if (turning)
-        {
-            passengers.Release();
             turning = false;
-        }
+        ReleasePassengers();
 
         Quaternion yaw = ClockwiseYaw(ClockwiseStepDegrees * count);
         transform.SetPositionAndRotation(Orbit(restPosition, restPivot, yaw), yaw * restRotation);
@@ -170,8 +188,7 @@ public class ClassController : MonoBehaviour
 
     void OnDestroy()
     {
-        if (turning)
-            passengers.Release();
+        ReleasePassengers();
 
         if (Instance == this)
             Instance = null;
@@ -198,7 +215,7 @@ public class ClassController : MonoBehaviour
             return;
 
         turning = false;
-        passengers.Release();
+        ReleasePassengers();
     }
 
     void LateUpdate()
