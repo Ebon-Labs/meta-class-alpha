@@ -105,7 +105,7 @@ O nome exibido no HUD tem uma convenção: se o pai do alvo tem tag `Planet`, a 
 
 `ZBounce` desloca a posição local no eixo Z enquanto o `Renderer` do mesmo objeto está visível para alguma câmera. A oscilação parte do repouso, sobe até a amplitude **1** e volta, com período **14,4 s**, e recomeça enquanto o objeto continuar visível. Fora de vista, volta ao repouso. Na cena Tutorial, o componente está em `PortalThree`.
 
-Na mesma cena, `PortalOne` começa visível. O teleporte para `PortalOne` o esconde e mostra `PortalTwo`. O teleporte para `PortalTwo` o esconde e mostra `PortalThree`. `PortalTwo` e `PortalThree` começam desativados. O teleporte para `PortalThree` espera **3 s** e encerra a sessão: o anfitrião chama `StopHost` e a cena offline `Menu` volta a abrir. Nesse retorno o cursor do Editor é solto, para o clique comum do menu funcionar.
+Na mesma cena, `PortalOne` começa desativado e só é ligado quando o vídeo do `MainScreen` chega ao fim. O teleporte para `PortalOne` o esconde e mostra `PortalTwo`. O teleporte para `PortalTwo` o esconde e mostra `PortalThree`. `PortalTwo` e `PortalThree` começam desativados. O teleporte para `PortalThree` espera **3 s** e encerra a sessão: o anfitrião chama `StopHost` e a cena offline `Menu` volta a abrir. Nesse retorno o cursor do Editor é solto, para o clique comum do menu funcionar.
 
 ### 2.5 HUD local
 

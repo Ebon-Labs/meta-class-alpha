@@ -165,6 +165,7 @@ MonoBehaviour:
   videoPlayer: {fileID: 4196281696115091522}
   screenRenderer: {fileID: 3196650472707690769}
   fadeDuration: 3
+  showWhenFinished: {fileID: 0}
 --- !u!1 &8619381145265601920
 GameObject:
   m_ObjectHideFlags: 0
