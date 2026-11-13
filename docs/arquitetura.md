@@ -101,6 +101,8 @@ O nome exibido no HUD tem uma convenção: se o pai do alvo tem tag `Planet`, a 
 
 `ObjectBasicController` troca o material do `Renderer` do próprio objeto entre um material inativo e um material de olhar. As trocas usam instâncias estáveis, para que um shader com animação de tempo continue correndo entre entrar e sair do foco. Não decide o que o clique faz.
 
+`ZBounce` desloca a posição local no eixo Z enquanto o `Renderer` do mesmo objeto está visível para alguma câmera. A oscilação parte do repouso, sobe até a amplitude **1** e volta, com período **4,8 s**, e recomeça enquanto o objeto continuar visível. Fora de vista, volta ao repouso. Na cena Tutorial, o componente está em `PortalThree`.
+
 ### 2.5 HUD local
 
 `UILogger` escreve uma string num `TextMeshProUGUI`. Não formata mensagens e não fala com a rede. Quem define o texto é o controlador de olhar.
@@ -451,6 +453,7 @@ Os TextMeshPro do menu e a miniatura `SolarSystemThumb` usam Cull Back (`_CullMo
 ```
 Assets/Scripts/
 ├── Cardboard/InitCardboard.cs
+├── Presentation/ZBounce.cs          oscilação local em Z enquanto visível
 ├── Menu/
 │   ├── CarouselMenu.cs              giro de 90° por toque na tela
 │   ├── SolarSystemThumbHost.cs      toque na miniatura cria a sala
