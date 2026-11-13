@@ -33,6 +33,61 @@ public class AvatarHeadYawTests
     }
 
     [Test]
+    public void LookPitch_UsesOnlyTheVerticalTurnWithinTheCameraLimits()
+    {
+        Assert.AreEqual(30f, AvatarHeadYaw.LookPitch(Quaternion.Euler(30f, 0f, 0f)), 0.05f);
+        Assert.AreEqual(-20f, AvatarHeadYaw.LookPitch(Quaternion.Euler(-20f, 40f, 0f)), 0.05f);
+        Assert.AreEqual(45f, CameraEditorController.ClampPitch(80f), 0.001f);
+        Assert.AreEqual(-45f, CameraEditorController.ClampPitch(-70f), 0.001f);
+    }
+
+    [Test]
+    public void LookRoll_UsesOnlyTheSideTiltAndStopsAtFortyFive()
+    {
+        Assert.AreEqual(25f, AvatarHeadYaw.LookRoll(Quaternion.Euler(0f, 0f, 25f)), 0.05f);
+        Assert.AreEqual(-15f, AvatarHeadYaw.LookRoll(Quaternion.Euler(10f, 40f, -15f)), 0.05f);
+        Assert.AreEqual(45f, AvatarHeadYaw.ClampYaw(70f, AvatarHeadYaw.LimitDegrees), 0.001f);
+        Assert.AreEqual(-45f, AvatarHeadYaw.ClampYaw(-80f, AvatarHeadYaw.LimitDegrees), 0.001f);
+    }
+
+    [Test]
+    public void Nod_LooksUpOnlyUp_AndDownOnlyDown()
+    {
+        Quaternion rest = Quaternion.identity;
+        Vector3 localUp = Vector3.up;
+        Vector3 localForward = Vector3.forward;
+
+        Quaternion down = AvatarHeadYaw.Nod(rest, 30f, localUp, localForward);
+        Vector3 lowered = down * localForward;
+        Assert.Less(lowered.y, -0.2f);
+        Assert.AreEqual(0f, lowered.x, 0.001f);
+        Assert.AreEqual(0f, AvatarHeadYaw.LookYaw(down), 0.05f);
+
+        Quaternion up = AvatarHeadYaw.Nod(rest, -30f, localUp, localForward);
+        Vector3 raised = up * localForward;
+        Assert.Greater(raised.y, 0.2f);
+        Assert.AreEqual(0f, raised.x, 0.001f);
+        Assert.AreEqual(0f, AvatarHeadYaw.LookYaw(up), 0.05f);
+    }
+
+    [Test]
+    public void Nod_OnTheBoneAxes_StaysInTheUpForwardPlane()
+    {
+        Quaternion rest = Quaternion.identity;
+        Vector3 localUp = Vector3.right;
+        Vector3 localForward = -Vector3.up;
+        Vector3 ear = AvatarHeadYaw.EarAxis(localUp, localForward);
+
+        Vector3 lowered = AvatarHeadYaw.Nod(rest, 30f, localUp, localForward) * localForward;
+        Assert.AreEqual(0f, Vector3.Dot(lowered, ear), 0.001f);
+        Assert.Less(Vector3.Dot(lowered, localUp), -0.2f);
+
+        Vector3 raised = AvatarHeadYaw.Nod(rest, -30f, localUp, localForward) * localForward;
+        Assert.AreEqual(0f, Vector3.Dot(raised, ear), 0.001f);
+        Assert.Greater(Vector3.Dot(raised, localUp), 0.2f);
+    }
+
+    [Test]
     public void LookYaw_UsesOnlyTheHorizontalTurn()
     {
         float level = AvatarHeadYaw.LookYaw(Quaternion.Euler(0f, 35f, 0f));

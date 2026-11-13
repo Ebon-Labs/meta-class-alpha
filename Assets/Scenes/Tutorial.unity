@@ -1512,11 +1512,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3979848393118821454, guid: 79797d94fc189fba5836edb535cfcd5d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.17
+      value: 2.01
       objectReference: {fileID: 0}
     - target: {fileID: 3979848393118821454, guid: 79797d94fc189fba5836edb535cfcd5d, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 5.24
+      value: 3.69
       objectReference: {fileID: 0}
     - target: {fileID: 4196281696115091522, guid: 79797d94fc189fba5836edb535cfcd5d, type: 3}
       propertyPath: m_VideoClip
@@ -1542,6 +1542,14 @@ PrefabInstance:
       propertyPath: m_TargetAudioSources.Array.size
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5205111491010840390, guid: 79797d94fc189fba5836edb535cfcd5d, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -4.26
+      objectReference: {fileID: 0}
+    - target: {fileID: 5205111491010840390, guid: 79797d94fc189fba5836edb535cfcd5d, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.6
+      objectReference: {fileID: 0}
     - target: {fileID: 6176666088786845154, guid: 79797d94fc189fba5836edb535cfcd5d, type: 3}
       propertyPath: m_Name
       value: ScreenWrapper
@@ -1564,11 +1572,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6289077820281825720, guid: 79797d94fc189fba5836edb535cfcd5d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.1851
+      value: 0.154
       objectReference: {fileID: 0}
     - target: {fileID: 6289077820281825720, guid: 79797d94fc189fba5836edb535cfcd5d, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -0.0908
+      value: -0.212
       objectReference: {fileID: 0}
     - target: {fileID: 6289077820281825720, guid: 79797d94fc189fba5836edb535cfcd5d, type: 3}
       propertyPath: m_LocalRotation.w

@@ -12,6 +12,8 @@ public class AvatarHeadYaw : NetworkBehaviour
     Transform body;
     Quaternion boneRest;
     Quaternion bodyRest;
+    Vector3 boneUp;
+    Vector3 boneForward;
     float bodyYaw;
     float lookYaw;
     bool captured;
@@ -50,14 +52,51 @@ public class AvatarHeadYaw : NetworkBehaviour
         return Vector3.SignedAngle(Vector3.forward, forward, Vector3.up);
     }
 
+    public static float LookPitch(Quaternion look)
+    {
+        float rise = (look * Vector3.forward).y;
+        return -Mathf.Asin(Mathf.Clamp(rise, -1f, 1f)) * Mathf.Rad2Deg;
+    }
+
+    public static float LookRoll(Quaternion look)
+    {
+        Vector3 forward = look * Vector3.forward;
+        if (forward.sqrMagnitude < 0.000001f)
+            return 0f;
+        if (Mathf.Abs(Vector3.Dot(forward.normalized, Vector3.up)) > 0.999f)
+            return 0f;
+
+        Quaternion upright = Quaternion.LookRotation(forward, Vector3.up);
+        Vector3 rolledUp = (Quaternion.Inverse(upright) * look) * Vector3.up;
+        return Vector3.SignedAngle(Vector3.up, rolledUp, Vector3.forward);
+    }
+
     public static Vector3 UpAxis(Transform boneParent, Transform player)
     {
-        if (boneParent == null || player == null)
-            return Vector3.up;
+        return AxisInParent(boneParent, player, player != null ? player.up : Vector3.up, Vector3.up);
+    }
 
-        Vector3 axis = boneParent.InverseTransformDirection(player.up);
+    public static Vector3 EarAxis(Vector3 localUp, Vector3 localForward)
+    {
+        Vector3 ear = Vector3.Cross(localUp, localForward);
+        if (ear.sqrMagnitude < 0.000001f)
+            return Vector3.right;
+        return ear.normalized;
+    }
+
+    public static Quaternion Nod(Quaternion rest, float pitch, Vector3 localUp, Vector3 localForward)
+    {
+        return rest * Quaternion.AngleAxis(pitch, EarAxis(localUp, localForward));
+    }
+
+    static Vector3 AxisInParent(Transform boneParent, Transform player, Vector3 worldAxis, Vector3 fallback)
+    {
+        if (boneParent == null || player == null)
+            return fallback;
+
+        Vector3 axis = boneParent.InverseTransformDirection(worldAxis);
         if (axis.sqrMagnitude < 0.000001f)
-            return Vector3.up;
+            return fallback;
         return axis.normalized;
     }
 
@@ -114,6 +153,8 @@ public class AvatarHeadYaw : NetworkBehaviour
                 return;
             boneRest = bone.localRotation;
             bodyRest = body.localRotation;
+            boneUp = bone.InverseTransformDirection(transform.up);
+            boneForward = bone.InverseTransformDirection(transform.forward);
             captured = true;
         }
 
@@ -129,7 +170,8 @@ public class AvatarHeadYaw : NetworkBehaviour
         YawPose pose = Follow(bodyYaw, lookYaw, LimitDegrees);
         bodyYaw = pose.Body;
         body.localRotation = WithYaw(bodyRest, bodyYaw, Vector3.up);
-        Vector3 axis = UpAxis(bone.parent, transform);
-        bone.localRotation = WithYaw(boneRest, pose.Head, axis);
+        float pitch = CameraEditorController.ClampPitch(LookPitch(view.transform.localRotation));
+        Quaternion nodded = Nod(boneRest, pitch, boneUp, boneForward);
+        bone.localRotation = WithYaw(nodded, pose.Head, UpAxis(bone.parent, transform));
     }
 }
