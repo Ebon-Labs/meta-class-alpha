@@ -97,13 +97,13 @@ Fluxo, independente do conteúdo da cena:
 
 `OnPointerEnter` e `OnPointerExit` são enviados com `SendMessage` apenas para as tags `Interactive`, `Teleportable` e `Player`. O destaque visual fica a cargo de quem implementar esses métodos, em geral `ObjectBasicController`.
 
-O nome exibido no HUD tem uma convenção: se o pai do alvo tem tag `Planet`, a mensagem é `Planeta: <nome do pai>`. Caso contrário, usa o nome do próprio objeto.
+O nome exibido no HUD tem uma convenção: se o pai do alvo tem tag `Planet`, a mensagem é `Planeta: <nome do pai>`. Caso contrário, usa o nome do próprio objeto. `PortalOne`, `PortalTwo` e `PortalThree` aparecem como **1**, **2** e **3**.
 
 ### 2.4 Feedback visual de foco
 
 `ObjectBasicController` troca o material do `Renderer` do próprio objeto entre um material inativo e um material de olhar. As trocas usam instâncias estáveis, para que um shader com animação de tempo continue correndo entre entrar e sair do foco. Não decide o que o clique faz.
 
-`ZBounce` desloca a posição local no eixo Z enquanto o `Renderer` do mesmo objeto está visível para alguma câmera. A oscilação parte do repouso, sobe até a amplitude **1** e volta, com período **4,8 s**, e recomeça enquanto o objeto continuar visível. Fora de vista, volta ao repouso. Na cena Tutorial, o componente está em `PortalThree`.
+`ZBounce` desloca a posição local no eixo Z enquanto o `Renderer` do mesmo objeto está visível para alguma câmera. A oscilação parte do repouso, sobe até a amplitude **1** e volta, com período **14,4 s**, e recomeça enquanto o objeto continuar visível. Fora de vista, volta ao repouso. Na cena Tutorial, o componente está em `PortalThree`.
 
 Na mesma cena, `PortalOne` começa visível. O teleporte para `PortalOne` o esconde e mostra `PortalTwo`. O teleporte para `PortalTwo` o esconde e mostra `PortalThree`. `PortalTwo` e `PortalThree` começam desativados. O teleporte para `PortalThree` espera **3 s** e encerra a sessão: o anfitrião chama `StopHost` e a cena offline `Menu` volta a abrir. Nesse retorno o cursor do Editor é solto, para o clique comum do menu funcionar.
 

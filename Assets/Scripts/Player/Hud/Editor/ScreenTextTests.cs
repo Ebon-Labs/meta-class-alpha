@@ -47,6 +47,9 @@ public class ScreenTextTests
         Assert.AreEqual("Parar", ScreenText.Name("StopButton"));
         Assert.AreEqual("Voltar à sala", ScreenText.Name("GoHomeOrb"));
         Assert.AreEqual("Marcador", ScreenText.Name("InteractionMarkerOrb"));
+        Assert.AreEqual("1", ScreenText.Name("PortalOne"));
+        Assert.AreEqual("2", ScreenText.Name("PortalTwo"));
+        Assert.AreEqual("3", ScreenText.Name("PortalThree"));
         Assert.AreEqual("Clique em: Sol", ScreenText.Format("gaze.click", ScreenText.Name("SunButton")));
     }
 

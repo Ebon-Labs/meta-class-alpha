@@ -4,7 +4,7 @@ using UnityEngine;
 public class ZBounce : MonoBehaviour
 {
     public const float Amplitude = 1f;
-    public const float Period = 4.8f;
+    public const float Period = 14.4f;
 
     Vector3 rest;
     float elapsed;
