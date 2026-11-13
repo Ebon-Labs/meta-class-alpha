@@ -115,7 +115,7 @@ O indicador de progresso é um `Slider` filho do jogador, ativado só durante a 
 
 ### 2.6 Olhar no Editor
 
-`CameraEditorController` gira a cabeça do jogador local com o mouse, só no Editor. O corpo (`Player`) fica apenas com a rotação em torno do eixo Y; a inclinação do olhar fica no filho `Head`, onde estão a câmera, o listener e a pose do visor. O cursor permanece visível e livre, para o botão `SAIR` e o menu receberem o clique comum.
+`CameraEditorController` gira a vista do jogador local com o mouse, só no Editor. O osso `head` do `Avatar` acompanha só o giro horizontal da câmera, em torno do eixo Y do jogador, no máximo **45°** para cada lado. Acima disso, o corpo do `Avatar` gira no mesmo eixo Y e a cabeça permanece no limite. Olhar para cima ou para baixo não gira cabeça nem corpo. A câmera, o listener e a pose do visor ficam no filho `Head`. O cursor permanece visível e livre, para o botão `SAIR` e o menu receberem o clique comum.
 
 ### 2.7 Voz espacial
 
@@ -484,7 +484,7 @@ Assets/Scripts/
 │   └── ControlButtonAppearance.cs
 ├── Player/
 │   ├── Gaze/CameraPointerController.cs
-│   ├── Look/PlayerBodyYaw.cs        corpo só gira em Y
+│   ├── Look/AvatarHeadYaw.cs        cabeça até 45° no Y; corpo no excesso
 │   ├── Hud/ScreenText.cs            frases em pt-BR
 │   └── Voice/VoiceChatController.cs
 └── SolarSystem/                     órbita pelo centro da malha, rótulos, luz, nuvens

@@ -49,7 +49,7 @@ public class CameraEditorController : NetworkBehaviour
             return;
 
         EditorMouseLook.Accumulate(ref mouseX, ref mouseY, Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"), sensitivity);
-        mouseX += FloorCarry.ConsumeYawDegrees();
+        FloorCarry.ConsumeYawDegrees();
 
         Camera camera = GetComponentInChildren<Camera>();
         Transform look = camera != null ? camera.transform : transform;
