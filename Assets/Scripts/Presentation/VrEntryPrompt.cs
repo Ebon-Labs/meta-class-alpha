@@ -10,10 +10,12 @@ public class VrEntryPrompt : MonoBehaviour
     public const string SolarSystemScene = "SolarSystem";
     public const string TutorialScene = "Tutorial";
     public const string PosterResource = "VrEntryPoster";
+    public const string WelcomeResource = "TutorialWelcome";
 
     static VrEntryPrompt current;
 
     float hideAt;
+    bool finished;
     bool frozeBody;
     bool bodyWasKinematic;
     Rigidbody frozenBody;
@@ -26,6 +28,11 @@ public class VrEntryPrompt : MonoBehaviour
     public static bool StillShowing(float now, float hideAt)
     {
         return now < hideAt;
+    }
+
+    public static bool ShouldPlayWelcome(string sceneName, bool alreadyPlayed)
+    {
+        return sceneName == TutorialScene && !alreadyPlayed;
     }
 
     public static bool RestoreEnabled(bool wasEnabled, bool isLocalPlayer)
@@ -163,13 +170,51 @@ public class VrEntryPrompt : MonoBehaviour
 
     void Finish()
     {
+        if (finished)
+            return;
+
+        finished = true;
         Application.onBeforeRender -= ShowPlayerBeforeRender;
         ReleaseLocalPlayer();
 
         NetworkIdentity identity = FindLocalIdentity();
         PlaceLocalPlayer(identity);
         EnableLocalView(identity);
+        PlayWelcome(gameObject.scene.name);
         Destroy(gameObject);
+    }
+
+    static void PlayWelcome(string sceneName)
+    {
+        if (!ShouldPlayWelcome(sceneName, alreadyPlayed: false))
+            return;
+
+        TutorialWelcome welcome = Resources.Load<TutorialWelcome>(WelcomeResource);
+        AudioClip clip = welcome != null ? welcome.Clip : null;
+        if (clip == null)
+            return;
+
+        EnsureListener();
+
+        var host = new GameObject("TutorialWelcomeVoice");
+        AudioSource source = host.AddComponent<AudioSource>();
+        source.clip = clip;
+        source.spatialBlend = 0f;
+        source.loop = false;
+        source.playOnAwake = false;
+        source.Play();
+        Destroy(host, clip.length);
+    }
+
+    static void EnsureListener()
+    {
+        NetworkIdentity identity = FindLocalIdentity();
+        if (identity == null)
+            return;
+
+        AudioListener listener = identity.GetComponentInChildren<AudioListener>(true);
+        if (listener != null)
+            listener.enabled = true;
     }
 
     void FreezeLocalPlayer(NetworkIdentity identity)

@@ -17,6 +17,8 @@ O envio foi limitado no mesmo dia a uma janela de 100 ms (1600 amostras a 16 kHz
 
 O `TutorialButton` abre `Tutorial.unity` em host + client e coloca o jogador no centro, acima do `Ground`.
 
+Pendência: movimentação da cabeça e do corpo do Player em relação à câmera. A câmera está no próprio objeto `Player`, no mesmo transform do corpo. Não há cabeça separada da vista, então olhar vira o corpo inteiro.
+
 ## 4 de novembro de 2026
 
 O projeto também pode ser uma plataforma aberta para o ensino de computação gráfica, modelagem 3D e programação. Pode ser um curso de Unity. Jovens iniciantes colaboram com novas salas usando o projeto como framework e caso de uso, e aprendem enquanto contribuem com um jogo real, já em produção e disponível para a comunidade.

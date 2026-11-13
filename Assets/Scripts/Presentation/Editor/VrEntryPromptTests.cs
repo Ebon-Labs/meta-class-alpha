@@ -31,6 +31,14 @@ public class VrEntryPromptTests
     }
 
     [Test]
+    public void ShouldPlayWelcome_OnlyOnceInTutorial()
+    {
+        Assert.IsTrue(VrEntryPrompt.ShouldPlayWelcome(VrEntryPrompt.TutorialScene, alreadyPlayed: false));
+        Assert.IsFalse(VrEntryPrompt.ShouldPlayWelcome(VrEntryPrompt.TutorialScene, alreadyPlayed: true));
+        Assert.IsFalse(VrEntryPrompt.ShouldPlayWelcome(VrEntryPrompt.SolarSystemScene, alreadyPlayed: false));
+    }
+
+    [Test]
     public void RestoreEnabled_TurnsTheLocalPlayerCameraBackOn()
     {
         Assert.IsTrue(VrEntryPrompt.RestoreEnabled(wasEnabled: false, isLocalPlayer: true));
