@@ -1,5 +1,7 @@
+using System.Collections.Generic;
 using UnityEngine;
 
+[DefaultExecutionOrder(-30)]
 public class MoveToEdge : MonoBehaviour
 {
     public const float DefaultDuration = 7f;
@@ -30,6 +32,63 @@ public class MoveToEdge : MonoBehaviour
         return Mathf.Max(bounds.extents.x, Mathf.Max(bounds.extents.y, bounds.extents.z));
     }
 
+    public static bool ShouldCarry(bool turning, bool traveling, bool moved)
+    {
+        return turning || traveling || moved;
+    }
+
+    public static string RouteKey(Transform transform)
+    {
+        if (transform == null)
+            return "";
+
+        var parts = new List<string>();
+        Transform cursor = transform;
+        while (cursor != null)
+        {
+            parts.Add(cursor.GetSiblingIndex() + ":" + cursor.name);
+            cursor = cursor.parent;
+        }
+
+        parts.Reverse();
+        return string.Join("/", parts);
+    }
+
+    public static int RouteIndex(MoveToEdge edge)
+    {
+        if (edge == null)
+            return -1;
+
+        MoveToEdge[] ordered = Ordered();
+        for (int i = 0; i < ordered.Length; i++)
+        {
+            if (ordered[i] == edge)
+                return i;
+        }
+
+        return -1;
+    }
+
+    public static MoveToEdge AtRoute(int index)
+    {
+        MoveToEdge[] ordered = Ordered();
+        if (index < 0 || index >= ordered.Length)
+            return null;
+
+        return ordered[index];
+    }
+
+    public static bool IsMoving => movingCount > 0;
+
+    static int movingCount;
+
+    static MoveToEdge[] Ordered()
+    {
+        MoveToEdge[] found = Object.FindObjectsByType<MoveToEdge>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+        System.Array.Sort(found, (a, b) => string.CompareOrdinal(RouteKey(a.transform), RouteKey(b.transform)));
+        return found;
+    }
+
     public static Transform FindCenter()
     {
         GameObject center = GameObject.FindWithTag(CenterTag);
@@ -57,7 +116,6 @@ public class MoveToEdge : MonoBehaviour
     [SerializeField] bool returnHome;
     [SerializeField] float duration = DefaultDuration;
 
-    readonly PassengerHold passengers = new PassengerHold();
     Vector3 origin;
     Vector3 start;
     Transform referencePoint;
@@ -84,6 +142,10 @@ public class MoveToEdge : MonoBehaviour
 
     public void OnPointerClick()
     {
+        int route = RouteIndex(this);
+        if (route >= 0 && RoomSync.RequestTravel(route))
+            return;
+
         Begin();
     }
 
@@ -104,12 +166,7 @@ public class MoveToEdge : MonoBehaviour
         destinationRadius = Radius(bounds);
 
         TravelClaim.Claim(this, CancelTravel);
-        if (!moving)
-            passengers.Hold(subject.transform, PassengerTag);
-
-        PlaceSubject();
-        elapsed = 0f;
-        moving = true;
+        StartMoving();
     }
 
     void Update()
@@ -151,12 +208,7 @@ public class MoveToEdge : MonoBehaviour
             return;
 
         TravelClaim.Claim(this, CancelTravel);
-        if (!moving)
-            passengers.Hold(subject.transform, PassengerTag);
-
-        PlaceSubject();
-        elapsed = 0f;
-        moving = true;
+        StartMoving();
     }
 
     void PlaceSubject()
@@ -179,10 +231,23 @@ public class MoveToEdge : MonoBehaviour
         return subject.transform.position;
     }
 
+    void StartMoving()
+    {
+        if (!moving)
+        {
+            movingCount++;
+            moving = true;
+        }
+
+        PlaceSubject();
+        elapsed = 0f;
+    }
+
     void MoveSubject(Vector3 reference)
     {
-        Vector3 offset = subject.transform.position - ReferencePosition();
-        subject.transform.position = reference + offset;
+        Transform body = subject.transform;
+        Vector3 offset = body.position - ReferencePosition();
+        body.position = reference + offset;
     }
 
     void UpdateReturn()
@@ -220,8 +285,12 @@ public class MoveToEdge : MonoBehaviour
 
     void Finish()
     {
-        moving = false;
-        passengers.Release();
+        if (moving)
+        {
+            moving = false;
+            movingCount--;
+        }
+
         TravelClaim.Release(this);
     }
 }

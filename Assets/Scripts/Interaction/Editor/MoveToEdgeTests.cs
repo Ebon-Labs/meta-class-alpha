@@ -32,4 +32,28 @@ public class MoveToEdgeTests
         Assert.IsFalse(MoveToEdge.IsAvailable(atOrigin: true));
         Assert.IsTrue(MoveToEdge.IsAvailable(atOrigin: false));
     }
+
+    [Test]
+    public void RouteKey_UsesSiblingIndexAndParentNames()
+    {
+        var sun = new GameObject("Sun");
+        var portal = new GameObject("Portal");
+        portal.transform.SetParent(sun.transform, false);
+        try
+        {
+            Assert.AreEqual("0:Sun/0:Portal", MoveToEdge.RouteKey(portal.transform));
+        }
+        finally
+        {
+            Object.DestroyImmediate(sun);
+        }
+    }
+
+    [Test]
+    public void ShouldCarry_FollowsTravelAndTheLastStep()
+    {
+        Assert.IsTrue(MoveToEdge.ShouldCarry(turning: false, traveling: true, moved: false));
+        Assert.IsTrue(MoveToEdge.ShouldCarry(turning: false, traveling: false, moved: true));
+        Assert.IsFalse(MoveToEdge.ShouldCarry(turning: false, traveling: false, moved: false));
+    }
 }

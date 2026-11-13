@@ -27,6 +27,7 @@ public class RoomSync : NetworkBehaviour
     static ServerState serverState;
     static int appliedScreen = int.MinValue;
     static RoomSync clockDriver;
+    static bool riding;
 
     [SyncVar] bool syncedReady;
     [SyncVar] float syncedTimeScale;
@@ -41,6 +42,7 @@ public class RoomSync : NetworkBehaviour
     [SyncVar(hook = nameof(OnClock))] float syncedClock;
     [SyncVar] bool syncedClassPose;
     [SyncVar] bool syncedTurning;
+    [SyncVar] bool syncedTraveling;
     [SyncVar] Vector3 syncedClassPosition;
     [SyncVar] Quaternion syncedClassRotation = Quaternion.identity;
     [SyncVar] bool syncedPlayerPose;
@@ -83,6 +85,11 @@ public class RoomSync : NetworkBehaviour
     public static bool RequestScreen(ScreenControlButton.Action action)
     {
         return Send(sync => sync.CmdScreen((int)action));
+    }
+
+    public static bool RequestTravel(int route)
+    {
+        return Send(sync => sync.CmdTravel(route));
     }
 
     public static SolarMotionSnapshot ToggleTime(SolarMotionSnapshot snapshot)
@@ -139,6 +146,7 @@ public class RoomSync : NetworkBehaviour
     {
         if (clockDriver == this)
             clockDriver = null;
+        riding = false;
         if (NetworkServer.active)
             return;
 
@@ -149,6 +157,7 @@ public class RoomSync : NetworkBehaviour
 
     public override void OnStopClient()
     {
+        riding = false;
         if (isServer || !syncedReady)
             return;
 
@@ -175,7 +184,7 @@ public class RoomSync : NetworkBehaviour
         if (isServer && this == clockDriver)
             PublishClassPose();
 
-        if (isClient && !isServer && !isLocalPlayer && syncedPlayerPose)
+        if (isClient && !isServer && !isLocalPlayer && syncedPlayerPose && !riding)
             ApplyRemotePlayerPose();
     }
 
@@ -183,6 +192,10 @@ public class RoomSync : NetworkBehaviour
     void CmdPublishPlayerPose(Vector3 position, Quaternion rotation)
     {
         WritePlayerPose(position, rotation);
+        ClassController room = ClassController.ResolveExisting(Object.FindFirstObjectByType<ClassController>());
+        if (room != null && (room.IsTurning || MoveToEdge.IsMoving))
+            return;
+
         ApplyRemotePlayerPose(position, rotation);
     }
 
@@ -206,6 +219,7 @@ public class RoomSync : NetworkBehaviour
         syncedClassPosition = room.transform.position;
         syncedClassRotation = room.transform.rotation;
         syncedTurning = room.IsTurning;
+        syncedTraveling = MoveToEdge.IsMoving;
         syncedClassPose = true;
     }
 
@@ -220,15 +234,16 @@ public class RoomSync : NetworkBehaviour
     {
         ClassController room = ClassController.ResolveExisting(Object.FindFirstObjectByType<ClassController>());
         if (room == null)
+        {
+            riding = false;
             return;
+        }
 
-        if (syncedTurning)
-            room.HoldPassengers();
-
+        Vector3 fromPosition = room.transform.position;
+        Quaternion fromRotation = room.transform.rotation;
+        bool moved = fromPosition != syncedClassPosition || fromRotation != syncedClassRotation;
+        riding = MoveToEdge.ShouldCarry(syncedTurning, syncedTraveling, moved);
         room.transform.SetPositionAndRotation(syncedClassPosition, syncedClassRotation);
-
-        if (!syncedTurning)
-            room.ReleasePassengers();
     }
 
     void ApplyRemotePlayerPose()
@@ -249,6 +264,14 @@ public class RoomSync : NetworkBehaviour
         }
 
         transform.SetPositionAndRotation(position, rotation);
+    }
+
+    [Command]
+    void CmdTravel(int route)
+    {
+        MoveToEdge edge = MoveToEdge.AtRoute(route);
+        if (edge != null)
+            edge.Begin();
     }
 
     [Command]

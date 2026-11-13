@@ -1,6 +1,7 @@
 using UnityEngine;
 
 [DisallowMultipleComponent]
+[DefaultExecutionOrder(-40)]
 public class ClassController : MonoBehaviour
 {
     public const float ClockwiseStepDegrees = 45f;
@@ -24,7 +25,6 @@ public class ClassController : MonoBehaviour
     bool appliedMuteGuests;
     bool appliedHideFloorAreas = true;
 
-    readonly PassengerHold passengers = new PassengerHold();
     Vector3 pivot;
     Vector3 restPosition;
     Vector3 restPivot;
@@ -34,7 +34,6 @@ public class ClassController : MonoBehaviour
     float turnElapsed;
     int appliedTurns;
     bool turning;
-    bool passengersHeld;
 
     public bool IsTurning => turning;
 
@@ -92,31 +91,11 @@ public class ClassController : MonoBehaviour
     public void TurnClockwise()
     {
         ResolveAreas();
-        HoldPassengers();
-
         pivot = hostArea != null ? hostArea.position : transform.position;
         positionFrom = transform.position;
         rotationFrom = transform.rotation;
         turnElapsed = 0f;
         turning = true;
-    }
-
-    public void HoldPassengers()
-    {
-        if (passengersHeld)
-            return;
-
-        passengers.Hold(transform, MoveToEdge.PassengerTag);
-        passengersHeld = true;
-    }
-
-    public void ReleasePassengers()
-    {
-        if (!passengersHeld)
-            return;
-
-        passengers.Release();
-        passengersHeld = false;
     }
 
     public static bool AnimateSingleStep(int applied, int target)
@@ -141,7 +120,6 @@ public class ClassController : MonoBehaviour
         ResolveAreas();
         if (turning)
             turning = false;
-        ReleasePassengers();
 
         Quaternion yaw = ClockwiseYaw(ClockwiseStepDegrees * count);
         transform.SetPositionAndRotation(Orbit(restPosition, restPivot, yaw), yaw * restRotation);
@@ -179,6 +157,10 @@ public class ClassController : MonoBehaviour
     void Awake()
     {
         Instance = this;
+        if (GetComponent<FloorGuard>() == null)
+            gameObject.AddComponent<FloorGuard>();
+        if (GetComponent<FloorFollow>() == null)
+            gameObject.AddComponent<FloorFollow>();
         ResolveAreas();
         restPosition = transform.position;
         restRotation = transform.rotation;
@@ -188,8 +170,6 @@ public class ClassController : MonoBehaviour
 
     void OnDestroy()
     {
-        ReleasePassengers();
-
         if (Instance == this)
             Instance = null;
     }
@@ -215,7 +195,6 @@ public class ClassController : MonoBehaviour
             return;
 
         turning = false;
-        ReleasePassengers();
     }
 
     void LateUpdate()
