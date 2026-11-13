@@ -3,7 +3,7 @@ using Mirror.Discovery;
 using UnityEngine;
 
 [DisallowMultipleComponent]
-public class SolarSystemThumbHost : MonoBehaviour
+public class ImageMenuThumb : MonoBehaviour
 {
     public const float HitPadding = 48f;
     public const string ObjectName = "SolarSystemThumb";
@@ -111,6 +111,7 @@ public class SolarSystemThumbHost : MonoBehaviour
         if (!string.IsNullOrEmpty(scene))
             manager.onlineScene = scene;
 
+        PlayerPortraitChoice.Apply(manager);
         manager.StartHost();
         Advertise(manager.GetComponent<NetworkDiscovery>());
     }

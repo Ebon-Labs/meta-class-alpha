@@ -82,6 +82,11 @@ public class RoomSync : NetworkBehaviour
         return Send(sync => sync.CmdToggleFloor());
     }
 
+    public static bool RequestRegroup()
+    {
+        return Send(sync => sync.CmdRegroup());
+    }
+
     public static bool RequestScreen(ScreenControlButton.Action action)
     {
         return Send(sync => sync.CmdScreen((int)action));
@@ -326,6 +331,33 @@ public class RoomSync : NetworkBehaviour
             return;
         serverState.HideFloor = !serverState.HideFloor;
         Commit();
+    }
+
+    [Command]
+    void CmdRegroup()
+    {
+        foreach (NetworkConnectionToClient conn in NetworkServer.connections.Values)
+        {
+            if (conn == null || conn.identity == null)
+                continue;
+
+            if (NetworkServer.localConnection != null && conn.connectionId == NetworkServer.localConnection.connectionId)
+                continue;
+
+            RoomSync guest = conn.identity.GetComponent<RoomSync>();
+            if (guest != null)
+                guest.TargetRegroup();
+        }
+    }
+
+    [TargetRpc]
+    void TargetRegroup()
+    {
+        ClassController room = ClassController.ResolveExisting(Object.FindFirstObjectByType<ClassController>());
+        if (room == null)
+            return;
+
+        room.PlacePlayer(transform, false);
     }
 
     [Command]

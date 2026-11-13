@@ -88,7 +88,7 @@ public class CreateRoomButton : MonoBehaviour
     public static bool Press(Vector2 screen, Camera view)
     {
         TextMeshPro label = FindLabel();
-        if (label == null || !SolarSystemThumbHost.Hits(label.gameObject, screen, view))
+        if (label == null || !ImageMenuThumb.Hits(label.gameObject, screen, view))
             return false;
 
         string alias = CurrentAlias();
@@ -104,14 +104,14 @@ public class CreateRoomButton : MonoBehaviour
             return;
 
         bool webGl = Application.platform == RuntimePlatform.WebGLPlayer;
-        if (!SolarSystemThumbHost.CanStartHost(NetworkClient.isConnected, NetworkClient.active, NetworkServer.active, webGl))
+        if (!ImageMenuThumb.CanStartHost(NetworkClient.isConnected, NetworkClient.active, NetworkServer.active, webGl))
             return;
 
         NetworkDiscovery discovery = Object.FindFirstObjectByType<NetworkDiscovery>();
         if (discovery != null)
             discovery.roomAlias = alias;
 
-        SolarSystemThumbHost.StartHostSession();
+        ImageMenuThumb.StartHostSession();
     }
 
     void Awake()

@@ -55,7 +55,7 @@ public class LanRoomBeacon : MonoBehaviour
 
         role = next;
         if (next == Role.Host)
-            SolarSystemThumbHost.Advertise(discovery);
+            ImageMenuThumb.Advertise(discovery);
         else if (next == Role.Search)
             discovery.StartDiscovery();
         else

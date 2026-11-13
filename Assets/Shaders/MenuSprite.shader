@@ -2,7 +2,7 @@ Shader "Custom/MenuSprite"
 {
     Properties
     {
-        _MainTex ("Sprite", 2D) = "white" {}
+        [PerRendererData] _MainTex ("Sprite", 2D) = "white" {}
         _Color ("Tint", Color) = (1, 1, 1, 1)
         _CullMode ("Cull Mode", Float) = 2
     }

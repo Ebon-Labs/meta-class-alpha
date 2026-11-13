@@ -6,10 +6,10 @@ public static class TutorialHost
 
     public static bool Press(Vector2 screen, Camera view)
     {
-        if (!SolarSystemThumbHost.Hits(GameObject.Find(CarouselMenu.TutorialName), screen, view))
+        if (!ImageMenuThumb.Hits(GameObject.Find(CarouselMenu.TutorialName), screen, view))
             return false;
 
-        SolarSystemThumbHost.StartHostScene(ScenePath);
+        ImageMenuThumb.StartHostScene(ScenePath);
         return true;
     }
 }

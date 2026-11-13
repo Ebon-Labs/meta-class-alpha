@@ -148,4 +148,28 @@ public class AvatarHeadYawTests
             Object.DestroyImmediate(root);
         }
     }
+
+    [Test]
+    public void StopIndependentMotion_DisablesImportedClips()
+    {
+        var root = new GameObject("Player");
+        var body = new GameObject("Avatar");
+        body.transform.SetParent(root.transform, false);
+        Animator animator = body.AddComponent<Animator>();
+        Animation clip = body.AddComponent<Animation>();
+        try
+        {
+            clip.playAutomatically = true;
+            AvatarHeadYaw.StopIndependentMotion(root);
+            Assert.IsFalse(animator.enabled);
+            Assert.IsNull(animator.runtimeAnimatorController);
+            Assert.IsFalse(clip.enabled);
+            Assert.IsFalse(clip.playAutomatically);
+            Assert.IsNull(clip.clip);
+        }
+        finally
+        {
+            Object.DestroyImmediate(root);
+        }
+    }
 }

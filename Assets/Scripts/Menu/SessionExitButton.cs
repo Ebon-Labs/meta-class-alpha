@@ -1,3 +1,4 @@
+using Mirror;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -10,9 +11,16 @@ public class SessionExitButton : MonoBehaviour
 
     static SessionExitButton current;
 
+    Canvas canvas;
+
     public static bool Shows(string sceneName)
     {
         return !string.IsNullOrEmpty(sceneName) && sceneName != MenuReturn.MenuScene;
+    }
+
+    public static bool VisibleTo(string sceneName, bool isHost)
+    {
+        return Shows(sceneName);
     }
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
@@ -20,17 +28,6 @@ public class SessionExitButton : MonoBehaviour
     {
         SceneManager.sceneLoaded -= OnSceneLoaded;
         SceneManager.sceneLoaded += OnSceneLoaded;
-    }
-
-    static void OnSceneLoaded(Scene scene, LoadSceneMode mode)
-    {
-        if (!Shows(scene.name))
-        {
-            if (current != null)
-                Destroy(current.gameObject);
-            return;
-        }
-
         if (current != null)
             return;
 
@@ -38,13 +35,63 @@ public class SessionExitButton : MonoBehaviour
         DontDestroyOnLoad(host);
         current = host.AddComponent<SessionExitButton>();
         current.CreateButton();
-        CameraEditorController.ReleaseCursor();
+    }
+
+    static void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        if (current == null)
+            return;
+
+        current.Apply(scene.name);
     }
 
     void OnDestroy()
     {
         if (current == this)
             current = null;
+    }
+
+    void Update()
+    {
+        Apply(SceneManager.GetActiveScene().name);
+    }
+
+    void Apply(string sceneName)
+    {
+        bool show = VisibleTo(sceneName, NetworkServer.active);
+        if (canvas != null)
+            canvas.gameObject.SetActive(show);
+        if (!show)
+            return;
+
+        CameraEditorController.ReleaseCursor();
+        Bind(LocalCamera());
+    }
+
+    static Camera LocalCamera()
+    {
+        if (!NetworkClient.active || NetworkClient.localPlayer == null)
+            return null;
+
+        return NetworkClient.localPlayer.GetComponentInChildren<Camera>(true);
+    }
+
+    void Bind(Camera view)
+    {
+        if (canvas == null)
+            return;
+
+        canvas.sortingOrder = SortingOrder;
+        if (view != null && view.enabled)
+        {
+            canvas.renderMode = RenderMode.ScreenSpaceCamera;
+            canvas.worldCamera = view;
+            canvas.planeDistance = 0.4f;
+            return;
+        }
+
+        canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+        canvas.worldCamera = null;
     }
 
     public void Press()
@@ -56,9 +103,10 @@ public class SessionExitButton : MonoBehaviour
     {
         var canvasObject = new GameObject("ExitCanvas");
         canvasObject.transform.SetParent(transform, false);
-        var canvas = canvasObject.AddComponent<Canvas>();
+        canvas = canvasObject.AddComponent<Canvas>();
         canvas.renderMode = RenderMode.ScreenSpaceOverlay;
         canvas.sortingOrder = SortingOrder;
+        canvas.gameObject.SetActive(false);
         var scaler = canvasObject.AddComponent<CanvasScaler>();
         scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
         scaler.referenceResolution = new Vector2(1920f, 1080f);
