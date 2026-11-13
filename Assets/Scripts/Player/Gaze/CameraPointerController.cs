@@ -218,6 +218,8 @@ public class CameraPointerController : NetworkBehaviour
             Debug.Log("handlePointerClick: " + target.tag);
             transform.position = GetTargetEdgePosition(target);
             DisablePointerForTarget(target);
+            TeleportReveal.Complete(target);
+            MenuReturn.Begin(target);
             return;
         }
 

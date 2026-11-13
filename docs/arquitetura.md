@@ -91,7 +91,7 @@ Fluxo, independente do conteúdo da cena:
 2. Se o alvo muda, o objeto anterior recebe `OnPointerExit` e o novo pode receber `OnPointerEnter`.
 3. Objetos com tag `Environment` não entram em foco. O mesmo vale para um alvo de teleporte em cuja borda o observador já está, e para o alvo recém-usado (o ponteiro fica desarmado até o olhar sair dele).
 4. Enquanto o foco permanece, um contador avança. O tempo padrão de confirmação é **3 segundos**. Um slider mostra a fração decorrida.
-5. Ao completar o tempo, `handlePointerClick` dispara. Se a tag é `Teleportable`, o jogador é movido para um ponto na superfície do volume do alvo, com uma margem de 0,05 unidade para fora, e o ponteiro daquele alvo é desligado. Outras tags só registram o clique no HUD.
+5. Ao completar o tempo, `handlePointerClick` dispara. Se a tag é `Teleportable`, o jogador é movido para um ponto na superfície do volume do alvo, com uma margem de 0,05 unidade para fora, e o ponteiro daquele alvo é desligado. Se o alvo tem `TeleportReveal`, o próprio objeto é desativado e o objeto em `Next` é ativado. Outras tags só registram o clique no HUD.
 
 `OnPointerEnter` e `OnPointerExit` são enviados com `SendMessage` apenas para as tags `Interactive`, `Teleportable` e `Player`. O destaque visual fica a cargo de quem implementar esses métodos, em geral `ObjectBasicController`.
 
@@ -103,6 +103,8 @@ O nome exibido no HUD tem uma convenção: se o pai do alvo tem tag `Planet`, a 
 
 `ZBounce` desloca a posição local no eixo Z enquanto o `Renderer` do mesmo objeto está visível para alguma câmera. A oscilação parte do repouso, sobe até a amplitude **1** e volta, com período **4,8 s**, e recomeça enquanto o objeto continuar visível. Fora de vista, volta ao repouso. Na cena Tutorial, o componente está em `PortalThree`.
 
+Na mesma cena, `PortalOne` começa visível. O teleporte para `PortalOne` o esconde e mostra `PortalTwo`. O teleporte para `PortalTwo` o esconde e mostra `PortalThree`. `PortalTwo` e `PortalThree` começam desativados. O teleporte para `PortalThree` espera **3 s** e encerra a sessão: o anfitrião chama `StopHost` e a cena offline `Menu` volta a abrir. Nesse retorno o cursor do Editor é solto, para o clique comum do menu funcionar.
+
 ### 2.5 HUD local
 
 `UILogger` escreve uma string num `TextMeshProUGUI`. Não formata mensagens e não fala com a rede. Quem define o texto é o controlador de olhar.
@@ -111,7 +113,7 @@ O indicador de progresso é um `Slider` filho do jogador, ativado só durante a 
 
 ### 2.6 Olhar no Editor
 
-`CameraEditorController` gira o transform do jogador local com o mouse e trava o cursor. Existe para testar a mesma câmera do gaze sem o visor. Em build, o `Start` retorna cedo; o `Update` ainda lê o mouse se houver um jogador local.
+`CameraEditorController` gira o transform do jogador local com o mouse e trava o cursor. Existe para testar a mesma câmera do gaze sem o visor. Em build, o `Start` retorna cedo; o `Update` ainda lê o mouse se houver um jogador local. Quando a cena `Menu` carrega de novo, o cursor fica visível e livre, e o clique comum volta a ser o toque na tela.
 
 ### 2.7 Voz espacial
 
@@ -459,7 +461,8 @@ Assets/Scripts/
 │   ├── SolarSystemThumbHost.cs      toque na miniatura cria a sala
 │   ├── RoomList.cs                  salas abertas e entrada como cliente
 │   ├── LanRoomBeacon.cs             anúncio ou busca conforme a sessão
-│   └── LogoBounce.cs
+│   ├── LogoBounce.cs
+│   └── MenuReturn.cs               volta ao Menu 3 s após o teleporte
 ├── Classroom/
 │   ├── ClassController.cs           giro de 45° e áreas
 │   ├── RotateClassButton.cs
@@ -472,6 +475,7 @@ Assets/Scripts/
 │   └── MainScreen.cs
 ├── Interaction/
 │   ├── MoveToEdge.cs                viagem ao astro, 7 s, Y = 8
+│   ├── TeleportReveal.cs            esconde o alvo e mostra o próximo
 │   ├── PassengerHold.cs
 │   ├── EdgeApproach.cs              SmoothStep compartilhado
 │   └── ControlButtonAppearance.cs

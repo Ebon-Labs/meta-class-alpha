@@ -388,6 +388,7 @@ GameObject:
   - component: {fileID: 597861219}
   - component: {fileID: 597861218}
   - component: {fileID: 597861217}
+  - component: {fileID: 597861221}
   m_Layer: 0
   m_Name: PortalOne
   m_TagString: Teleportable
@@ -424,6 +425,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: MetaClass::ObjectBasicController
   InactiveMaterial: {fileID: 2100000, guid: 5b8e1c04a7d24f6e9c0b3a58d71e4f02, type: 2}
   GazedAtMaterial: {fileID: 2100000, guid: e4218d5466c01bd43b4f55ab2325b0d3, type: 2}
+--- !u!114 &597861221
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 597861215}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a4c8e1b27d3f49a6b5e0c8d91f05aa91, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: MetaClass::TeleportReveal
+  Next: {fileID: 1064591519}
 --- !u!136 &597861218
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -575,13 +589,14 @@ GameObject:
   - component: {fileID: 1064591523}
   - component: {fileID: 1064591522}
   - component: {fileID: 1064591521}
+  - component: {fileID: 1064591525}
   m_Layer: 0
   m_Name: PortalTwo
   m_TagString: Teleportable
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1064591520
 Transform:
   m_ObjectHideFlags: 0
@@ -611,6 +626,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: MetaClass::ObjectBasicController
   InactiveMaterial: {fileID: 2100000, guid: 6e1a9c35d8b24f7a0c4e8b71f25d0a93, type: 2}
   GazedAtMaterial: {fileID: 2100000, guid: e4218d5466c01bd43b4f55ab2325b0d3, type: 2}
+--- !u!114 &1064591525
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1064591519}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a4c8e1b27d3f49a6b5e0c8d91f05aa91, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: MetaClass::TeleportReveal
+  Next: {fileID: 1847362910}
 --- !u!136 &1064591522
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -1191,13 +1219,14 @@ GameObject:
   - component: {fileID: 1847362913}
   - component: {fileID: 1847362912}
   - component: {fileID: 1847362916}
+  - component: {fileID: 1847362917}
   m_Layer: 0
   m_Name: PortalThree
   m_TagString: Teleportable
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1847362911
 Transform:
   m_ObjectHideFlags: 0
@@ -1227,18 +1256,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: MetaClass::ObjectBasicController
   InactiveMaterial: {fileID: 2100000, guid: c9f1d47a2b8e4c6d9a0e5f31b74c8d12, type: 2}
   GazedAtMaterial: {fileID: 2100000, guid: e4218d5466c01bd43b4f55ab2325b0d3, type: 2}
---- !u!114 &1847362916
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1847362910}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b7e2c4a19d3f48e6a5c0b8d71f04aa22, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: MetaClass::ZBounce
 --- !u!136 &1847362913
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -1319,6 +1336,30 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1847362910}
   m_Mesh: {fileID: 10206, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &1847362916
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1847362910}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b7e2c4a19d3f48e6a5c0b8d71f04aa22, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: MetaClass::ZBounce
+--- !u!114 &1847362917
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1847362910}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c6e2a91b4d8f47a0b5c3d71e04f8aa33, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: MetaClass::MenuReturn
 --- !u!1001 &1853859710
 PrefabInstance:
   m_ObjectHideFlags: 0
