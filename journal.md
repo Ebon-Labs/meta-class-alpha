@@ -1,5 +1,9 @@
 # Diário
 
+## 13 de novembro de 2026
+
+Modelagem e posicionamento de ojetos realmente ainda é uma questão para os agente, por isso alguns elementos da interface ainda precisaram ser criados na mão. Além disso notei que se faz sempre necessário conhecer a arquitetura tanto de codigo como a hierarquia de objetos e a responsabilidade de cada um para que a IA não alucine e crie coisas absurdas; intervenção humana é de fato muito necessário.
+
 ## 12 de novembro de 2026
 
 Relato: ruído estridente emitido no client.
