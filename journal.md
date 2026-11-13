@@ -4,6 +4,8 @@
 
 Modelagem e posicionamento de ojetos realmente ainda é uma questão para os agente, por isso alguns elementos da interface ainda precisaram ser criados na mão. Além disso notei que se faz sempre necessário conhecer a arquitetura tanto de codigo como a hierarquia de objetos e a responsabilidade de cada um para que a IA não alucine e crie coisas absurdas; intervenção humana é de fato muito necessário.
 
+Comece pelo simples: a IA terá  mais facilidade de fazer por si só funcionalidade similares as ja construídas, tipo criar um novo botão em um painel com icone dentro do estilo ja estabelicido e uma novafuncionalidade reaproveitando a estrutura e codigo ja desenvolvido dentro da arquitetura
+
 ## 12 de novembro de 2026
 
 Relato: ruído estridente emitido no client.

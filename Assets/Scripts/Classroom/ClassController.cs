@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 [DisallowMultipleComponent]
@@ -238,6 +240,25 @@ public class ClassController : MonoBehaviour
 
         body.linearVelocity = Vector3.zero;
         body.angularVelocity = Vector3.zero;
+    }
+
+    public int PlaceGuests(IList<Transform> players, Func<Transform, bool> isHost)
+    {
+        if (players == null)
+            return 0;
+
+        int moved = 0;
+        for (int i = 0; i < players.Count; i++)
+        {
+            Transform player = players[i];
+            if (player == null || (isHost != null && isHost(player)))
+                continue;
+
+            PlacePlayer(player, false);
+            moved++;
+        }
+
+        return moved;
     }
 
     public bool ShouldMuteGuestMicrophone(bool isHostPlayer)
