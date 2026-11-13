@@ -15,7 +15,9 @@ O `Editor.log` dessa sessão registra o descarte do pacote de voz, no canal unre
 
 O envio foi limitado no mesmo dia a uma janela de 100 ms (1600 amostras a 16 kHz, teto de 3000) em `MaxVoiceSamples`, descartando o áudio acumulado e ficando só com o trecho mais recente (`VoiceReadStart`). O relato fica aberto até o client ser ouvido de novo sem o estridente.
 
-TODO: sala de tutorial. O `TutorialButton` no menu ainda não abre sala nenhuma.
+O `TutorialButton` abre `Tutorial.unity` em host + client e coloca o jogador no centro, acima do `Ground`.
+
+Pendência: movimentação da cabeça e do corpo do Player em relação à câmera. A câmera está no próprio objeto `Player`, no mesmo transform do corpo. Não há cabeça separada da vista, então olhar vira o corpo inteiro.
 
 ## 4 de novembro de 2026
 

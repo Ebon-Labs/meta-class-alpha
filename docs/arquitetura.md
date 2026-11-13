@@ -1,7 +1,7 @@
 # Documento de Arquitetura
 
 **Projeto:** meta-class-alpha  
-**Cenas de build:** `Assets/Scenes/Menu.unity` (primeira), depois `Assets/Scenes/SolarSystem.unity`  
+**Cenas de build:** `Assets/Scenes/Menu.unity` (primeira), depois `Assets/Scenes/SolarSystem.unity` e `Assets/Scenes/Tutorial.unity`  
 **Escopo:** funcionalidades implementadas e a forma como o menu e a cena SolarSystem as compõem  
 **Fora de escopo:** sala de controle e portal de retorno descritos em [TDD-sala-observacao-controle.md](TDD-sala-observacao-controle.md), que ainda não estão implementados. O painel descritivo desse TDD está feito (`InfoArea` e `SceneInfoPanel`, seções 2.13 e 3).  
 **Código novo:** [codigo-limpo.md](codigo-limpo.md) — arquitetura, Clean Code, SOLID e testes.
@@ -79,6 +79,8 @@ A rede usa Mirror com transporte Telepathy. O contrato genérico é:
 
 Parâmetros atuais do manager, reutilizáveis como padrão do projeto: porta **7777**, no máximo **4** conexões, `dontDestroyOnLoad`, `autoStartServerBuild` ligado e `autoConnectClientBuild` desligado. O endereço padrão no Editor é `localhost`. O manager vive na cena Menu, com cena offline `Menu` e cena online `SolarSystem`. SolarSystem não carrega um segundo `NetworkManager`. O HUD de canto do Mirror continua sendo o controle que cria a sala.
 
+`SessionExitButton` desenha o botão **SAIR** no canto superior direito, em canvas de tela, com clique comum. Aparece em toda cena cujo nome não é `Menu` e some ao voltar para ela. O clique chama a mesma saída de `MenuReturn`: anfitrião e cliente juntos (`StopHost`) derrubam a sala e levam todos à cena offline `Menu`; só cliente (`StopClient`) sai da sala e volta ao `Menu`, e os demais ficam.
+
 `CameraPointerController.OnStartClient` posiciona o jogador local numa área aleatória próxima da origem (`x` e `z` entre 0 e 3, `y = 1`) e habilita câmera e canvas somente quando `isLocalPlayer` é verdadeiro.
 
 ### 2.3 Olhar, permanência e teleporte
@@ -91,15 +93,19 @@ Fluxo, independente do conteúdo da cena:
 2. Se o alvo muda, o objeto anterior recebe `OnPointerExit` e o novo pode receber `OnPointerEnter`.
 3. Objetos com tag `Environment` não entram em foco. O mesmo vale para um alvo de teleporte em cuja borda o observador já está, e para o alvo recém-usado (o ponteiro fica desarmado até o olhar sair dele).
 4. Enquanto o foco permanece, um contador avança. O tempo padrão de confirmação é **3 segundos**. Um slider mostra a fração decorrida.
-5. Ao completar o tempo, `handlePointerClick` dispara. Se a tag é `Teleportable`, o jogador é movido para um ponto na superfície do volume do alvo, com uma margem de 0,05 unidade para fora, e o ponteiro daquele alvo é desligado. Outras tags só registram o clique no HUD.
+5. Ao completar o tempo, `handlePointerClick` dispara. Se a tag é `Teleportable`, o jogador é movido para um ponto na superfície do volume do alvo, com uma margem de 0,05 unidade para fora, e o ponteiro daquele alvo é desligado. Se o alvo tem `TeleportReveal`, o próprio objeto é desativado e o objeto em `Next` é ativado. Outras tags só registram o clique no HUD.
 
 `OnPointerEnter` e `OnPointerExit` são enviados com `SendMessage` apenas para as tags `Interactive`, `Teleportable` e `Player`. O destaque visual fica a cargo de quem implementar esses métodos, em geral `ObjectBasicController`.
 
-O nome exibido no HUD tem uma convenção: se o pai do alvo tem tag `Planet`, a mensagem é `Planeta: <nome do pai>`. Caso contrário, usa o nome do próprio objeto.
+O nome exibido no HUD tem uma convenção: se o pai do alvo tem tag `Planet`, a mensagem é `Planeta: <nome do pai>`. Caso contrário, usa o nome do próprio objeto. `PortalOne`, `PortalTwo` e `PortalThree` aparecem como **1**, **2** e **3**.
 
 ### 2.4 Feedback visual de foco
 
 `ObjectBasicController` troca o material do `Renderer` do próprio objeto entre um material inativo e um material de olhar. As trocas usam instâncias estáveis, para que um shader com animação de tempo continue correndo entre entrar e sair do foco. Não decide o que o clique faz.
+
+`ZBounce` desloca a posição local no eixo Z enquanto o `Renderer` do mesmo objeto está visível para alguma câmera. A oscilação parte do repouso, sobe até a amplitude **1** e volta, com período **14,4 s**, e recomeça enquanto o objeto continuar visível. Fora de vista, volta ao repouso. Na cena Tutorial, o componente está em `PortalThree`.
+
+Na mesma cena, `PortalOne` começa desativado e só é ligado quando o vídeo do `MainScreen` chega ao fim. O teleporte para `PortalOne` o esconde e mostra `PortalTwo`. O teleporte para `PortalTwo` o esconde e mostra `PortalThree`. `PortalTwo` e `PortalThree` começam desativados. O teleporte para `PortalThree` espera **3 s** e encerra a sessão: o anfitrião chama `StopHost` e a cena offline `Menu` volta a abrir. Nesse retorno o cursor do Editor é solto, para o clique comum do menu funcionar.
 
 ### 2.5 HUD local
 
@@ -109,7 +115,7 @@ O indicador de progresso é um `Slider` filho do jogador, ativado só durante a 
 
 ### 2.6 Olhar no Editor
 
-`CameraEditorController` gira o transform do jogador local com o mouse e trava o cursor. Existe para testar a mesma câmera do gaze sem o visor. Em build, o `Start` retorna cedo; o `Update` ainda lê o mouse se houver um jogador local.
+`CameraEditorController` gira o transform do jogador local com o mouse. Existe para testar a mesma câmera do gaze sem o visor. Em build, o `Start` retorna cedo; o `Update` ainda lê o mouse se houver um jogador local. O cursor permanece visível e livre, para o botão `SAIR` e o menu receberem o clique comum.
 
 ### 2.7 Voz espacial
 
@@ -217,9 +223,9 @@ A cena Menu é a primeira do build. Ela não tem jogador local, então o gaze n�
 | `CreateBack` | Voltar | −90° |
 | `Enter` | Buscar Sala | −90° |
 | `EnterBack` | Voltar | +90° horário, mesmo sentido de Create |
-| `TutorialButton` | Instruções | nenhum: o toque mais perto desse rótulo não gira |
+| `TutorialButton` | Instruções | nenhum giro: o toque abre `Tutorial.unity` em host + client |
 
-O acerto usa os limites visíveis do renderer, com **48 px** de folga, e escolhe o rótulo cujo centro na tela está mais perto do toque. Só entra o rótulo virado para a câmera. Cantos atrás da câmera são ignorados. Esses rótulos não chamam `StartHost` nem `StartClient`. O toque em `SolarSystemThumb` chama `NetworkManager.StartHost()`, a mesma ação do botão Host (Server + Client) do HUD, e só enquanto não há sessão ativa. A miniatura também precisa estar virada para a câmera, para não criar sala a partir da face de busca. O clique numa sala da lista é testado antes da miniatura.
+O acerto usa os limites visíveis do renderer, com **48 px** de folga, e escolhe o rótulo cujo centro na tela está mais perto do toque. Só entra o rótulo virado para a câmera. Cantos atrás da câmera são ignorados. Create, Enter e as voltas não chamam `StartHost` nem `StartClient`. O toque em `TutorialButton` troca a cena online para `Assets/Scenes/Tutorial.unity` e chama `NetworkManager.StartHost()` (host + client), só enquanto não há sessão ativa. Na cena Tutorial, o jogador sem área de anfitrião ou convidado fica no centro do objeto `Ground`, acima do topo da malha, na altura dos olhos. O toque em `SolarSystemThumb` gira o carrossel e não inicia a sala. A sala do sistema solar continua no botão Entrar e no Host do HUD, com `onlineScene` de volta para `Assets/Scenes/SolarSystem.unity`. A miniatura também precisa estar virada para a câmera. O clique numa sala da lista é testado antes da miniatura. Ao entrar em SolarSystem ou Tutorial, `coloque-oculos-vr` cobre a visão por **5 s** e só então a cena aparece. Na cena Tutorial, quando essa imagem some, `boas-vindas-treinamento` toca uma vez.
 
 `LanRoomBeacon` nasce em runtime no `NetworkDiscovery`, quando `RoomList` liga. Servidor ativo anuncia a sala; cliente que não é servidor para a busca; sem sessão, a busca começa. O anúncio é UDP em broadcast, porta **47777**, a cada **3 s**. `RoomList` guarda cada sala pelo `serverId` e apaga as que ficam mais de **7 s** sem anúncio novo. O componente fica no campo TMP da face de busca: o campo é só leitura, e sem salas o placeholder da cena continua visível. Cada sala é uma linha (apelido, ou host e porta). O toque na linha entra só como cliente (`StartClient` com o URI da sala) e não cria outra sala. O anfitrião não lista a própria sala.
 
@@ -451,12 +457,15 @@ Os TextMeshPro do menu e a miniatura `SolarSystemThumb` usam Cull Back (`_CullMo
 ```
 Assets/Scripts/
 ├── Cardboard/InitCardboard.cs
+├── Presentation/ZBounce.cs          oscilação local em Z enquanto visível
 ├── Menu/
 │   ├── CarouselMenu.cs              giro de 90° por toque na tela
 │   ├── SolarSystemThumbHost.cs      toque na miniatura cria a sala
 │   ├── RoomList.cs                  salas abertas e entrada como cliente
 │   ├── LanRoomBeacon.cs             anúncio ou busca conforme a sessão
-│   └── LogoBounce.cs
+│   ├── LogoBounce.cs
+│   ├── MenuReturn.cs               volta ao Menu 3 s após o teleporte
+│   └── SessionExitButton.cs        botão SAIR fora do Menu
 ├── Classroom/
 │   ├── ClassController.cs           giro de 45° e áreas
 │   ├── RotateClassButton.cs
@@ -469,6 +478,7 @@ Assets/Scripts/
 │   └── MainScreen.cs
 ├── Interaction/
 │   ├── MoveToEdge.cs                viagem ao astro, 7 s, Y = 8
+│   ├── TeleportReveal.cs            esconde o alvo e mostra o próximo
 │   ├── PassengerHold.cs
 │   ├── EdgeApproach.cs              SmoothStep compartilhado
 │   └── ControlButtonAppearance.cs

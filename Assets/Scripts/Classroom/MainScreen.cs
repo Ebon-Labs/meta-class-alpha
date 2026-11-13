@@ -12,18 +12,24 @@ public class MainScreen : MonoBehaviour, IScreenPlayback
         Color
     }
 
+    public const string TutorialScene = "Tutorial";
+    public const string PortalOneName = "PortalOne";
+
     static readonly int ColorId = Shader.PropertyToID("_Color");
     static readonly int TintId = Shader.PropertyToID("_Tint");
     static readonly int TintColorId = Shader.PropertyToID("_TintColor");
 
     [SerializeField] VideoPlayer videoPlayer;
     [SerializeField] Renderer screenRenderer;
+    [SerializeField] GameObject showWhenFinished;
     [SerializeField] float fadeDuration = 3f;
 
     Material material;
     int tintProperty;
     Color tint;
     Coroutine tintFade;
+    bool sawPlayback;
+    bool revealed;
 
     void Awake()
     {
@@ -43,14 +49,43 @@ public class MainScreen : MonoBehaviour, IScreenPlayback
 
     void OnEnable()
     {
-        if (videoPlayer != null)
-            videoPlayer.started += OnVideoStarted;
+        BindPlayer(true);
     }
 
     void OnDisable()
     {
-        if (videoPlayer != null)
-            videoPlayer.started -= OnVideoStarted;
+        BindPlayer(false);
+    }
+
+    void Update()
+    {
+        if (revealed || videoPlayer == null)
+            return;
+
+        if (videoPlayer.isPlaying)
+        {
+            sawPlayback = true;
+            return;
+        }
+
+        if (PlaybackEnded(sawPlayback, false, videoPlayer.isPaused, videoPlayer.time, videoPlayer.length))
+            FinishVideo();
+    }
+
+    void BindPlayer(bool listen)
+    {
+        if (videoPlayer == null)
+            videoPlayer = GetComponentInChildren<VideoPlayer>(true);
+        if (videoPlayer == null)
+            return;
+
+        videoPlayer.started -= OnVideoStarted;
+        videoPlayer.loopPointReached -= OnVideoFinished;
+        if (!listen)
+            return;
+
+        videoPlayer.started += OnVideoStarted;
+        videoPlayer.loopPointReached += OnVideoFinished;
     }
 
     void OnDestroy()
@@ -89,6 +124,57 @@ public class MainScreen : MonoBehaviour, IScreenPlayback
             StopCoroutine(tintFade);
 
         tintFade = StartCoroutine(FadeTint());
+    }
+
+    void OnVideoFinished(VideoPlayer source)
+    {
+        sawPlayback = true;
+        FinishVideo();
+    }
+
+    void FinishVideo()
+    {
+        if (revealed)
+            return;
+
+        revealed = true;
+        Reveal(ChoosePortal(showWhenFinished, gameObject.scene.name, FindNamed(PortalOneName)));
+    }
+
+    public static void Reveal(GameObject target)
+    {
+        if (target != null)
+            target.SetActive(true);
+    }
+
+    public static GameObject ChoosePortal(GameObject assigned, string sceneName, GameObject namedPortal)
+    {
+        if (assigned != null)
+            return assigned;
+        if (sceneName != TutorialScene)
+            return null;
+        return namedPortal;
+    }
+
+    public static bool PlaybackEnded(bool sawPlayback, bool isPlaying, bool isPaused, double time, double length)
+    {
+        if (!sawPlayback || isPlaying)
+            return false;
+        if (length > 0.01)
+            return time >= length - 0.25;
+        return !isPaused && time > 0.5;
+    }
+
+    static GameObject FindNamed(string objectName)
+    {
+        Transform[] all = Object.FindObjectsByType<Transform>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+        for (int i = 0; i < all.Length; i++)
+        {
+            if (all[i].name == objectName)
+                return all[i].gameObject;
+        }
+
+        return null;
     }
 
     System.Collections.IEnumerator FadeTint()

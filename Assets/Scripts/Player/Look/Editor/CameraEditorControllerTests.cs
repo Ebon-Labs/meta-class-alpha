@@ -15,4 +15,12 @@ public class CameraEditorControllerTests
         Assert.AreEqual(10f, euler.y, 0.0001f);
         Assert.AreEqual(0f, euler.z, 0.0001f);
     }
+
+    [Test]
+    public void Menu_RestoresTheCommonClick()
+    {
+        Assert.IsTrue(CameraEditorController.ShowsCommonClick(CameraEditorController.MenuScene));
+        Assert.IsFalse(CameraEditorController.ShowsCommonClick("Tutorial"));
+        Assert.IsFalse(CameraEditorController.ShowsCommonClick("SolarSystem"));
+    }
 }

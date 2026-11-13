@@ -7,6 +7,7 @@ public class SolarSystemThumbHost : MonoBehaviour
 {
     public const float HitPadding = 48f;
     public const string ObjectName = "SolarSystemThumb";
+    public const string SolarSystemScene = "Assets/Scenes/SolarSystem.unity";
 
     public static bool CanStartHost(bool clientConnected, bool clientActive, bool serverActive, bool webGl)
     {
@@ -92,6 +93,11 @@ public class SolarSystemThumbHost : MonoBehaviour
 
     public static void StartHostSession()
     {
+        StartHostScene(SolarSystemScene);
+    }
+
+    public static void StartHostScene(string scene)
+    {
         bool webGl = Application.platform == RuntimePlatform.WebGLPlayer;
         if (!CanStartHost(NetworkClient.isConnected, NetworkClient.active, NetworkServer.active, webGl))
             return;
@@ -101,6 +107,9 @@ public class SolarSystemThumbHost : MonoBehaviour
             manager = Object.FindFirstObjectByType<NetworkManager>();
         if (manager == null)
             return;
+
+        if (!string.IsNullOrEmpty(scene))
+            manager.onlineScene = scene;
 
         manager.StartHost();
         Advertise(manager.GetComponent<NetworkDiscovery>());

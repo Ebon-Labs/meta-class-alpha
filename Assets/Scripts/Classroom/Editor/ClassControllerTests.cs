@@ -88,6 +88,24 @@ public class ClassControllerTests
     }
 
     [Test]
+    public void TutorialWithoutAnArea_StandsOnTheGround()
+    {
+        Transform ground = new GameObject(ClassController.GroundName).transform;
+        Transform host = new GameObject("HostArea").transform;
+        try
+        {
+            Assert.AreEqual(ground, ClassController.AreaForRoleOrGround(isHost: true, null, null, ClassController.TutorialScene, ground));
+            Assert.AreEqual(host, ClassController.AreaForRoleOrGround(isHost: true, host, null, ClassController.TutorialScene, ground));
+            Assert.IsNull(ClassController.AreaForRoleOrGround(isHost: true, null, null, "SolarSystem", ground));
+        }
+        finally
+        {
+            Object.DestroyImmediate(ground.gameObject);
+            Object.DestroyImmediate(host.gameObject);
+        }
+    }
+
+    [Test]
     public void HostGoesToHostAreaAndClientGoesToGuestArea()
     {
         Transform host = new GameObject("HostArea").transform;

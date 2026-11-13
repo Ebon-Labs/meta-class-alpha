@@ -1,4 +1,6 @@
 using NUnit.Framework;
+using UnityEngine;
+using Object = UnityEngine.Object;
 
 public class MainScreenTests
 {
@@ -25,5 +27,52 @@ public class MainScreenTests
         Assert.AreEqual(MainScreen.TintPropertyKind.Tint, MainScreen.ResolveTintKind(true, true));
         Assert.AreEqual(MainScreen.TintPropertyKind.TintColor, MainScreen.ResolveTintKind(false, true));
         Assert.AreEqual(MainScreen.TintPropertyKind.Color, MainScreen.ResolveTintKind(false, false));
+    }
+
+    [Test]
+    public void Reveal_EnablesThePortalWhenTheVideoEnds()
+    {
+        GameObject portal = new GameObject("PortalOne");
+        portal.SetActive(false);
+        try
+        {
+            MainScreen.Reveal(portal);
+
+            Assert.IsTrue(portal.activeSelf);
+        }
+        finally
+        {
+            Object.DestroyImmediate(portal);
+        }
+    }
+
+    [Test]
+    public void Reveal_IgnoresAMissingPortal()
+    {
+        MainScreen.Reveal(null);
+    }
+
+    [Test]
+    public void ChoosePortal_UsesTheTutorialPortalWhenTheReferenceIsMissing()
+    {
+        GameObject portal = new GameObject(MainScreen.PortalOneName);
+        try
+        {
+            Assert.AreEqual(portal, MainScreen.ChoosePortal(null, MainScreen.TutorialScene, portal));
+            Assert.IsNull(MainScreen.ChoosePortal(null, "SolarSystem", portal));
+        }
+        finally
+        {
+            Object.DestroyImmediate(portal);
+        }
+    }
+
+    [Test]
+    public void PlaybackEnded_RequiresTheClipToReachTheEnd()
+    {
+        Assert.IsFalse(MainScreen.PlaybackEnded(false, false, false, 17, 17));
+        Assert.IsFalse(MainScreen.PlaybackEnded(true, true, false, 17, 17));
+        Assert.IsFalse(MainScreen.PlaybackEnded(true, false, true, 4, 17));
+        Assert.IsTrue(MainScreen.PlaybackEnded(true, false, false, 16.9, 17));
     }
 }

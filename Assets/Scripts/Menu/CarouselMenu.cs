@@ -74,6 +74,9 @@ public class CarouselMenu : MonoBehaviour
             return;
         }
 
+        if (TutorialHost.Press(screen, view))
+            return;
+
         Press(screen);
     }
 
