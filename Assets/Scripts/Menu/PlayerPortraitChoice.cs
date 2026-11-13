@@ -25,6 +25,11 @@ public class PlayerPortraitChoice : MonoBehaviour
         return male ? boyPrefab : girlPrefab;
     }
 
+    public static GameObject Prefab(bool male)
+    {
+        return Chosen(male, girl, boy);
+    }
+
     public static Material PortraitMaterial(bool colored, Material front, Material grayscale)
     {
         return colored ? front : grayscale;
