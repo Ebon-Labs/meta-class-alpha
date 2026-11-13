@@ -45,11 +45,14 @@ public class CameraEditorController : NetworkBehaviour
 
     void Update()
     {
-        if (!isLocalPlayer)
+        if (!isLocalPlayer || !Application.isEditor)
             return;
 
         EditorMouseLook.Accumulate(ref mouseX, ref mouseY, Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"), sensitivity);
         mouseX += FloorCarry.ConsumeYawDegrees();
-        transform.eulerAngles = EditorMouseLook.Euler(mouseX, mouseY);
+
+        Camera camera = GetComponentInChildren<Camera>();
+        Transform look = camera != null ? camera.transform : transform;
+        look.localRotation = Quaternion.Euler(mouseY, mouseX, 0f);
     }
 }

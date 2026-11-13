@@ -115,7 +115,7 @@ O indicador de progresso é um `Slider` filho do jogador, ativado só durante a 
 
 ### 2.6 Olhar no Editor
 
-`CameraEditorController` gira o transform do jogador local com o mouse. Existe para testar a mesma câmera do gaze sem o visor. Em build, o `Start` retorna cedo; o `Update` ainda lê o mouse se houver um jogador local. O cursor permanece visível e livre, para o botão `SAIR` e o menu receberem o clique comum.
+`CameraEditorController` gira a cabeça do jogador local com o mouse, só no Editor. O corpo (`Player`) fica apenas com a rotação em torno do eixo Y; a inclinação do olhar fica no filho `Head`, onde estão a câmera, o listener e a pose do visor. O cursor permanece visível e livre, para o botão `SAIR` e o menu receberem o clique comum.
 
 ### 2.7 Voz espacial
 
@@ -484,6 +484,7 @@ Assets/Scripts/
 │   └── ControlButtonAppearance.cs
 ├── Player/
 │   ├── Gaze/CameraPointerController.cs
+│   ├── Look/PlayerBodyYaw.cs        corpo só gira em Y
 │   ├── Hud/ScreenText.cs            frases em pt-BR
 │   └── Voice/VoiceChatController.cs
 └── SolarSystem/                     órbita pelo centro da malha, rótulos, luz, nuvens
