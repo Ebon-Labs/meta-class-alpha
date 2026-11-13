@@ -1,12 +1,12 @@
 # Documento de Arquitetura
 
 **Projeto:** meta-class-alpha  
-**Cenas de build:** `Assets/Scenes/Menu.unity` (primeira), depois `Assets/Scenes/TheRoom.unity`  
-**Escopo:** funcionalidades implementadas e a forma como o menu e a cena The Room as compõem  
+**Cenas de build:** `Assets/Scenes/Menu.unity` (primeira), depois `Assets/Scenes/SolarSystem.unity`  
+**Escopo:** funcionalidades implementadas e a forma como o menu e a cena SolarSystem as compõem  
 **Fora de escopo:** sala de controle e portal de retorno descritos em [TDD-sala-observacao-controle.md](TDD-sala-observacao-controle.md), que ainda não estão implementados. O painel descritivo desse TDD está feito (`InfoArea` e `SceneInfoPanel`, seções 2.13 e 3).  
 **Código novo:** [codigo-limpo.md](codigo-limpo.md) — arquitetura, Clean Code, SOLID e testes.
 
-Este documento separa duas camadas. A primeira descreve capacidades genéricas: scripts e contratos que não conhecem a sala, os planetas nem o enredo da experiência. A segunda descreve como The Room instancia essas capacidades, qual é a hierarquia da cena e como os objetos se relacionam em runtime.
+Este documento separa duas camadas. A primeira descreve capacidades genéricas: scripts e contratos que não conhecem a sala, os planetas nem o enredo da experiência. A segunda descreve como SolarSystem instancia essas capacidades, qual é a hierarquia da cena e como os objetos se relacionam em runtime.
 
 ---
 
@@ -32,7 +32,7 @@ flowchart LR
         Info[Área informativa]
     end
 
-    subgraph Cena["The Room"]
+    subgraph Cena["SolarSystem"]
         Room[Sala e piso]
         System[Sistema solar]
         Player[Player.prefab]
@@ -56,7 +56,7 @@ flowchart LR
 
 ## 2. Funcionalidades genéricas
 
-Cada bloco abaixo pode ser reutilizado em outra cena desde que os contratos (tags, nomes de âncora, prefabs) sejam respeitados. Nenhum deles referencia objetos exclusivos de The Room além de nomes de busca do Sol (`Sun Sphere`, `Sun`, `SUN`) e da raiz `SolarSystem`, usados só para localizar o centro orbital.
+Cada bloco abaixo pode ser reutilizado em outra cena desde que os contratos (tags, nomes de âncora, prefabs) sejam respeitados. Nenhum deles referencia objetos exclusivos de SolarSystem além de nomes de busca do Sol (`Sun Sphere`, `Sun`, `SUN`) e da raiz `SolarSystem`, usados só para localizar o centro orbital.
 
 ### 2.1 Sessão de realidade virtual
 
@@ -77,7 +77,7 @@ A rede usa Mirror com transporte Telepathy. O contrato genérico é:
 - posição e rotação do dono seguem para o servidor (`NetworkTransform` com `SyncDirection.ClientToServer`) e dali para os demais clientes;
 - câmera, canvas e listener existem no prefab, mas só o jogador local os liga.
 
-Parâmetros atuais do manager, reutilizáveis como padrão do projeto: porta **7777**, no máximo **4** conexões, `dontDestroyOnLoad`, `autoStartServerBuild` ligado e `autoConnectClientBuild` desligado. O endereço padrão no Editor é `localhost`. O manager vive na cena Menu, com cena offline `Menu` e cena online `TheRoom`. The Room não carrega um segundo `NetworkManager`. O HUD de canto do Mirror continua sendo o controle que cria a sala.
+Parâmetros atuais do manager, reutilizáveis como padrão do projeto: porta **7777**, no máximo **4** conexões, `dontDestroyOnLoad`, `autoStartServerBuild` ligado e `autoConnectClientBuild` desligado. O endereço padrão no Editor é `localhost`. O manager vive na cena Menu, com cena offline `Menu` e cena online `SolarSystem`. SolarSystem não carrega um segundo `NetworkManager`. O HUD de canto do Mirror continua sendo o controle que cria a sala.
 
 `CameraPointerController.OnStartClient` posiciona o jogador local numa área aleatória próxima da origem (`x` e `z` entre 0 e 3, `y = 1`) e habilita câmera e canvas somente quando `isLocalPlayer` é verdadeiro.
 
@@ -217,12 +217,13 @@ A cena Menu é a primeira do build. Ela não tem jogador local, então o gaze n�
 | `CreateBack` | Voltar | −90° |
 | `Enter` | Buscar Sala | −90° |
 | `EnterBack` | Voltar | +90° horário, mesmo sentido de Create |
+| `TutorialButton` | Instruções | nenhum: o toque mais perto desse rótulo não gira |
 
 O acerto usa os limites visíveis do renderer, com **48 px** de folga, e escolhe o rótulo cujo centro na tela está mais perto do toque. Só entra o rótulo virado para a câmera. Cantos atrás da câmera são ignorados. Esses rótulos não chamam `StartHost` nem `StartClient`. O toque em `SolarSystemThumb` chama `NetworkManager.StartHost()`, a mesma ação do botão Host (Server + Client) do HUD, e só enquanto não há sessão ativa. A miniatura também precisa estar virada para a câmera, para não criar sala a partir da face de busca. O clique numa sala da lista é testado antes da miniatura.
 
-`LanRoomBeacon` nasce em runtime no `NetworkDiscovery`, quando `RoomList` liga. Servidor ativo anuncia a sala; cliente que não é servidor para a busca; sem sessão, a busca começa. O anúncio é UDP em broadcast, porta **47777**, a cada **3 s**. `RoomList` guarda cada sala pelo `serverId` e apaga as que ficam mais de **7 s** sem anúncio novo. Cada item é um TextMeshPro com endereço e porta. O toque entra só como cliente (`StartClient` com o URI da sala) e não cria outra sala. O anfitrião não lista a própria sala.
+`LanRoomBeacon` nasce em runtime no `NetworkDiscovery`, quando `RoomList` liga. Servidor ativo anuncia a sala; cliente que não é servidor para a busca; sem sessão, a busca começa. O anúncio é UDP em broadcast, porta **47777**, a cada **3 s**. `RoomList` guarda cada sala pelo `serverId` e apaga as que ficam mais de **7 s** sem anúncio novo. O componente fica no campo TMP da face de busca: o campo é só leitura, e sem salas o placeholder da cena continua visível. Cada sala é uma linha (apelido, ou host e porta). O toque na linha entra só como cliente (`StartClient` com o URI da sala) e não cria outra sala. O anfitrião não lista a própria sala.
 
-O fundo é `eduverso_logo_bg_menu.png` no shader `Custom/MenuBackdrop`. `MenuBackdrop` cobre a câmera ortográfica em 16:9. O objeto `Logo` é uma Image em canvas World Space com `eduverso_logo.png` e oscila na vertical enquanto a cena está ativa (`LogoBounce`, amplitude **0,35**, período **1,6 s**). Na face de criar, `SolarSystemThumb` é outra Image, com `solar_system_thumb`. Os TextMeshPro do menu usam o atlas `Montserrat-Bold SDF`. O material das letras e o da miniatura `SolarSystemThumb` usam Cull Back (`_CullMode` 2), então as costas ficam ocultas.
+O fundo é `educaverso_logo_bg_menu.png` no shader `Custom/MenuBackdrop`. `MenuBackdrop` cobre a câmera ortográfica em 16:9. O objeto `Logo` é uma Image em canvas World Space com `educaverso_logo.png` e oscila na vertical enquanto a cena está ativa (`LogoBounce`, amplitude **0,35**, período **1,6 s**). Na face de criar, `SolarSystemThumb` é outra Image, com `solar_system_thumb`. Os TextMeshPro do menu usam o atlas `Montserrat-Bold SDF`. O material das letras e o da miniatura `SolarSystemThumb` usam Cull Back (`_CullMode` 2), então as costas ficam ocultas.
 
 ### 2.16 Botões da sala
 
@@ -239,9 +240,9 @@ O clique continua sendo o de olhar. O ícone de marcadores, voz, ritmo da órbit
 
 ---
 
-## 3. Aplicação na cena The Room
+## 3. Aplicação na cena SolarSystem
 
-The Room é a cena online. O build começa no Menu e o Mirror a carrega quando a sala fica online. Ela compõe as capacidades da seção 2 em três grupos — infraestrutura de sessão, sala próxima ao jogador e sistema solar em escala.
+SolarSystem é a cena online. O build começa no Menu e o Mirror a carrega quando a sala fica online. Ela compõe as capacidades da seção 2 em três grupos — infraestrutura de sessão, sala próxima ao jogador e sistema solar em escala.
 
 ### 3.1 O que a cena é
 
@@ -252,7 +253,7 @@ Uma sala com piso, alguns objetos ao alcance do olhar e, ao redor, o sistema sol
 Raízes da cena:
 
 ```
-TheRoom
+SolarSystem
 ├── EventSystem             UI
 ├── SpaceSphere             esfera de fundo, escala 50000
 ├── Interactive             objetos da sala
@@ -318,7 +319,7 @@ Player                        tag Player
 
 ### 3.3 Como cada funcionalidade aparece na cena
 
-| Funcionalidade genérica | Onde vive em The Room |
+| Funcionalidade genérica | Onde vive em SolarSystem |
 |-------------------------|------------------------|
 | Sessão VR | `InitCardboard` no `Plane`, com o material de skybox estrelado |
 | Presença em rede | O `NetworkManager` veio do Menu e permanece com `dontDestroyOnLoad`. Jogadores spawnados a partir de `Player.prefab` |
@@ -403,7 +404,7 @@ A fase orbital não é reconciliada. Dois clientes que entram em momentos difere
 
 ### 3.6 Prefabs usados pela cena
 
-| Prefab | Uso em The Room |
+| Prefab | Uso em SolarSystem |
 |--------|-----------------|
 | `Player.prefab` | Spawn de rede. Não está colocado na cena |
 | `Sphere Portal.prefab` | Um na sala, um por planeta, um na Lua e um no Sol. Na órbita o nome vira `Portal` |
@@ -437,9 +438,9 @@ Menu
 │   ├── MainMenu            Menu, Criar Sala, Buscar Sala
 │   ├── CreateMenu          miniatura do sistema solar, Voltar
 │   └── EnterMenu           lista de salas, Voltar
-├── MenuBackground          eduverso_logo_bg_menu.png, MenuBackdrop
-├── Logo                    Image World Space, eduverso_logo.png, LogoBounce
-├── NetworkManager          HUD de canto, NetworkDiscovery, offline Menu, online TheRoom
+├── MenuBackground          educaverso_logo_bg_menu.png, MenuBackdrop
+├── Logo                    Image World Space, educaverso_logo.png, LogoBounce
+├── NetworkManager          HUD de canto, NetworkDiscovery, offline Menu, online SolarSystem
 └── EventSystem
 ```
 
@@ -481,6 +482,6 @@ Assets/Scripts/
     └── OrbitControlButton.cs
 ```
 
-Fontes do menu: `Assets/Fonts/Montserrat-Bold.ttf` e o atlas `Assets/Fonts/Montserrat-Bold SDF.asset`. Imagens: `Assets/Materials/eduverso_logo.png`, `eduverso_logo_bg_menu.png` e `solar_system_thumb.jpg`.
+Fontes do menu: `Assets/Fonts/Montserrat-Bold.ttf` e o atlas `Assets/Fonts/Montserrat-Bold SDF.asset`. Imagens: `Assets/Materials/educaverso_logo.png`, `educaverso_logo_bg_menu.png` e `solar_system_thumb.jpg`.
 
 Bibliotecas que a arquitetura assume e não reimplementa: Mirror (identidade, spawn, transform, comandos de voz), Google Cardboard XR Plugin (parâmetros do visor e pose rastreada no Player) e TextMesh Pro (HUD e rótulos).

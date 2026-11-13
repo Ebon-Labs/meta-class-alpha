@@ -17,6 +17,16 @@ public class PlanetOrbitCalculatorTests
     }
 
     [Test]
+    public void AngleAtClock_MatchesAScaledStep()
+    {
+        const float period = 365.256f;
+        const float scale = 4320f;
+        const float dt = 0.016f;
+        float stepped = PlanetOrbitCalculator.AdvanceAngle(0f, PlanetOrbitCalculator.DegreesPerSecond(period, scale), dt);
+        Assert.AreEqual(stepped, PlanetOrbitCalculator.AngleAtClock(period, scale * dt), 0.0001f);
+    }
+
+    [Test]
     public void ResolveRadius_KeepsClearanceAndFallsBackToCurrentDistance()
     {
         Assert.AreEqual(10f, PlanetOrbitCalculator.ResolveRadius(5f, 1f, 10f, true), 0.0001f);

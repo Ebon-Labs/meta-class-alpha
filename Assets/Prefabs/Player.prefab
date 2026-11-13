@@ -585,6 +585,7 @@ GameObject:
   - component: {fileID: 7362518493028174650}
   - component: {fileID: 3353528118521351429}
   - component: {fileID: 7034601599373284955}
+  - component: {fileID: 6402198755123456781}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -754,7 +755,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2864296461989590329}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8ff3ba0becae47b8b9381191598957c8, type: 3}
   m_Name: 
@@ -894,6 +895,21 @@ MonoBehaviour:
   spatialBlend: 1
   minDistance: 1
   maxDistance: 25
+--- !u!114 &6402198755123456781
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2864296461989590329}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e1b2c3d44f5a6789a0b1c2d3e4f50617, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: MetaClass::RoomSync
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
 --- !u!114 &7362518493028174650
 MonoBehaviour:
   m_ObjectHideFlags: 0

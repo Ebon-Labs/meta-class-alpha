@@ -48,6 +48,43 @@ public class CarouselMenuTests
         Assert.AreEqual(CarouselMenu.SignedStep(CarouselMenu.CreateName), CarouselMenu.SignedStep(CarouselMenu.EnterBackName));
         Assert.AreEqual(0f, CarouselMenu.SignedStep("Title"));
         Assert.AreEqual(0f, CarouselMenu.SignedStep(CreateRoomButton.ObjectName));
+        Assert.AreEqual(0f, CarouselMenu.SignedStep(CarouselMenu.TutorialName));
+    }
+
+    [Test]
+    public void TutorialButton_WinsTheTouchAndDoesNotTurn()
+    {
+        var viewObject = new GameObject("CarouselView");
+        var enter = new GameObject(CarouselMenu.EnterName);
+        var tutorial = new GameObject(CarouselMenu.TutorialName);
+        try
+        {
+            Camera view = viewObject.AddComponent<Camera>();
+            view.orthographic = true;
+            view.orthographicSize = 5f;
+            view.pixelRect = new Rect(0f, 0f, 1000f, 1000f);
+            view.transform.SetPositionAndRotation(new Vector3(0f, 0f, -10f), Quaternion.identity);
+
+            var enterRect = enter.AddComponent<RectTransform>();
+            enterRect.sizeDelta = new Vector2(0.4f, 0.2f);
+            enter.transform.SetPositionAndRotation(new Vector3(0f, 0.15f, 0f), Quaternion.identity);
+
+            var tutorialRect = tutorial.AddComponent<RectTransform>();
+            tutorialRect.sizeDelta = new Vector2(0.4f, 0.2f);
+            tutorial.transform.SetPositionAndRotation(new Vector3(0f, -0.15f, 0f), Quaternion.identity);
+
+            Vector2 onTutorial = view.WorldToScreenPoint(tutorial.transform.position);
+            Assert.AreEqual(0f, CarouselMenu.SignedStep(onTutorial, view, enter, tutorial));
+
+            Vector2 onEnter = view.WorldToScreenPoint(enter.transform.position);
+            Assert.AreEqual(-CarouselMenu.StepDegrees, CarouselMenu.SignedStep(onEnter, view, enter, tutorial));
+        }
+        finally
+        {
+            Object.DestroyImmediate(tutorial);
+            Object.DestroyImmediate(enter);
+            Object.DestroyImmediate(viewObject);
+        }
     }
 
     [Test]

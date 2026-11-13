@@ -1,6 +1,7 @@
 using UnityEngine;
 
 [DisallowMultipleComponent]
+[DefaultExecutionOrder(-40)]
 public class ClassController : MonoBehaviour
 {
     public const float ClockwiseStepDegrees = 45f;
@@ -24,12 +25,17 @@ public class ClassController : MonoBehaviour
     bool appliedMuteGuests;
     bool appliedHideFloorAreas = true;
 
-    readonly PassengerHold passengers = new PassengerHold();
     Vector3 pivot;
+    Vector3 restPosition;
+    Vector3 restPivot;
+    Quaternion restRotation = Quaternion.identity;
     Vector3 positionFrom;
     Quaternion rotationFrom = Quaternion.identity;
     float turnElapsed;
+    int appliedTurns;
     bool turning;
+
+    public bool IsTurning => turning;
 
     public bool MuteGuests => muteGuests;
     public bool HideFloorAreas => hideFloorAreas;
@@ -85,14 +91,39 @@ public class ClassController : MonoBehaviour
     public void TurnClockwise()
     {
         ResolveAreas();
-        if (!turning)
-            passengers.Hold(transform, MoveToEdge.PassengerTag);
-
         pivot = hostArea != null ? hostArea.position : transform.position;
         positionFrom = transform.position;
         rotationFrom = transform.rotation;
         turnElapsed = 0f;
         turning = true;
+    }
+
+    public static bool AnimateSingleStep(int applied, int target)
+    {
+        return target == applied + 1;
+    }
+
+    public void MatchTurnCount(int count)
+    {
+        if (count < 0)
+            count = 0;
+        if (count == appliedTurns)
+            return;
+
+        if (AnimateSingleStep(appliedTurns, count))
+        {
+            TurnClockwise();
+            appliedTurns = count;
+            return;
+        }
+
+        ResolveAreas();
+        if (turning)
+            turning = false;
+
+        Quaternion yaw = ClockwiseYaw(ClockwiseStepDegrees * count);
+        transform.SetPositionAndRotation(Orbit(restPosition, restPivot, yaw), yaw * restRotation);
+        appliedTurns = count;
     }
 
     public void ToggleMuteGuests()
@@ -126,15 +157,19 @@ public class ClassController : MonoBehaviour
     void Awake()
     {
         Instance = this;
+        if (GetComponent<FloorGuard>() == null)
+            gameObject.AddComponent<FloorGuard>();
+        if (GetComponent<FloorFollow>() == null)
+            gameObject.AddComponent<FloorFollow>();
         ResolveAreas();
+        restPosition = transform.position;
+        restRotation = transform.rotation;
+        restPivot = hostArea != null ? hostArea.position : restPosition;
         ApplyControls(force: true);
     }
 
     void OnDestroy()
     {
-        if (turning)
-            passengers.Release();
-
         if (Instance == this)
             Instance = null;
     }
@@ -160,7 +195,6 @@ public class ClassController : MonoBehaviour
             return;
 
         turning = false;
-        passengers.Release();
     }
 
     void LateUpdate()

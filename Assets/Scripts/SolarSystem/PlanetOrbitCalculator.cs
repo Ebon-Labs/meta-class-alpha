@@ -49,6 +49,11 @@ public static class PlanetOrbitCalculator
         return Mathf.Repeat(currentAngleDegrees + degreesPerSecond * deltaTime, 360f);
     }
 
+    public static float AngleAtClock(float orbitalPeriodDays, float clock)
+    {
+        return Mathf.Repeat(DegreesPerSecond(orbitalPeriodDays, 1f) * clock, 360f);
+    }
+
     public static Vector3 EvaluatePosition(
         Vector3 orbitCenter,
         Vector3 offsetFromCenter,

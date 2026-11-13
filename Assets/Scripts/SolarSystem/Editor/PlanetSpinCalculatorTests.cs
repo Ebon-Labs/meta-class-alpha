@@ -25,6 +25,16 @@ public class PlanetSpinCalculatorTests
     }
 
     [Test]
+    public void AngleAtClock_MatchesAScaledStep()
+    {
+        const float hours = 23.934f;
+        const float scale = 4320f;
+        const float dt = 0.016f;
+        float stepped = PlanetSpinCalculator.AdvanceAngle(0f, PlanetSpinCalculator.DegreesPerSecond(hours, scale), dt);
+        Assert.AreEqual(stepped, PlanetSpinCalculator.AngleAtClock(hours, scale * dt), 0.0001f);
+    }
+
+    [Test]
     public void AxialTilt_PitchesTheBaseRotation()
     {
         Quaternion tilted = PlanetSpinCalculator.ApplyAxialTilt(Quaternion.identity, 23.44f);

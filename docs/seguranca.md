@@ -1,7 +1,7 @@
 # Riscos de segurança
 
 **Projeto:** meta-class-alpha  
-**Cena:** `Assets/Scenes/TheRoom.unity`  
+**Cena:** `Assets/Scenes/SolarSystem.unity`  
 **Escopo:** revisão do código do projeto em outubro de 2026. Não houve indício de malware: os scripts próprios não baixam código, não decodificam payload e não abrem processos. As DLLs em `Assets/Mirror/Plugins/Mono.Cecil/` pertencem ao Weaver do Mirror. As URLs do repositório apontam para Unity, Mirror, Cardboard e ParrelSync.
 
 Estes riscos são aceitáveis numa aula em rede local fechada. Ficam graves se a porta do servidor estiver acessível fora dessa rede.
@@ -11,7 +11,7 @@ Estes riscos são aceitáveis numa aula em rede local fechada. Ficam graves se a
 ## 1. Servidor sem autenticação e sem cifra
 
 **Gravidade:** alta  
-**Onde:** `NetworkManager` em `Assets/Scenes/TheRoom.unity` (porta **7777**, `authenticator` vazio, `autoStartServerBuild` ligado) e transporte Telepathy no mesmo objeto.
+**Onde:** `NetworkManager` em `Assets/Scenes/SolarSystem.unity` (porta **7777**, `authenticator` vazio, `autoStartServerBuild` ligado) e transporte Telepathy no mesmo objeto.
 
 O servidor sobe sozinho na build Android. Não há `NetworkAuthenticator`. Quem alcançar a porta entra como jogador, até o limite de 4 conexões. O Telepathy envia o tráfego em texto puro: pose do jogador e áudio da voz podem ser lidos no caminho.
 

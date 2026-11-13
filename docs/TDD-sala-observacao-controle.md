@@ -131,7 +131,7 @@ Entrega:
 - `SceneInfoPanel` (`Assets/Scripts/SceneInfoPanel.cs`) na raiz do Player, escrevendo no objeto `SceneInfo` do Canvas. Esse objeto começa desligado e é separado do log de gaze (`UILogger`).
 - Só o jogador local vê o painel. Áreas sobrepostas usam a última entrada. Texto vazio esconde aquela origem.
 - O raio de olhar ignora triggers, então o volume não vira alvo de gaze.
-- Na cena The Room há uma `InfoArea` em cada wrapper de planeta, no `MoonWrapper` e no Sol, com o parágrafo curto daquele corpo. O prefab ainda traz Lorem ipsum como padrão.
+- Na cena SolarSystem há uma `InfoArea` em cada wrapper de planeta, no `MoonWrapper` e no Sol, com o parágrafo curto daquele corpo. O prefab ainda traz Lorem ipsum como padrão.
 
 O esboço abaixo, com título, imagem e `ScriptableObject`, não entrou na entrega. O aceite é o corpo do texto no campo `body`.
 
@@ -218,7 +218,7 @@ Casos de uso iniciais sugeridos:
 - Novos planetas / conteúdo científico além do texto do painel.
 - Inventário, missões ou progressão.
 - Redesign completo do HUD.
-- Troca de cena completa (pode ser a mesma `TheRoom` com região dedicada).
+- Troca de cena completa (pode ser a mesma `SolarSystem` com região dedicada).
 
 ---
 

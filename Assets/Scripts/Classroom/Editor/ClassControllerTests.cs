@@ -103,4 +103,12 @@ public class ClassControllerTests
             Object.DestroyImmediate(guest.gameObject);
         }
     }
+
+    [Test]
+    public void AnimateSingleStep_OnlyTheNextTurnPlaysTheMotion()
+    {
+        Assert.IsTrue(ClassController.AnimateSingleStep(0, 1));
+        Assert.IsFalse(ClassController.AnimateSingleStep(0, 4));
+        Assert.IsFalse(ClassController.AnimateSingleStep(2, 2));
+    }
 }

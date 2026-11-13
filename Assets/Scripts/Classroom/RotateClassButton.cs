@@ -18,6 +18,9 @@ public class RotateClassButton : MonoBehaviour
 
     public static void Turn()
     {
+        if (RoomSync.RequestTurn())
+            return;
+
         ClassController classController = ClassController.ResolveExisting(FindFirstObjectByType<ClassController>());
         if (classController == null)
             return;

@@ -9,7 +9,7 @@ Guia para gerar um APK do **meta-class-alpha** para testes em dispositivo com Go
 | Item | Valor |
 |------|-------|
 | Unity | 6000.3.6f1 (Unity 6.3) |
-| Cena de build | `Assets/Scenes/TheRoom.unity` |
+| Cena de build | `Assets/Scenes/SolarSystem.unity` |
 | Package Name | `com.EbonLabs.metaclassalpha` |
 | Versão | 0.1 (versionCode: 1) |
 | Min API Level | 25 (Android 7.1) |
@@ -33,7 +33,7 @@ Se algo estiver faltando, o Unity costuma solicitar a instalação ao trocar a p
 1. Abra o projeto no Unity.
 2. Vá em **File → Build Profiles** (Unity 6) ou **File → Build Settings**.
 3. Selecione **Android** e clique em **Switch Platform** (aguarde a reimportação).
-4. Confirme que a cena `Assets/Scenes/TheRoom.unity` está incluída no build.
+4. Confirme que a cena `Assets/Scenes/SolarSystem.unity` está incluída no build.
 5. Revise **Edit → Project Settings → Player → Android**:
    - **Package Name**: `com.EbonLabs.metaclassalpha`
    - **Minimum API Level**: 25

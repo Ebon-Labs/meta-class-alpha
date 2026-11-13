@@ -32,7 +32,15 @@ public class DistanceControlButton : MonoBehaviour
         if (motion == null)
             return;
 
+        if (RoomSync.RequestToggleDistance())
+            return;
+
         motion.ToggleDistanceScale();
+        ApplyIconToAppearance(createInstances: true);
+    }
+
+    public void RefreshAppearance()
+    {
         ApplyIconToAppearance(createInstances: true);
     }
 

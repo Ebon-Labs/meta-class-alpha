@@ -32,6 +32,9 @@ public class ScreenControlButton : MonoBehaviour
 
     public void OnPointerClick()
     {
+        if (RoomSync.RequestScreen(action))
+            return;
+
         Execute(action, GetComponentInParent<MainScreen>());
     }
 }

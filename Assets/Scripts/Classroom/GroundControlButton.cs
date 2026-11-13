@@ -31,7 +31,15 @@ public class GroundControlButton : MonoBehaviour
         if (classController == null)
             return;
 
+        if (RoomSync.RequestToggleFloor())
+            return;
+
         classController.ToggleHideFloorAreas();
+        ApplyIconToAppearance(createInstances: true);
+    }
+
+    public void RefreshAppearance()
+    {
         ApplyIconToAppearance(createInstances: true);
     }
 

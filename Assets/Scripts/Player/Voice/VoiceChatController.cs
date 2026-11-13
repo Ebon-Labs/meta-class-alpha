@@ -148,11 +148,72 @@ public class VoiceChatController : NetworkBehaviour
         if (sampleCount <= 0)
             return;
 
-        float[] samples = new float[sampleCount];
-        micClip.GetData(samples, lastMicPos);
-        lastMicPos = micPos;
+        int send = Mathf.Min(sampleCount, MaxVoiceSamples(sampleRate, transmitChunkMs));
+        int start = VoiceReadStart(lastMicPos, sampleCount, send, micClip.samples);
+        float[] samples = new float[send];
+        ReadClipRing(micClip, start, samples);
+        lastMicPos = (start + send) % micClip.samples;
 
         CmdSendVoice(Pcm16Codec.FloatToPCM16(samples));
+    }
+
+    public static int MaxVoiceSamples(int sampleRate, int chunkMs)
+    {
+        int rate = sampleRate > 0 ? sampleRate : 1;
+        int chunk = chunkMs > 0 ? chunkMs : 1;
+        int samples = rate * chunk / 1000;
+        if (samples < 1)
+            samples = 1;
+
+        const int PacketCap = 3000;
+        return samples < PacketCap ? samples : PacketCap;
+    }
+
+    public static int VoiceReadStart(int origin, int available, int send, int clipSamples)
+    {
+        if (clipSamples < 1)
+            return 0;
+
+        int skip = available - send;
+        if (skip < 0)
+            skip = 0;
+
+        int start = origin + skip;
+        start %= clipSamples;
+        if (start < 0)
+            start += clipSamples;
+        return start;
+    }
+
+    static void ReadClipRing(AudioClip clip, int start, float[] destination)
+    {
+        int length = clip.samples;
+        if (length < 1 || destination.Length == 0)
+            return;
+
+        int first = destination.Length;
+        int room = length - start;
+        if (room < first)
+            first = room;
+        if (first < 0)
+            first = 0;
+
+        if (first > 0)
+        {
+            float[] part = new float[first];
+            clip.GetData(part, start);
+            for (int i = 0; i < first; i++)
+                destination[i] = part[i];
+        }
+
+        int rest = destination.Length - first;
+        if (rest <= 0)
+            return;
+
+        float[] tail = new float[rest];
+        clip.GetData(tail, 0);
+        for (int i = 0; i < rest; i++)
+            destination[first + i] = tail[i];
     }
 
     [Command(channel = Channels.Unreliable)]

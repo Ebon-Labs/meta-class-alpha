@@ -9,7 +9,7 @@ Guide to build an APK of **meta-class-alpha** for testing on a Google Cardboard 
 | Item | Value |
 |------|-------|
 | Unity | 6000.3.6f1 (Unity 6.3) |
-| Build scene | `Assets/Scenes/TheRoom.unity` |
+| Build scene | `Assets/Scenes/SolarSystem.unity` |
 | Package Name | `com.EbonLabs.metaclassalpha` |
 | Version | 0.1 (versionCode: 1) |
 | Min API Level | 25 (Android 7.1) |
@@ -33,7 +33,7 @@ If anything is missing, Unity usually prompts to install it when switching the p
 1. Open the project in Unity.
 2. Go to **File → Build Profiles** (Unity 6) or **File → Build Settings**.
 3. Select **Android** and click **Switch Platform** (wait for reimport).
-4. Confirm that `Assets/Scenes/TheRoom.unity` is included in the build.
+4. Confirm that `Assets/Scenes/SolarSystem.unity` is included in the build.
 5. Review **Edit → Project Settings → Player → Android**:
    - **Package Name**: `com.EbonLabs.metaclassalpha`
    - **Minimum API Level**: 25

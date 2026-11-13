@@ -31,7 +31,15 @@ public class MuteControlButton : MonoBehaviour
         if (classController == null)
             return;
 
+        if (RoomSync.RequestToggleMute())
+            return;
+
         classController.ToggleMuteGuests();
+        ApplyIconToAppearance(createInstances: true);
+    }
+
+    public void RefreshAppearance()
+    {
         ApplyIconToAppearance(createInstances: true);
     }
 

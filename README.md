@@ -6,7 +6,7 @@ Multiplayer virtual reality experience for **Google Cardboard**, where players e
 
 ## About the game
 
-The build opens on the **Menu** scene. From there a host starts a room and Mirror loads **The Room**. In the headset, players can:
+The build opens on the **Menu** scene. From there a host starts a room and Mirror loads **SolarSystem**. In the headset, players can:
 
 - Look at and interact with objects in the environment
 - Turn the classroom 45° clockwise around the host area
@@ -58,7 +58,7 @@ Camera (look direction)
 meta-class-alpha/
 ├── Assets/
 │   ├── Scenes/Menu.unity         # First scene in the build
-│   ├── Scenes/TheRoom.unity      # Classroom, loaded as the online scene
+│   ├── Scenes/SolarSystem.unity      # Classroom, loaded as the online scene
 │   ├── Scripts/                  # Game logic
 │   ├── Prefabs/                  # Player, portals, treasures
 │   ├── Models/                   # SolarSystem.fbx, avatar (Male_002)
@@ -96,7 +96,7 @@ meta-class-alpha/
 ### Networking (Mirror)
 
 - **NetworkManager** in the `Menu` scene, port **7777**, max **4** connections. It persists with `dontDestroyOnLoad`
-- **Offline scene** `Menu`, **online scene** `TheRoom`. The Room does not contain a second manager
+- **Offline scene** `Menu`, **online scene** `SolarSystem`. SolarSystem does not contain a second manager
 - The corner Mirror HUD still creates the room. The Portuguese labels Criar Sala and Buscar Sala only turn the carousel. A screen touch on SolarSystemThumb calls the same Host (Server + Client) action. RoomList shows open rooms on the local network, and a touch on one joins it as Client
 - **Player prefab** (`Assets/Prefabs/Player.prefab`): camera, canvas, gaze, voice, and network identity
 - Server starts automatically in builds (`autoStartServerBuild`)
@@ -122,7 +122,7 @@ flowchart TB
         HUD[NetworkManagerHUD]
     end
 
-    subgraph Scene["TheRoom.unity"]
+    subgraph Scene["SolarSystem.unity"]
         SS[SolarSystem]
         Class[Class]
         Portals[Portals]
@@ -160,7 +160,7 @@ Open the folder in **Unity Hub** with editor **6000.3.6f1**.
 
 ### 2. Working scene
 
-Open `Assets/Scenes/Menu.unity` and press Play from there. It is the first enabled scene in the build. `TheRoom.unity` loads when a room becomes online. Play mode uses the open scene, so starting Play inside The Room skips the menu.
+Open `Assets/Scenes/Menu.unity` and press Play from there. It is the first enabled scene in the build. `SolarSystem.unity` loads when a room becomes online. Play mode uses the open scene, so starting Play inside SolarSystem skips the menu.
 
 ### 3. Test in Editor
 
@@ -245,7 +245,7 @@ Current extensions: C#, Unity Tools, Unity Debug, DocComment.
 
 ## Additional documentation
 
-- [docs/arquitetura.md](docs/arquitetura.md) — architecture: generic features, the Menu scene, and how The Room applies them (PT)
+- [docs/arquitetura.md](docs/arquitetura.md) — architecture: generic features, the Menu scene, and how SolarSystem applies them (PT)
 - [docs/codigo-limpo.md](docs/codigo-limpo.md) — agent reference for architecture, Clean Code, SOLID, and tests (PT)
 - [docs/seguranca.md](docs/seguranca.md) — network, voice, and Android manifest risks, with a mitigation for each (PT)
 - [docs/TDD-sala-observacao-controle.md](docs/TDD-sala-observacao-controle.md) — TDD for the observation and control room (descriptive panel done; control room and return portal still to do, PT)

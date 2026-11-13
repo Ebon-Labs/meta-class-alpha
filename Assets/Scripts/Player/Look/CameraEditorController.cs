@@ -25,6 +25,7 @@ public class CameraEditorController : NetworkBehaviour
             return;
 
         EditorMouseLook.Accumulate(ref mouseX, ref mouseY, Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"), sensitivity);
+        mouseX += FloorCarry.ConsumeYawDegrees();
         transform.eulerAngles = EditorMouseLook.Euler(mouseX, mouseY);
     }
 }
