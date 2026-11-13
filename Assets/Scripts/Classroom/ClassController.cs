@@ -6,6 +6,8 @@ public class ClassController : MonoBehaviour
 {
     public const float ClockwiseStepDegrees = 45f;
     public const float TurnDuration = 3f;
+    public const string TutorialScene = "Tutorial";
+    public const string GroundName = "Ground";
 
     public static ClassController Instance { get; private set; }
 
@@ -66,6 +68,15 @@ public class ClassController : MonoBehaviour
     public static Transform AreaForRole(bool isHost, Transform hostArea, Transform guestArea)
     {
         return isHost ? hostArea : guestArea;
+    }
+
+    public static Transform AreaForRoleOrGround(bool isHost, Transform hostArea, Transform guestArea, string sceneName, Transform ground)
+    {
+        Transform area = AreaForRole(isHost, hostArea, guestArea);
+        if (area != null || sceneName != TutorialScene)
+            return area;
+
+        return ground;
     }
 
     public static Quaternion TurnAroundOwnY(Quaternion localRotation, float degrees)
@@ -208,7 +219,7 @@ public class ClassController : MonoBehaviour
             return;
 
         ResolveAreas();
-        Transform area = AreaForRole(isHost, hostArea, guestArea);
+        Transform area = AreaForRoleOrGround(isHost, hostArea, guestArea, gameObject.scene.name, FindGround());
         if (area == null)
             return;
 
@@ -232,6 +243,12 @@ public class ClassController : MonoBehaviour
     public bool ShouldMuteGuestMicrophone(bool isHostPlayer)
     {
         return GuestMutePolicy.ShouldMute(muteGuests, isHostPlayer);
+    }
+
+    static Transform FindGround()
+    {
+        GameObject ground = GameObject.Find(GroundName);
+        return ground != null ? ground.transform : null;
     }
 
     void ResolveAreas()

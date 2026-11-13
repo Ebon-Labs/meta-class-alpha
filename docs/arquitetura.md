@@ -1,7 +1,7 @@
 # Documento de Arquitetura
 
 **Projeto:** meta-class-alpha  
-**Cenas de build:** `Assets/Scenes/Menu.unity` (primeira), depois `Assets/Scenes/SolarSystem.unity`  
+**Cenas de build:** `Assets/Scenes/Menu.unity` (primeira), depois `Assets/Scenes/SolarSystem.unity` e `Assets/Scenes/Tutorial.unity`  
 **Escopo:** funcionalidades implementadas e a forma como o menu e a cena SolarSystem as compõem  
 **Fora de escopo:** sala de controle e portal de retorno descritos em [TDD-sala-observacao-controle.md](TDD-sala-observacao-controle.md), que ainda não estão implementados. O painel descritivo desse TDD está feito (`InfoArea` e `SceneInfoPanel`, seções 2.13 e 3).  
 **Código novo:** [codigo-limpo.md](codigo-limpo.md) — arquitetura, Clean Code, SOLID e testes.
@@ -217,9 +217,9 @@ A cena Menu é a primeira do build. Ela não tem jogador local, então o gaze n�
 | `CreateBack` | Voltar | −90° |
 | `Enter` | Buscar Sala | −90° |
 | `EnterBack` | Voltar | +90° horário, mesmo sentido de Create |
-| `TutorialButton` | Instruções | nenhum: o toque mais perto desse rótulo não gira |
+| `TutorialButton` | Instruções | nenhum giro: o toque abre `Tutorial.unity` em host + client |
 
-O acerto usa os limites visíveis do renderer, com **48 px** de folga, e escolhe o rótulo cujo centro na tela está mais perto do toque. Só entra o rótulo virado para a câmera. Cantos atrás da câmera são ignorados. Esses rótulos não chamam `StartHost` nem `StartClient`. O toque em `SolarSystemThumb` chama `NetworkManager.StartHost()`, a mesma ação do botão Host (Server + Client) do HUD, e só enquanto não há sessão ativa. A miniatura também precisa estar virada para a câmera, para não criar sala a partir da face de busca. O clique numa sala da lista é testado antes da miniatura.
+O acerto usa os limites visíveis do renderer, com **48 px** de folga, e escolhe o rótulo cujo centro na tela está mais perto do toque. Só entra o rótulo virado para a câmera. Cantos atrás da câmera são ignorados. Create, Enter e as voltas não chamam `StartHost` nem `StartClient`. O toque em `TutorialButton` troca a cena online para `Assets/Scenes/Tutorial.unity` e chama `NetworkManager.StartHost()` (host + client), só enquanto não há sessão ativa. Na cena Tutorial, o jogador sem área de anfitrião ou convidado fica no centro do objeto `Ground`, acima do topo da malha, na altura dos olhos. O toque em `SolarSystemThumb` gira o carrossel e não inicia a sala. A sala do sistema solar continua no botão Entrar e no Host do HUD, com `onlineScene` de volta para `Assets/Scenes/SolarSystem.unity`. A miniatura também precisa estar virada para a câmera. O clique numa sala da lista é testado antes da miniatura.
 
 `LanRoomBeacon` nasce em runtime no `NetworkDiscovery`, quando `RoomList` liga. Servidor ativo anuncia a sala; cliente que não é servidor para a busca; sem sessão, a busca começa. O anúncio é UDP em broadcast, porta **47777**, a cada **3 s**. `RoomList` guarda cada sala pelo `serverId` e apaga as que ficam mais de **7 s** sem anúncio novo. O componente fica no campo TMP da face de busca: o campo é só leitura, e sem salas o placeholder da cena continua visível. Cada sala é uma linha (apelido, ou host e porta). O toque na linha entra só como cliente (`StartClient` com o URI da sala) e não cria outra sala. O anfitrião não lista a própria sala.
 
