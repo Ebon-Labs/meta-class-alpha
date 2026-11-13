@@ -41,9 +41,6 @@ public class CameraEditorController : NetworkBehaviour
             return;
 
         print("We are running this from inside of the editor!");
-
-        Cursor.visible = false;
-        Cursor.lockState = CursorLockMode.Locked;
     }
 
     void Update()

@@ -79,6 +79,8 @@ A rede usa Mirror com transporte Telepathy. O contrato genérico é:
 
 Parâmetros atuais do manager, reutilizáveis como padrão do projeto: porta **7777**, no máximo **4** conexões, `dontDestroyOnLoad`, `autoStartServerBuild` ligado e `autoConnectClientBuild` desligado. O endereço padrão no Editor é `localhost`. O manager vive na cena Menu, com cena offline `Menu` e cena online `SolarSystem`. SolarSystem não carrega um segundo `NetworkManager`. O HUD de canto do Mirror continua sendo o controle que cria a sala.
 
+`SessionExitButton` desenha o botão **SAIR** no canto superior direito, em canvas de tela, com clique comum. Aparece em toda cena cujo nome não é `Menu` e some ao voltar para ela. O clique chama a mesma saída de `MenuReturn`: anfitrião e cliente juntos (`StopHost`) derrubam a sala e levam todos à cena offline `Menu`; só cliente (`StopClient`) sai da sala e volta ao `Menu`, e os demais ficam.
+
 `CameraPointerController.OnStartClient` posiciona o jogador local numa área aleatória próxima da origem (`x` e `z` entre 0 e 3, `y = 1`) e habilita câmera e canvas somente quando `isLocalPlayer` é verdadeiro.
 
 ### 2.3 Olhar, permanência e teleporte
@@ -113,7 +115,7 @@ O indicador de progresso é um `Slider` filho do jogador, ativado só durante a 
 
 ### 2.6 Olhar no Editor
 
-`CameraEditorController` gira o transform do jogador local com o mouse e trava o cursor. Existe para testar a mesma câmera do gaze sem o visor. Em build, o `Start` retorna cedo; o `Update` ainda lê o mouse se houver um jogador local. Quando a cena `Menu` carrega de novo, o cursor fica visível e livre, e o clique comum volta a ser o toque na tela.
+`CameraEditorController` gira o transform do jogador local com o mouse. Existe para testar a mesma câmera do gaze sem o visor. Em build, o `Start` retorna cedo; o `Update` ainda lê o mouse se houver um jogador local. O cursor permanece visível e livre, para o botão `SAIR` e o menu receberem o clique comum.
 
 ### 2.7 Voz espacial
 
@@ -462,7 +464,8 @@ Assets/Scripts/
 │   ├── RoomList.cs                  salas abertas e entrada como cliente
 │   ├── LanRoomBeacon.cs             anúncio ou busca conforme a sessão
 │   ├── LogoBounce.cs
-│   └── MenuReturn.cs               volta ao Menu 3 s após o teleporte
+│   ├── MenuReturn.cs               volta ao Menu 3 s após o teleporte
+│   └── SessionExitButton.cs        botão SAIR fora do Menu
 ├── Classroom/
 │   ├── ClassController.cs           giro de 45° e áreas
 │   ├── RotateClassButton.cs
