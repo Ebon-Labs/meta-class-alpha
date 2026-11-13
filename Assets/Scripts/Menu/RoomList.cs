@@ -239,6 +239,7 @@ public class RoomList : MonoBehaviour
             discovery.StopDiscovery();
 
         manager.networkAddress = response.uri.Host;
+        PlayerPortraitChoice.Apply(manager);
         manager.StartClient(response.uri);
     }
 

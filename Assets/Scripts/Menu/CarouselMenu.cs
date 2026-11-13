@@ -62,6 +62,9 @@ public class CarouselMenu : MonoBehaviour
             return;
 
         Camera view = Camera.main;
+        if (PlayerPortraitChoice.Press(screen, view))
+            return;
+
         if (RoomList.JoinPressed(screen, view))
             return;
 
