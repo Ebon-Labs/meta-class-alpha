@@ -124,6 +124,36 @@ public class AvatarHeadYaw : NetworkBehaviour
         return null;
     }
 
+    public static void StopIndependentMotion(GameObject player)
+    {
+        if (player == null)
+            return;
+
+        Animator[] animators = player.GetComponentsInChildren<Animator>(true);
+        for (int i = 0; i < animators.Length; i++)
+        {
+            Animator animator = animators[i];
+            if (animator == null)
+                continue;
+
+            animator.runtimeAnimatorController = null;
+            animator.enabled = false;
+        }
+
+        Animation[] clips = player.GetComponentsInChildren<Animation>(true);
+        for (int i = 0; i < clips.Length; i++)
+        {
+            Animation clip = clips[i];
+            if (clip == null)
+                continue;
+
+            clip.Stop();
+            clip.playAutomatically = false;
+            clip.clip = null;
+            clip.enabled = false;
+        }
+    }
+
     public static Transform FindBody(Transform player, Transform bone)
     {
         if (player == null || bone == null)
@@ -138,8 +168,19 @@ public class AvatarHeadYaw : NetworkBehaviour
         return body;
     }
 
+    void Awake()
+    {
+        StopIndependentMotion(gameObject);
+    }
+
+    void Update()
+    {
+        StopIndependentMotion(gameObject);
+    }
+
     void LateUpdate()
     {
+        StopIndependentMotion(gameObject);
         if (!isLocalPlayer)
             return;
 

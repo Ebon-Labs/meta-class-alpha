@@ -737,7 +737,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f1a8c3e74b2d49a6b5e0c8d91f04bb21, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: MetaClass::SolarSystemThumbHost
+  m_EditorClassIdentifier: MetaClass::ImageMenuThumb
 --- !u!114 &227963375
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4161,7 +4161,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f1a8c3e74b2d49a6b5e0c8d91f04bb21, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: MetaClass::SolarSystemThumbHost
+  m_EditorClassIdentifier: MetaClass::ImageMenuThumb
 --- !u!114 &2100001201
 MonoBehaviour:
   m_ObjectHideFlags: 0

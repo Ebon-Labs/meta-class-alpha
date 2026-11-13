@@ -738,7 +738,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f1a8c3e74b2d49a6b5e0c8d91f04bb21, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: MetaClass::SolarSystemThumbHost
+  m_EditorClassIdentifier: MetaClass::ImageMenuThumb
 --- !u!114 &227963375
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1613,17 +1613,17 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 823787820}
-  m_LocalRotation: {x: 0.10129518, y: -0.18853223, z: -0.0011643635, w: 0.9768283}
-  m_LocalPosition: {x: 0, y: 0, z: -0.548}
+  m_LocalRotation: {x: 0.09974455, y: -0.0035759555, z: 0.017694484, w: 0.9948493}
+  m_LocalPosition: {x: 0, y: 0, z: -0.396}
   m_LocalScale: {x: 0.00059965416, y: 0.0011998696, z: 0.019999996}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 954108723}
-  m_LocalEulerAnglesHint: {x: 11.388, y: -382.08398, z: -2.366}
+  m_LocalEulerAnglesHint: {x: 11.454, y: -360.21, z: 2.017}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -0.373, y: 0.021}
-  m_SizeDelta: {x: 800, y: 800}
+  m_AnchoredPosition: {x: -0.421, y: -0.018}
+  m_SizeDelta: {x: 300, y: 600}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &823787822
 MonoBehaviour:
@@ -1750,7 +1750,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 927873544}
   m_LocalRotation: {x: -0.0788977, y: -5.8207647e-11, z: 3.8198767e-11, w: -0.9968828}
-  m_LocalPosition: {x: 0, y: 0, z: -0.599}
+  m_LocalPosition: {x: 0, y: 0, z: -0.594}
   m_LocalScale: {x: 0.03, y: 0.06, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1758,7 +1758,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 369.05, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -0.314}
+  m_AnchoredPosition: {x: 0, y: -0.282}
   m_SizeDelta: {x: 20, y: 3}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &927873546
@@ -2267,7 +2267,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1023178544}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: -1}
-  m_LocalPosition: {x: 0, y: 0, z: -0.57}
+  m_LocalPosition: {x: 0, y: 0, z: -0.563}
   m_LocalScale: {x: 0.03, y: 0.06, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2275,7 +2275,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 270, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -0.147}
+  m_AnchoredPosition: {x: 0, y: -0.058}
   m_SizeDelta: {x: 20, y: 4}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1023178546
@@ -3080,7 +3080,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1402029285}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: -1}
-  m_LocalPosition: {x: 0, y: 0, z: -0.571}
+  m_LocalPosition: {x: 0, y: 0, z: -0.568}
   m_LocalScale: {x: 0.03, y: 0.06, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -3088,8 +3088,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 270, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0.102}
-  m_SizeDelta: {x: 20, y: 5}
+  m_AnchoredPosition: {x: 0, y: 0.137}
+  m_SizeDelta: {x: 20, y: 2}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1402029287
 MonoBehaviour:
@@ -3864,17 +3864,17 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1681274303}
-  m_LocalRotation: {x: 0.090241715, y: 0.28684866, z: 0.046027217, w: 0.9526047}
-  m_LocalPosition: {x: 0, y: 0, z: -0.508}
+  m_LocalRotation: {x: 0.099452354, y: 0.008836143, z: 0.009026525, w: 0.9949622}
+  m_LocalPosition: {x: 0, y: 0, z: -0.41399997}
   m_LocalScale: {x: 0.00059965416, y: 0.0011998696, z: 0.019999996}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 954108723}
-  m_LocalEulerAnglesHint: {x: 8.368, y: -325.89, z: 8.104}
+  m_LocalEulerAnglesHint: {x: 11.405, y: -358.867, z: 1.153}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0.383, y: 0.022}
-  m_SizeDelta: {x: 800, y: 800}
+  m_AnchoredPosition: {x: 0.38499933, y: -0.016999975}
+  m_SizeDelta: {x: 300, y: 600}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1681274306
 MonoBehaviour:
@@ -4428,7 +4428,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f1a8c3e74b2d49a6b5e0c8d91f04bb21, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: MetaClass::SolarSystemThumbHost
+  m_EditorClassIdentifier: MetaClass::ImageMenuThumb
 --- !u!114 &2100001201
 MonoBehaviour:
   m_ObjectHideFlags: 0

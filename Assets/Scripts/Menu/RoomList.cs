@@ -69,7 +69,7 @@ public class RoomList : MonoBehaviour
         int count = Mathf.Min(min.Count, Mathf.Min(max.Count, centers.Count));
         for (int i = 0; i < count; i++)
         {
-            if (!SolarSystemThumbHost.Contains(screen, min[i], max[i], padding))
+            if (!ImageMenuThumb.Contains(screen, min[i], max[i], padding))
                 continue;
 
             float distance = (screen - centers[i]).sqrMagnitude;

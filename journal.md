@@ -6,6 +6,8 @@ Modelagem e posicionamento de ojetos realmente ainda é uma questão para os age
 
 Comece pelo simples: a IA terá  mais facilidade de fazer por si só funcionalidade similares as ja construídas, tipo criar um novo botão em um painel com icone dentro do estilo ja estabelicido e uma novafuncionalidade reaproveitando a estrutura e codigo ja desenvolvido dentro da arquitetura
 
+algumas vezes a IA implementa coisas que ninguem pediu, como fazer o Player ficar balançando na Tela, provavelmente pelas referencia de games que simulam estado idle de PLayers como se estivesse respirando. COmo sabemos LLMS são treinadas com codigo que acham por aí, por isso sempre é importante retestar funcionalidades após cada etapa casa não esteja atenta a todas as modificações feitas no codigo.
+
 ## 12 de novembro de 2026
 
 Relato: ruído estridente emitido no client.

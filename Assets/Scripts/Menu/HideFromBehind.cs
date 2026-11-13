@@ -10,6 +10,15 @@ public class HideFromBehind : MonoBehaviour
 
     Material side;
 
+    public static bool KeepsOwnMaterial(Material material)
+    {
+        if (material == null || material.shader == null)
+            return false;
+
+        string shader = material.shader.name;
+        return shader == SpriteShader || shader == "Custom/MenuGrayscale";
+    }
+
     public static void Cull(Material material)
     {
         if (material != null && material.HasProperty("_CullMode"))
@@ -29,8 +38,13 @@ public class HideFromBehind : MonoBehaviour
         }
 
         Image image = GetComponent<Image>();
-        if (image != null && image.material != side)
-            image.material = side;
+        if (image != null)
+        {
+            if (!KeepsOwnMaterial(image.material))
+                image.material = side;
+            else
+                Cull(image.material);
+        }
 
         TMP_Text[] texts = GetComponentsInChildren<TMP_Text>(true);
         for (int i = 0; i < texts.Length; i++)

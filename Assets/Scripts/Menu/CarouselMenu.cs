@@ -34,7 +34,7 @@ public class CarouselMenu : MonoBehaviour
 
     public static float SignedStep(string objectName)
     {
-        if (objectName == CreateName || objectName == EnterBackName || objectName == SolarSystemThumbHost.ObjectName)
+        if (objectName == CreateName || objectName == EnterBackName || objectName == ImageMenuThumb.ObjectName)
             return StepDegrees;
 
         if (objectName == CreateBackName || objectName == EnterName)
@@ -71,9 +71,9 @@ public class CarouselMenu : MonoBehaviour
         if (CreateRoomButton.Press(screen, view))
             return;
 
-        if (SolarSystemThumbHost.Press(screen, view))
+        if (ImageMenuThumb.Press(screen, view))
         {
-            Begin(SignedStep(SolarSystemThumbHost.ObjectName));
+            Begin(SignedStep(ImageMenuThumb.ObjectName));
             return;
         }
 
@@ -117,7 +117,7 @@ public class CarouselMenu : MonoBehaviour
 
     static bool AcceptsPress(TextMeshPro label)
     {
-        return label != null && label.name != SolarSystemThumbHost.ObjectName && (SignedStep(label.name) != 0f || label.name == TutorialName);
+        return label != null && label.name != ImageMenuThumb.ObjectName && (SignedStep(label.name) != 0f || label.name == TutorialName);
     }
 
     public static float SignedStep(Vector2 screen, Camera view, params GameObject[] targets)
@@ -135,7 +135,7 @@ public class CarouselMenu : MonoBehaviour
 
     static void Consider(Vector2 screen, Camera view, GameObject target, ref float chosen, ref float nearest)
     {
-        if (target == null || view == null || !SolarSystemThumbHost.FacesCamera(target.transform.forward, view.transform.forward))
+        if (target == null || view == null || !ImageMenuThumb.FacesCamera(target.transform.forward, view.transform.forward))
             return;
 
         if (!TryScreenBounds(target, view, out Vector2 min, out Vector2 max, out Vector2 center))

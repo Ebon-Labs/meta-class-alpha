@@ -4,6 +4,7 @@ Shader "Custom/MenuGrayscale"
     {
         [PerRendererData] _MainTex ("Sprite", 2D) = "white" {}
         _Color ("Tint", Color) = (1, 1, 1, 1)
+        _CullMode ("Cull Mode", Float) = 2
     }
 
     SubShader
@@ -17,7 +18,7 @@ Shader "Custom/MenuGrayscale"
             "PreviewType" = "Plane"
         }
 
-        Cull Off
+        Cull [_CullMode]
         Lighting Off
         ZWrite Off
         Blend SrcAlpha OneMinusSrcAlpha

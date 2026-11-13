@@ -24,14 +24,16 @@ public class PlayerPortraitChoiceTests
     [Test]
     public void PortraitMaterial_ColorsTheSelectionAndGraysTheOther()
     {
+        var front = new Material(Shader.Find("Sprites/Default"));
         var gray = new Material(Shader.Find("Sprites/Default"));
         try
         {
-            Assert.IsNull(PlayerPortraitChoice.PortraitMaterial(true, gray));
-            Assert.AreEqual(gray, PlayerPortraitChoice.PortraitMaterial(false, gray));
+            Assert.AreEqual(front, PlayerPortraitChoice.PortraitMaterial(true, front, gray));
+            Assert.AreEqual(gray, PlayerPortraitChoice.PortraitMaterial(false, front, gray));
         }
         finally
         {
+            Object.DestroyImmediate(front);
             Object.DestroyImmediate(gray);
         }
     }

@@ -16,6 +16,7 @@ public class PlayerPortraitChoice : MonoBehaviour
     static GameObject girl;
     static GameObject boy;
     static Material gray;
+    static Material front;
 
     public static bool UsesMale { get; private set; }
 
@@ -24,9 +25,9 @@ public class PlayerPortraitChoice : MonoBehaviour
         return male ? boyPrefab : girlPrefab;
     }
 
-    public static Material PortraitMaterial(bool colored, Material grayscale)
+    public static Material PortraitMaterial(bool colored, Material front, Material grayscale)
     {
-        return colored ? null : grayscale;
+        return colored ? front : grayscale;
     }
 
     public static void KeepSpare(List<GameObject> prefabs, GameObject spare)
@@ -58,19 +59,19 @@ public class PlayerPortraitChoice : MonoBehaviour
         if (image == null)
             return;
 
-        image.material = PortraitMaterial(colored, Gray());
+        image.material = PortraitMaterial(colored, Front(), Gray());
         image.color = Color.white;
     }
 
     public static bool Press(Vector2 screen, Camera view)
     {
-        if (SolarSystemThumbHost.Hits(GameObject.Find(BoyName), screen, view))
+        if (ImageMenuThumb.Hits(GameObject.Find(BoyName), screen, view))
         {
             Select(true);
             return true;
         }
 
-        if (SolarSystemThumbHost.Hits(GameObject.Find(GirlName), screen, view))
+        if (ImageMenuThumb.Hits(GameObject.Find(GirlName), screen, view))
         {
             Select(false);
             return true;
@@ -110,16 +111,34 @@ public class PlayerPortraitChoice : MonoBehaviour
         Select(false);
     }
 
+    static Material Front()
+    {
+        if (front != null)
+            return front;
+
+        Shader shader = Shader.Find(HideFromBehind.SpriteShader);
+        if (shader == null)
+            return null;
+
+        front = new Material(shader);
+        HideFromBehind.Cull(front);
+        return front;
+    }
+
     static Material Gray()
     {
         if (gray != null)
+        {
+            HideFromBehind.Cull(gray);
             return gray;
+        }
 
         Shader shader = Shader.Find("Custom/MenuGrayscale");
         if (shader == null)
             return null;
 
         gray = new Material(shader);
+        HideFromBehind.Cull(gray);
         return gray;
     }
 }
