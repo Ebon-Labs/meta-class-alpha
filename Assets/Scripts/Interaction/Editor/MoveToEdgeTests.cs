@@ -50,46 +50,55 @@ public class MoveToEdgeTests
     }
 
     [Test]
-    public void StopScale_SunIsFarther_EarthAndMarsAreCloser()
+    public void Wrapper_IsThePlanetHolderOrTheSun()
     {
-        Assert.AreEqual(MoveToEdge.SunStopScale, MoveToEdge.StopScale("Sun"));
-        Assert.AreEqual(5f, MoveToEdge.StopScale("Sol"));
-        Assert.AreEqual(MoveToEdge.EarthStopScale, MoveToEdge.StopScale("Earth "), 0.0001f);
-        Assert.AreEqual(MoveToEdge.EarthStopScale, MoveToEdge.StopScale("EarthWrapper"), 0.0001f);
-        Assert.AreEqual(MoveToEdge.MarsStopScale, MoveToEdge.StopScale("MarsWrapper"), 0.0001f);
-        Assert.AreEqual(1f, MoveToEdge.StopScale("Jupiter"));
-        Assert.AreEqual(1f, MoveToEdge.StopScale("InfoArea"));
-        Assert.AreEqual(1f, MoveToEdge.StopScale("SolarSystem"));
+        Assert.IsTrue(MoveToEdge.IsWrapper("EarthWrapper"));
+        Assert.IsTrue(MoveToEdge.IsWrapper("JupterWrapper"));
+        Assert.IsTrue(MoveToEdge.IsWrapper("Sun"));
+        Assert.IsTrue(MoveToEdge.IsWrapper("Sol"));
+        Assert.IsFalse(MoveToEdge.IsWrapper("Sun Light"));
+        Assert.IsFalse(MoveToEdge.IsWrapper("InfoArea"));
+        Assert.IsFalse(MoveToEdge.IsWrapper("SolarSystem"));
     }
 
     [Test]
-    public void ApplyStopScale_ChangesDistanceAndKeepsTheParkHeight()
-    {
-        Vector3 stop = new Vector3(30f, MoveToEdge.AstroParkHeight, 0f);
-
-        Vector3 farther = MoveToEdge.ApplyStopScale(Vector3.zero, stop, MoveToEdge.SunStopScale);
-        Assert.AreEqual(150f, farther.x, 0.001f);
-        Assert.AreEqual(MoveToEdge.AstroParkHeight, farther.y, 0.001f);
-
-        Vector3 closer = MoveToEdge.ApplyStopScale(Vector3.zero, stop, MoveToEdge.EarthStopScale);
-        Assert.AreEqual(10f, closer.x, 0.001f);
-        Assert.AreEqual(MoveToEdge.AstroParkHeight, closer.y, 0.001f);
-    }
-
-    [Test]
-    public void StopBody_UsesThePlanetAncestor()
+    public void WrapperOf_UsesTheNearestPlanetHolder()
     {
         var earth = new GameObject("EarthWrapper");
         var info = new GameObject("InfoArea");
         info.transform.SetParent(earth.transform, false);
         try
         {
-            Assert.AreSame(earth.transform, MoveToEdge.StopBody(info.transform));
+            Assert.AreSame(earth.transform, MoveToEdge.WrapperOf(info.transform));
         }
         finally
         {
             Object.DestroyImmediate(earth);
         }
+    }
+
+    [Test]
+    public void ReferenceOnEdge_PutsTheClassFaceOnTheWrapperFace()
+    {
+        var wrapper = new Bounds(Vector3.zero, new Vector3(20f, 20f, 20f));
+        Vector3 from = new Vector3(100f, 0f, 0f);
+
+        Vector3 reference = MoveToEdge.ReferenceOnEdge(wrapper, new Vector3(2f, 2f, 2f), Vector3.zero, from);
+
+        Assert.AreEqual(12f, reference.x, 0.001f);
+        Assert.AreEqual(0f, reference.y, 0.001f);
+        Assert.AreEqual(0f, reference.z, 0.001f);
+    }
+
+    [Test]
+    public void WithGroundHeight_ChangesOnlyY()
+    {
+        Vector3 parked = MoveToEdge.WithGroundHeight(new Vector3(12f, 40f, -3f), hasGround: true, groundY: 0f);
+
+        Assert.AreEqual(12f, parked.x, 0.001f);
+        Assert.AreEqual(0f, parked.y, 0.001f);
+        Assert.AreEqual(-3f, parked.z, 0.001f);
+        Assert.AreEqual(2f, MoveToEdge.WithGroundHeight(new Vector3(1f, 2f, 3f), hasGround: false, groundY: 0f).y, 0.001f);
     }
 
     [Test]

@@ -8,11 +8,9 @@ public class MoveToEdge : MonoBehaviour
     public const float AstroParkHeight = 8f;
     public const string PassengerTag = "Player";
     public const string CenterTag = "Class Center";
+    public const string GroundName = "Ground";
 
     public const float OriginTolerance = 0.05f;
-    public const float SunStopScale = 5f;
-    public const float EarthStopScale = 1f / 3f;
-    public const float MarsStopScale = 1f / 3f;
 
     public static bool HoldKinematic(bool traveling, bool wasKinematic)
     {
@@ -101,28 +99,25 @@ public class MoveToEdge : MonoBehaviour
         return center.transform;
     }
 
-    public static float StopScale(string objectName)
+    public static bool IsWrapper(string objectName)
     {
         if (string.IsNullOrEmpty(objectName))
-            return 1f;
+            return false;
 
         string name = objectName.Trim();
-        if (name.Equals("Sol", System.StringComparison.OrdinalIgnoreCase) || name.StartsWith("Sun", System.StringComparison.OrdinalIgnoreCase))
-            return SunStopScale;
-        if (name.Equals("Terra", System.StringComparison.OrdinalIgnoreCase) || name.StartsWith("Earth", System.StringComparison.OrdinalIgnoreCase))
-            return EarthStopScale;
-        if (name.Equals("Marte", System.StringComparison.OrdinalIgnoreCase) || name.StartsWith("Mars", System.StringComparison.OrdinalIgnoreCase))
-            return MarsStopScale;
+        if (name.EndsWith("Wrapper", System.StringComparison.OrdinalIgnoreCase))
+            return true;
 
-        return 1f;
+        return name.Equals("Sun", System.StringComparison.OrdinalIgnoreCase)
+            || name.Equals("Sol", System.StringComparison.OrdinalIgnoreCase);
     }
 
-    public static Transform StopBody(Transform destination)
+    public static Transform WrapperOf(Transform destination)
     {
         Transform cursor = destination;
         while (cursor != null)
         {
-            if (StopScale(cursor.name) != 1f)
+            if (IsWrapper(cursor.name))
                 return cursor;
 
             cursor = cursor.parent;
@@ -131,11 +126,55 @@ public class MoveToEdge : MonoBehaviour
         return null;
     }
 
-    public static Vector3 ApplyStopScale(Vector3 bodyCenter, Vector3 stop, float scale)
+    public static float RayRadius(Vector3 extents, Vector3 direction)
     {
-        Vector3 scaled = bodyCenter + (stop - bodyCenter) * scale;
-        scaled.y = AstroParkHeight;
-        return scaled;
+        float distance = float.PositiveInfinity;
+        for (int i = 0; i < 3; i++)
+        {
+            float component = Mathf.Abs(direction[i]);
+            if (component > 0.0001f)
+                distance = Mathf.Min(distance, extents[i] / component);
+        }
+
+        if (float.IsPositiveInfinity(distance))
+            return 0f;
+
+        return distance;
+    }
+
+    public static Vector3 ReferenceOnEdge(Bounds wrapper, Vector3 roomExtents, Vector3 referenceOffset, Vector3 from)
+    {
+        Vector3 outward = from - wrapper.center;
+        if (outward.sqrMagnitude < 0.0001f)
+            outward = Vector3.forward;
+        else
+            outward.Normalize();
+
+        float reach = RayRadius(wrapper.extents, outward) + RayRadius(roomExtents, outward);
+        return wrapper.center + outward * reach + referenceOffset;
+    }
+
+    public static Vector3 WithGroundHeight(Vector3 point, bool hasGround, float groundY)
+    {
+        if (hasGround)
+            point.y = groundY;
+        return point;
+    }
+
+    public static bool TryGroundHeight(Transform ground, out float height)
+    {
+        height = 0f;
+        if (ground == null)
+            return false;
+
+        if (BodyBounds.TryGet(ground, out Bounds bounds))
+        {
+            height = bounds.max.y;
+            return true;
+        }
+
+        height = ground.position.y;
+        return true;
     }
 
     public static Vector3 Landing(Vector3 center, float radius, Vector3 from)
@@ -161,9 +200,6 @@ public class MoveToEdge : MonoBehaviour
     Transform referencePoint;
     Vector3 destinationCenter;
     float destinationRadius;
-    Vector3 stopBodyPosition;
-    float stopScale = 1f;
-    bool hasStopBody;
     float elapsed;
     bool originCaptured;
     bool moving;
@@ -207,7 +243,6 @@ public class MoveToEdge : MonoBehaviour
 
         destinationCenter = bounds.center;
         destinationRadius = Radius(bounds);
-        CaptureStop(destination.transform);
 
         TravelClaim.Claim(this, CancelTravel);
         StartMoving();
@@ -230,10 +265,7 @@ public class MoveToEdge : MonoBehaviour
         }
 
         elapsed += Time.deltaTime;
-        Vector3 end = Landing(destinationCenter, destinationRadius, start);
-        if (hasStopBody)
-            end = ApplyStopScale(stopBodyPosition, end, stopScale);
-        MoveSubject(EdgeApproach.Move(start, end, elapsed, duration));
+        MoveSubject(EdgeApproach.Move(start, OnGround(EdgeTarget()), elapsed, duration));
         if (duration <= 0f || elapsed >= duration)
             Finish();
     }
@@ -244,15 +276,27 @@ public class MoveToEdge : MonoBehaviour
             Finish();
     }
 
-    void CaptureStop(Transform destinationTransform)
+    Vector3 EdgeTarget()
     {
-        Transform body = StopBody(destinationTransform);
-        hasStopBody = body != null;
-        if (!hasStopBody)
-            return;
+        Transform wrapper = destination != null ? WrapperOf(destination.transform) : null;
+        if (wrapper != null
+            && subject != null
+            && BodyBounds.TryGet(wrapper, out Bounds wrapperBounds)
+            && BodyBounds.TryGet(subject.transform, out Bounds roomBounds))
+        {
+            Vector3 reference = ReferencePosition();
+            Vector3 offset = reference - roomBounds.center;
+            return ReferenceOnEdge(wrapperBounds, roomBounds.extents, offset, start);
+        }
 
-        stopBodyPosition = body.position;
-        stopScale = StopScale(body.name);
+        return Landing(destinationCenter, destinationRadius, start);
+    }
+
+    Vector3 OnGround(Vector3 point)
+    {
+        GameObject ground = GameObject.Find(GroundName);
+        bool hasGround = TryGroundHeight(ground != null ? ground.transform : null, out float height);
+        return WithGroundHeight(point, hasGround, height);
     }
 
     void BeginReturn()
@@ -312,7 +356,7 @@ public class MoveToEdge : MonoBehaviour
         if (moving && subject != null)
         {
             elapsed += Time.deltaTime;
-            MoveSubject(EdgeApproach.Move(start, origin, elapsed, duration));
+            MoveSubject(EdgeApproach.Move(start, OnGround(origin), elapsed, duration));
             if (duration <= 0f || elapsed >= duration)
                 Finish();
         }
