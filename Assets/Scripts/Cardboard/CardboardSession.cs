@@ -8,11 +8,12 @@ public class CardboardSession : MonoBehaviour
 {
     public const float MenuOrthographicSize = 5f;
     public const float MenuFieldOfView = 60f;
+    public const string DefaultViewerUri =
+        "https://google.com/cardboard/cfg?p=CgZHb29nbGUSEkNhcmRib2FyZCBJL08gMjAxNR0rGBU9JQHegj0qEAAASEIAAEhCAABIQgAASEJYADUpXA89OggeZnc-Ej6aPlAAYAM";
 
     static CardboardSession current;
 
     int ticket;
-    bool prompted;
 
     public static bool RunsOnThisPlayer()
     {
@@ -28,9 +29,15 @@ public class CardboardSession : MonoBehaviour
         return VrEntryPrompt.Covers(sceneName);
     }
 
-    public static bool ShouldScan(bool hasParams, bool alreadyPrompted)
+    public static bool ShouldStoreDefault(bool hasParams)
     {
-        return !hasParams && !alreadyPrompted;
+        return !hasParams;
+    }
+
+    public static void StoreDefaultViewer()
+    {
+        Api.SaveDeviceParams(DefaultViewerUri);
+        Api.ReloadDeviceParams();
     }
 
     public static void RestoreFlatCamera(Camera camera, bool orthographic, float orthographicSize, float fieldOfView)
@@ -81,7 +88,6 @@ public class CardboardSession : MonoBehaviour
 
     void Enter()
     {
-        prompted = false;
         Screen.sleepTimeout = SleepTimeout.NeverSleep;
         int mine = ++ticket;
         StartCoroutine(StartViewer(mine));
@@ -91,7 +97,6 @@ public class CardboardSession : MonoBehaviour
     {
         ticket++;
         StopAllCoroutines();
-        prompted = false;
 
         XRManagerSettings manager = Manager();
         if (manager != null && manager.isInitializationComplete)
@@ -123,11 +128,8 @@ public class CardboardSession : MonoBehaviour
         }
 
         manager.StartSubsystems();
-        if (ShouldScan(Api.HasDeviceParams(), prompted))
-        {
-            prompted = true;
-            Api.ScanDeviceParams();
-        }
+        if (ShouldStoreDefault(Api.HasDeviceParams()))
+            StoreDefaultViewer();
     }
 
     void Update()
@@ -141,9 +143,6 @@ public class CardboardSession : MonoBehaviour
             MenuReturn.Leave();
             return;
         }
-
-        if (Api.IsGearButtonPressed)
-            Api.ScanDeviceParams();
 
         if (Api.IsTriggerHeldPressed)
             Api.Recenter();

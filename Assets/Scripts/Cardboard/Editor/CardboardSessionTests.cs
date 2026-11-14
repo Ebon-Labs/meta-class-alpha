@@ -12,11 +12,11 @@ public class CardboardSessionTests
     }
 
     [Test]
-    public void Scan_OnlyWhenParamsAreMissingAndNotYetPrompted()
+    public void DefaultViewer_IsStoredOnlyWhenParamsAreMissing()
     {
-        Assert.IsTrue(CardboardSession.ShouldScan(hasParams: false, alreadyPrompted: false));
-        Assert.IsFalse(CardboardSession.ShouldScan(hasParams: true, alreadyPrompted: false));
-        Assert.IsFalse(CardboardSession.ShouldScan(hasParams: false, alreadyPrompted: true));
+        Assert.IsTrue(CardboardSession.ShouldStoreDefault(hasParams: false));
+        Assert.IsFalse(CardboardSession.ShouldStoreDefault(hasParams: true));
+        StringAssert.StartsWith("https://google.com/cardboard/cfg?p=", CardboardSession.DefaultViewerUri);
     }
 
     [Test]
