@@ -80,7 +80,8 @@ public class CameraPointerController : NetworkBehaviour
             camera = GetComponentInChildren<Camera>(true);
 
         Transform look = camera != null ? camera.transform : transform;
-        if (Physics.Raycast(look.position, look.forward, out RaycastHit hit, MaxDistance, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore))
+        RaycastHit[] hits = Physics.RaycastAll(look.position, look.forward, MaxDistance, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore);
+        if (InfoArea.TryClosestHit(hits, look.position, out RaycastHit hit))
             GazeAt(hit.transform.gameObject);
         else
             ClearGaze();
