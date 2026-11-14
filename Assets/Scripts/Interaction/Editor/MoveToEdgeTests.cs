@@ -54,11 +54,31 @@ public class MoveToEdgeTests
     {
         Assert.IsTrue(MoveToEdge.IsWrapper("EarthWrapper"));
         Assert.IsTrue(MoveToEdge.IsWrapper("JupterWrapper"));
-        Assert.IsTrue(MoveToEdge.IsWrapper("Sun"));
-        Assert.IsTrue(MoveToEdge.IsWrapper("Sol"));
+        Assert.IsTrue(MoveToEdge.IsWrapper("SunWrapper"));
+        Assert.IsFalse(MoveToEdge.IsWrapper("Sun"));
+        Assert.IsFalse(MoveToEdge.IsWrapper("Sol"));
         Assert.IsFalse(MoveToEdge.IsWrapper("Sun Light"));
         Assert.IsFalse(MoveToEdge.IsWrapper("InfoArea"));
         Assert.IsFalse(MoveToEdge.IsWrapper("SolarSystem"));
+    }
+
+    [Test]
+    public void WrapperOf_UsesSunWrapperInsteadOfTheSunObject()
+    {
+        var sunWrapper = new GameObject("SunWrapper");
+        var sun = new GameObject("Sun");
+        var info = new GameObject("InfoArea");
+        try
+        {
+            sun.transform.SetParent(sunWrapper.transform, false);
+            info.transform.SetParent(sun.transform, false);
+
+            Assert.AreSame(sunWrapper.transform, MoveToEdge.WrapperOf(info.transform));
+        }
+        finally
+        {
+            Object.DestroyImmediate(sunWrapper);
+        }
     }
 
     [Test]

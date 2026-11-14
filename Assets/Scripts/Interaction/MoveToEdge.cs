@@ -104,12 +104,7 @@ public class MoveToEdge : MonoBehaviour
         if (string.IsNullOrEmpty(objectName))
             return false;
 
-        string name = objectName.Trim();
-        if (name.EndsWith("Wrapper", System.StringComparison.OrdinalIgnoreCase))
-            return true;
-
-        return name.Equals("Sun", System.StringComparison.OrdinalIgnoreCase)
-            || name.Equals("Sol", System.StringComparison.OrdinalIgnoreCase);
+        return objectName.Trim().EndsWith("Wrapper", System.StringComparison.OrdinalIgnoreCase);
     }
 
     public static Transform WrapperOf(Transform destination)
