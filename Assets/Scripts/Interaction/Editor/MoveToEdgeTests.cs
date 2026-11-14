@@ -50,6 +50,49 @@ public class MoveToEdgeTests
     }
 
     [Test]
+    public void StopScale_SunIsFarther_EarthAndMarsAreCloser()
+    {
+        Assert.AreEqual(MoveToEdge.SunStopScale, MoveToEdge.StopScale("Sun"));
+        Assert.AreEqual(5f, MoveToEdge.StopScale("Sol"));
+        Assert.AreEqual(MoveToEdge.EarthStopScale, MoveToEdge.StopScale("Earth "), 0.0001f);
+        Assert.AreEqual(MoveToEdge.EarthStopScale, MoveToEdge.StopScale("EarthWrapper"), 0.0001f);
+        Assert.AreEqual(MoveToEdge.MarsStopScale, MoveToEdge.StopScale("MarsWrapper"), 0.0001f);
+        Assert.AreEqual(1f, MoveToEdge.StopScale("Jupiter"));
+        Assert.AreEqual(1f, MoveToEdge.StopScale("InfoArea"));
+        Assert.AreEqual(1f, MoveToEdge.StopScale("SolarSystem"));
+    }
+
+    [Test]
+    public void ApplyStopScale_ChangesDistanceAndKeepsTheParkHeight()
+    {
+        Vector3 stop = new Vector3(30f, MoveToEdge.AstroParkHeight, 0f);
+
+        Vector3 farther = MoveToEdge.ApplyStopScale(Vector3.zero, stop, MoveToEdge.SunStopScale);
+        Assert.AreEqual(150f, farther.x, 0.001f);
+        Assert.AreEqual(MoveToEdge.AstroParkHeight, farther.y, 0.001f);
+
+        Vector3 closer = MoveToEdge.ApplyStopScale(Vector3.zero, stop, MoveToEdge.EarthStopScale);
+        Assert.AreEqual(10f, closer.x, 0.001f);
+        Assert.AreEqual(MoveToEdge.AstroParkHeight, closer.y, 0.001f);
+    }
+
+    [Test]
+    public void StopBody_UsesThePlanetAncestor()
+    {
+        var earth = new GameObject("EarthWrapper");
+        var info = new GameObject("InfoArea");
+        info.transform.SetParent(earth.transform, false);
+        try
+        {
+            Assert.AreSame(earth.transform, MoveToEdge.StopBody(info.transform));
+        }
+        finally
+        {
+            Object.DestroyImmediate(earth);
+        }
+    }
+
+    [Test]
     public void ShouldCarry_FollowsTravelAndTheLastStep()
     {
         Assert.IsTrue(MoveToEdge.ShouldCarry(turning: false, traveling: true, moved: false));

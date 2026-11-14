@@ -10,6 +10,9 @@ public class MoveToEdge : MonoBehaviour
     public const string CenterTag = "Class Center";
 
     public const float OriginTolerance = 0.05f;
+    public const float SunStopScale = 5f;
+    public const float EarthStopScale = 1f / 3f;
+    public const float MarsStopScale = 1f / 3f;
 
     public static bool HoldKinematic(bool traveling, bool wasKinematic)
     {
@@ -98,6 +101,43 @@ public class MoveToEdge : MonoBehaviour
         return center.transform;
     }
 
+    public static float StopScale(string objectName)
+    {
+        if (string.IsNullOrEmpty(objectName))
+            return 1f;
+
+        string name = objectName.Trim();
+        if (name.Equals("Sol", System.StringComparison.OrdinalIgnoreCase) || name.StartsWith("Sun", System.StringComparison.OrdinalIgnoreCase))
+            return SunStopScale;
+        if (name.Equals("Terra", System.StringComparison.OrdinalIgnoreCase) || name.StartsWith("Earth", System.StringComparison.OrdinalIgnoreCase))
+            return EarthStopScale;
+        if (name.Equals("Marte", System.StringComparison.OrdinalIgnoreCase) || name.StartsWith("Mars", System.StringComparison.OrdinalIgnoreCase))
+            return MarsStopScale;
+
+        return 1f;
+    }
+
+    public static Transform StopBody(Transform destination)
+    {
+        Transform cursor = destination;
+        while (cursor != null)
+        {
+            if (StopScale(cursor.name) != 1f)
+                return cursor;
+
+            cursor = cursor.parent;
+        }
+
+        return null;
+    }
+
+    public static Vector3 ApplyStopScale(Vector3 bodyCenter, Vector3 stop, float scale)
+    {
+        Vector3 scaled = bodyCenter + (stop - bodyCenter) * scale;
+        scaled.y = AstroParkHeight;
+        return scaled;
+    }
+
     public static Vector3 Landing(Vector3 center, float radius, Vector3 from)
     {
         Vector3 outward = from - center;
@@ -121,6 +161,9 @@ public class MoveToEdge : MonoBehaviour
     Transform referencePoint;
     Vector3 destinationCenter;
     float destinationRadius;
+    Vector3 stopBodyPosition;
+    float stopScale = 1f;
+    bool hasStopBody;
     float elapsed;
     bool originCaptured;
     bool moving;
@@ -164,6 +207,7 @@ public class MoveToEdge : MonoBehaviour
 
         destinationCenter = bounds.center;
         destinationRadius = Radius(bounds);
+        CaptureStop(destination.transform);
 
         TravelClaim.Claim(this, CancelTravel);
         StartMoving();
@@ -187,6 +231,8 @@ public class MoveToEdge : MonoBehaviour
 
         elapsed += Time.deltaTime;
         Vector3 end = Landing(destinationCenter, destinationRadius, start);
+        if (hasStopBody)
+            end = ApplyStopScale(stopBodyPosition, end, stopScale);
         MoveSubject(EdgeApproach.Move(start, end, elapsed, duration));
         if (duration <= 0f || elapsed >= duration)
             Finish();
@@ -196,6 +242,17 @@ public class MoveToEdge : MonoBehaviour
     {
         if (moving)
             Finish();
+    }
+
+    void CaptureStop(Transform destinationTransform)
+    {
+        Transform body = StopBody(destinationTransform);
+        hasStopBody = body != null;
+        if (!hasStopBody)
+            return;
+
+        stopBodyPosition = body.position;
+        stopScale = StopScale(body.name);
     }
 
     void BeginReturn()
