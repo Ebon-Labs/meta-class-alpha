@@ -5,6 +5,7 @@ using UnityEngine;
 public struct AvatarChoiceMessage : NetworkMessage
 {
     public bool male;
+    public string playerName;
 }
 
 [DisallowMultipleComponent]
@@ -15,6 +16,7 @@ public class ChosenAvatar : MonoBehaviour
 
     static ChosenAvatar current;
     static readonly Dictionary<int, bool> choices = new Dictionary<int, bool>();
+    static readonly Dictionary<int, string> names = new Dictionary<int, string>();
     static readonly HashSet<int> waiting = new HashSet<int>();
     static bool installed;
     static bool registered;
@@ -32,6 +34,17 @@ public class ChosenAvatar : MonoBehaviour
             return chosenMale;
 
         return isLocal && localMale;
+    }
+
+    public static string NameFor(bool isLocal, bool hasName, string chosenName, string localName)
+    {
+        if (hasName)
+            return chosenName ?? "";
+
+        if (isLocal)
+            return localName ?? "";
+
+        return "";
     }
 
     public static GameObject PrefabFor(bool male, GameObject girlPrefab, GameObject boyPrefab, IList<GameObject> registeredPrefabs, GameObject fallback)
@@ -80,6 +93,7 @@ public class ChosenAvatar : MonoBehaviour
         {
             installed = false;
             choices.Clear();
+            names.Clear();
             waiting.Clear();
         }
         else if (!installed)
@@ -109,7 +123,11 @@ public class ChosenAvatar : MonoBehaviour
         if (NetworkClient.connection == null || !NetworkClient.connection.isAuthenticated)
             return;
 
-        NetworkClient.Send(new AvatarChoiceMessage { male = PlayerPortraitChoice.UsesMale });
+        NetworkClient.Send(new AvatarChoiceMessage
+        {
+            male = PlayerPortraitChoice.UsesMale,
+            playerName = PlayerName.Remembered()
+        });
         announced = true;
     }
 
@@ -127,6 +145,7 @@ public class ChosenAvatar : MonoBehaviour
             return;
 
         choices[conn.connectionId] = message.male;
+        names[conn.connectionId] = message.playerName ?? "";
         if (!waiting.Contains(conn.connectionId))
             return;
 
@@ -147,7 +166,10 @@ public class ChosenAvatar : MonoBehaviour
 
         bool local = IsLocal(conn);
         if (local)
+        {
             choices[conn.connectionId] = PlayerPortraitChoice.UsesMale;
+            names[conn.connectionId] = PlayerName.Remembered();
+        }
 
         if (WaitsForChoice(local, choices.ContainsKey(conn.connectionId)))
         {
@@ -171,6 +193,11 @@ public class ChosenAvatar : MonoBehaviour
             ? Instantiate(prefab, start.position, start.rotation)
             : Instantiate(prefab);
         player.name = $"{prefab.name} [connId={conn.connectionId}]";
+        bool hasName = names.TryGetValue(conn.connectionId, out string stored);
+        PlayerNameplate plate = player.GetComponent<PlayerNameplate>();
+        if (plate != null)
+            plate.Publish(NameFor(IsLocal(conn), hasName, stored, PlayerName.Remembered()));
+
         NetworkServer.AddPlayerForConnection(conn, player);
     }
 
