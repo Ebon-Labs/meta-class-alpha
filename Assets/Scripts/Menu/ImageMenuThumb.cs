@@ -111,6 +111,7 @@ public class ImageMenuThumb : MonoBehaviour
         if (!string.IsNullOrEmpty(scene))
             manager.onlineScene = scene;
 
+        PlayerName.Remember();
         PlayerPortraitChoice.Apply(manager);
         manager.StartHost();
         Advertise(manager.GetComponent<NetworkDiscovery>());

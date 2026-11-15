@@ -1,4 +1,6 @@
 using NUnit.Framework;
+using TMPro;
+using UnityEngine;
 
 public class PlayerNameTests
 {
@@ -29,5 +31,25 @@ public class PlayerNameTests
         Assert.IsTrue(PlayerName.Allows(CarouselMenu.EnterName, "ab"));
         Assert.IsTrue(PlayerName.Allows(CarouselMenu.TutorialName, "ab"));
         Assert.IsTrue(PlayerName.Allows(CarouselMenu.EnterBackName, ""));
+    }
+
+    [Test]
+    public void Remember_KeepsTheNameAfterTheFieldIsGone()
+    {
+        var input = new GameObject(PlayerName.InputName);
+        try
+        {
+            input.AddComponent<TMP_InputField>().text = "Ana";
+            PlayerName.Remember();
+            Object.DestroyImmediate(input);
+            input = null;
+
+            Assert.AreEqual("Ana", PlayerName.Remembered());
+        }
+        finally
+        {
+            if (input != null)
+                Object.DestroyImmediate(input);
+        }
     }
 }

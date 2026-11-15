@@ -7,6 +7,10 @@ public static class PlayerName
     public const float DisabledAlpha = 0.3f;
     public const string InputName = "NameTextInput";
 
+    static string chosen = "";
+
+    public static string Chosen => chosen ?? "";
+
     public static bool Ready(string name)
     {
         return !string.IsNullOrEmpty(name) && name.Length >= MinimumLength;
@@ -36,6 +40,21 @@ public static class PlayerName
             return "";
 
         return CreateRoomButton.Alias(input.GetComponent<TMP_InputField>());
+    }
+
+    public static void Remember()
+    {
+        GameObject input = GameObject.Find(InputName);
+        if (input == null)
+            return;
+
+        chosen = CreateRoomButton.Alias(input.GetComponent<TMP_InputField>()) ?? "";
+    }
+
+    public static string Remembered()
+    {
+        Remember();
+        return Chosen;
     }
 
     public static void Apply(TMP_Text label, string name)

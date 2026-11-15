@@ -34,6 +34,15 @@ public class ChosenAvatarTests
     }
 
     [Test]
+    public void NameFor_UsesTheNameThatArrivedWithThePlayer()
+    {
+        Assert.AreEqual("Ana", ChosenAvatar.NameFor(isLocal: false, hasName: true, chosenName: "Ana", localName: "Beto"));
+        Assert.AreEqual("Beto", ChosenAvatar.NameFor(isLocal: true, hasName: false, chosenName: null, localName: "Beto"));
+        Assert.AreEqual("", ChosenAvatar.NameFor(isLocal: false, hasName: false, chosenName: null, localName: "Beto"));
+        Assert.AreEqual("", ChosenAvatar.NameFor(isLocal: true, hasName: true, chosenName: null, localName: "Beto"));
+    }
+
+    [Test]
     public void WaitsForChoice_OnlyForARemotePlayer()
     {
         Assert.IsTrue(ChosenAvatar.WaitsForChoice(isLocal: false, hasChoice: false));
