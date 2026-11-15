@@ -6,7 +6,8 @@
         "Mirror.Components",
         "Unity.TextMeshPro",
         "UnityEngine.UI",
-        "Google.XR.Cardboard"
+        "Google.XR.Cardboard",
+        "Unity.XR.Management"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

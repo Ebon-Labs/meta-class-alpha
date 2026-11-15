@@ -1,9 +1,11 @@
+using System.Collections.Generic;
 using Mirror;
 using UnityEngine;
 
 [RequireComponent(typeof(SphereCollider))]
 public class InfoArea : MonoBehaviour
 {
+    static readonly List<InfoArea> active = new List<InfoArea>();
     const string LoremIpsum =
         "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.";
 
@@ -19,8 +21,16 @@ public class InfoArea : MonoBehaviour
         volume.isTrigger = true;
     }
 
+    void OnEnable()
+    {
+        if (!active.Contains(this))
+            active.Add(this);
+    }
+
     void OnDisable()
     {
+        active.Remove(this);
+
         if (!localPlayerInside)
             return;
 
@@ -45,6 +55,81 @@ public class InfoArea : MonoBehaviour
             panel.Show(this, body);
         else
             panel.Hide(this);
+    }
+
+    public static Transform PlanetOf(Transform area)
+    {
+        Transform cursor = area;
+        while (cursor != null)
+        {
+            if (cursor.CompareTag(GazeFocusRules.PlanetTag))
+                return cursor;
+
+            Transform parent = cursor.parent;
+            if (parent != null)
+            {
+                for (int i = 0; i < parent.childCount; i++)
+                {
+                    Transform child = parent.GetChild(i);
+                    if (child.CompareTag(GazeFocusRules.PlanetTag))
+                        return child;
+                }
+            }
+
+            cursor = parent;
+        }
+
+        return null;
+    }
+
+    public static bool BlocksPlanet(Transform hit, Transform planet)
+    {
+        if (hit == null || planet == null)
+            return false;
+
+        return hit == planet || hit.IsChildOf(planet);
+    }
+
+    public static bool AllowsRay(Transform hit, Vector3 observer)
+    {
+        if (hit == null)
+            return false;
+
+        for (int i = 0; i < active.Count; i++)
+        {
+            InfoArea area = active[i];
+            if (area == null || !area.Contains(observer))
+                continue;
+
+            if (BlocksPlanet(hit, PlanetOf(area.transform)))
+                return false;
+        }
+
+        return true;
+    }
+
+    public static bool TryClosestHit(RaycastHit[] hits, Vector3 observer, out RaycastHit closest)
+    {
+        closest = default;
+        bool found = false;
+        float best = float.PositiveInfinity;
+        if (hits == null)
+            return false;
+
+        for (int i = 0; i < hits.Length; i++)
+        {
+            Transform hit = hits[i].transform;
+            Transform collider = hits[i].collider != null ? hits[i].collider.transform : null;
+            bool blocked = !AllowsRay(hit, observer) || (collider != null && !AllowsRay(collider, observer));
+            if (hits[i].distance >= best || blocked)
+                continue;
+
+            best = hits[i].distance;
+            closest = hits[i];
+            found = true;
+        }
+
+        return found;
     }
 
     public static bool ContainsLocalPoint(Vector3 localPoint, Vector3 center, float radius)

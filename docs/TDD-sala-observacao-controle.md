@@ -1,8 +1,8 @@
 # TDD — Sala de observação e controle
 
 **Projeto:** meta-class-alpha  
-**Escopo:** features de sala de controle, retorno via portal e painel descritivo de UI  
-**Status:** parcial. O painel descritivo (seção 4) está feito. Sala de controle e portal de retorno continuam a fazer.  
+**Escopo:** features de sala de controle, retorno via portal, painel descritivo de UI e nome do player visível na cena  
+**Status:** parcial. O painel descritivo (seção 4) está feito. Sala de controle, portal de retorno e nome do player continuam a fazer.  
 **Contexto técnico atual:** Unity + Mirror (multiplayer) + Cardboard XR; interação por gaze (`CameraPointerController`); teleporte via tag `Teleportable`; UI HUD no Canvas World Space do Player (`UILogger` / TMP).
 
 ---
@@ -14,6 +14,7 @@ Permitir que o jogador:
 1. Observe e **controle o cenário** (ex.: sistema solar) a partir de uma sala dedicada.
 2. **Volte à sala de controle** a qualquer momento por um objeto de interação sob os pés.
 3. Veja um **painel descritivo na UI** ao entrar em áreas específicas do cenário. **Feito:** `InfoArea` + `SceneInfo` mostram o corpo do texto.
+4. Defina o **nome do player** e veja esse nome na cena. **A fazer.**
 
 ---
 
@@ -192,7 +193,32 @@ Casos de uso iniciais sugeridos:
 
 ---
 
-## 5. Dependências e reuso
+## 5. Feature: Nome do player visível na cena
+
+**Status:** a fazer.
+
+### 5.1 Descrição
+
+Cada jogador define o próprio nome. Esse nome aparece na cena, visível para quem está na sala.
+
+### 5.2 Requisitos funcionais
+
+| ID | Requisito |
+|----|-----------|
+| NP-01 | O jogador define um nome antes ou ao entrar na cena. |
+| NP-02 | O nome fica visível na cena, associado ao avatar daquele jogador. |
+| NP-03 | Os outros jogadores da sala veem o mesmo nome. |
+| NP-04 | Um nome vazio não é exibido como se fosse um nome escolhido. |
+
+### 5.3 Critérios de aceite (testes)
+
+- [ ] Definir o nome e entrar na cena mostra esse nome no jogador.
+- [ ] Outro cliente vê o nome do jogador que entrou.
+- [ ] Sem nome definido, a cena não mostra um rótulo falso.
+
+---
+
+## 6. Dependências e reuso
 
 | Sistema existente | Uso |
 |-------------------|-----|
@@ -205,15 +231,16 @@ Casos de uso iniciais sugeridos:
 
 ---
 
-## 6. Ordem de implementação sugerida
+## 7. Ordem de implementação sugerida
 
 1. **Sala de controle** (espaço + spawn + wiring dos controles ao `SolarSystemMotionController`).
 2. **Portal de retorno** (objeto sob os pés + ramo de teleporte para spawn).
 3. **Painel descritivo** — feito (`InfoArea` + `SceneInfoPanel`, texto de corpo, última área vence).
+4. **Nome do player** — a fazer: definir o nome e visualizá-lo na cena.
 
 ---
 
-## 7. Fora de escopo (neste TDD)
+## 8. Fora de escopo (neste TDD)
 
 - Novos planetas / conteúdo científico além do texto do painel.
 - Inventário, missões ou progressão.
@@ -222,7 +249,7 @@ Casos de uso iniciais sugeridos:
 
 ---
 
-## 8. Riscos
+## 9. Riscos
 
 | Risco | Mitigação |
 |-------|-----------|
@@ -233,8 +260,8 @@ Casos de uso iniciais sugeridos:
 
 ---
 
-## 9. Definição de pronto (DoD)
+## 10. Definição de pronto (DoD)
 
-- Features SC e PT implementadas conforme critérios de aceite. O painel descritivo está feito.
+- Features SC, PT e NP implementadas conforme critérios de aceite. O painel descritivo está feito. O nome do player ainda não.
 - Como configurar uma nova `InfoArea` está em [arquitetura.md](arquitetura.md) (seções 2.13 e 3). O spawn da sala de controle ainda não.
 - Sem regressão no teleporte atual para planetas/`Teleportable`.
