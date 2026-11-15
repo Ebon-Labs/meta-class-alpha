@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using TMPro;
 using UnityEngine;
 
 public class CarouselMenuTests
@@ -57,8 +58,10 @@ public class CarouselMenuTests
         var viewObject = new GameObject("CarouselView");
         var enter = new GameObject(CarouselMenu.EnterName);
         var tutorial = new GameObject(CarouselMenu.TutorialName);
+        var nameInput = new GameObject(PlayerName.InputName);
         try
         {
+            nameInput.AddComponent<TMP_InputField>().text = "ab";
             Camera view = viewObject.AddComponent<Camera>();
             view.orthographic = true;
             view.orthographicSize = 5f;
@@ -78,9 +81,13 @@ public class CarouselMenuTests
 
             Vector2 onEnter = view.WorldToScreenPoint(enter.transform.position);
             Assert.AreEqual(-CarouselMenu.StepDegrees, CarouselMenu.SignedStep(onEnter, view, enter, tutorial));
+
+            nameInput.GetComponent<TMP_InputField>().text = "a";
+            Assert.AreEqual(0f, CarouselMenu.SignedStep(onEnter, view, enter, tutorial));
         }
         finally
         {
+            Object.DestroyImmediate(nameInput);
             Object.DestroyImmediate(tutorial);
             Object.DestroyImmediate(enter);
             Object.DestroyImmediate(viewObject);

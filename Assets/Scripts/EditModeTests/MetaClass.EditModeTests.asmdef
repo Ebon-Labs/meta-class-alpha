@@ -4,6 +4,7 @@
     "references": [
         "MetaClass",
         "Mirror",
+        "Unity.TextMeshPro",
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner"
     ],

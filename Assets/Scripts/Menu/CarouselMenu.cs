@@ -57,6 +57,7 @@ public class CarouselMenu : MonoBehaviour
         }
 
         CreateRoomButton.Refresh();
+        PlayerName.Refresh();
 
         if (!TryPress(out Vector2 screen))
             return;
@@ -77,10 +78,14 @@ public class CarouselMenu : MonoBehaviour
             return;
         }
 
-        if (TutorialHost.Press(screen, view))
+        float step = view == null ? 0f : SignedStep(screen, view, PressLabels());
+        if (step != 0f)
+        {
+            Begin(step);
             return;
+        }
 
-        Press(screen);
+        TutorialHost.Press(screen, view);
     }
 
     public void Press(Vector2 screen)
@@ -136,6 +141,9 @@ public class CarouselMenu : MonoBehaviour
     static void Consider(Vector2 screen, Camera view, GameObject target, ref float chosen, ref float nearest)
     {
         if (target == null || view == null || !ImageMenuThumb.FacesCamera(target.transform.forward, view.transform.forward))
+            return;
+
+        if (!PlayerName.Allows(target.name, PlayerName.Current()))
             return;
 
         if (!TryScreenBounds(target, view, out Vector2 min, out Vector2 max, out Vector2 center))

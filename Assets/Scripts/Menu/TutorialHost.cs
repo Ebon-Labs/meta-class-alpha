@@ -9,7 +9,9 @@ public static class TutorialHost
         if (!ImageMenuThumb.Hits(GameObject.Find(CarouselMenu.TutorialName), screen, view))
             return false;
 
-        ImageMenuThumb.StartHostScene(ScenePath);
+        if (PlayerName.Allows(CarouselMenu.TutorialName, PlayerName.Current()))
+            ImageMenuThumb.StartHostScene(ScenePath);
+
         return true;
     }
 }
