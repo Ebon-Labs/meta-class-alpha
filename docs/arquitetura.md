@@ -338,9 +338,9 @@ Player                        tag Player
 | Voz | `VoiceChatController` e `AudioSource` no Player; os outros ouvem na posição do avatar |
 | Órbita | `PlanetOrbitMotion` em cada `*Wrapper`, centro no Sol, `SolarSystemMotionController` na raiz do FBX. O wrapper se desloca para o centro da malha ficar no círculo. A folga contra o Sol vale para os planetas; a Lua orbita `EarthCenter`, não segue o `distanceScale` solar e não aplica essa folga |
 | Botões da sala | Marcadores, voz, ritmo, distância, chão e tela. O ícone dos quatro primeiros é o oposto do estado atual |
-| Rotação | `PlanetOrbitMotion` na malha de cada planeta e na Lua, com o perfil científico correspondente. Na Lua o perfil não é reaplicado no `Awake` |
+| Rotação | `PlanetOrbitMotion` na malha de cada planeta e na Lua, com o perfil científico correspondente. A orientação axial está no planeta; o wrapper fica sem rotação. Na Lua o perfil não é reaplicado no `Awake` |
 | Rótulos | Uma instância de `PlanetLabel.prefab` por wrapper de planeta e mais uma no `MoonWrapper`, com `overrideText` igual ao nome do corpo |
-| Painel descritivo | `SceneInfo` no Canvas do Player. Uma `InfoArea` em cada wrapper de planeta, no `MoonWrapper` e no Sol |
+| Painel descritivo | `SceneInfo` no Canvas do Player. Uma `InfoArea` filha de cada planeta, no centro da malha; a da Lua fica no `MoonWrapper` e a do Sol no próprio Sol |
 | Luz | `Sun Light` segue `Sun Sphere` |
 | Nuvens | Filhos `Clouds` já presentes em Terra e Vênus. `PlanetCloudLayer` existe como script e não está atribuído na cena |
 | Marcadores | Um `InteractionOrb` por wrapper de planeta e um no `MoonWrapper`, visíveis porque `showInteractionOrbs` está ligado |
@@ -359,7 +359,7 @@ Parâmetros do controlador na cena: `timeScale = 4320`, `distanceScale = 300`, o
 | Netuno | 7 | 9020,7 | 60182 | 16,11 | 28,32° |
 | Lua | — | 195 em volta da Terra | 27,322 | 655,728 | 6,68° |
 
-Vênus e Urano usam dia sideral negativo: a rotação do corpo é retrógrada. Os wrappers dos planetas não giram; só transladam em torno do eixo Y do Sol. A Lua translada em torno de `EarthCenter`, com o eixo inclinado 5,145°, e o corpo gira no próprio eixo. O raio 195 não vem do catálogo em unidades astronômicas.
+Vênus e Urano usam dia sideral negativo: a rotação do corpo é retrógrada. Os wrappers dos planetas não giram; só transladam em torno do eixo Y do Sol. A orientação que antes estava no wrapper está no objeto do planeta, e é esse objeto que o giro usa como referência. A Lua translada em torno de `EarthCenter`, com o eixo inclinado 5,145°, e o corpo gira no próprio eixo. O raio 195 não vem do catálogo em unidades astronômicas.
 
 ### 3.4 Sala, portais e sistema solar
 
@@ -418,7 +418,7 @@ A fase orbital não é reconciliada. Dois clientes que entram em momentos difere
 | `Treasure.prefab` | Um sob `Interactive` |
 | `PlanetLabel.prefab` | Um por wrapper de planeta e um no `MoonWrapper`, texto fixo do corpo |
 | `InteractionOrb.prefab` | Um por wrapper de planeta e um no `MoonWrapper` |
-| `InfoArea.prefab` | Um por wrapper de planeta, um no `MoonWrapper` e um no Sol. O `body` da cena substitui o Lorem ipsum do prefab |
+| `InfoArea.prefab` | Uma filha de cada planeta, no centro da malha, mais uma no `MoonWrapper` e uma no Sol. O `body` da cena substitui o Lorem ipsum do prefab |
 | `Sun Sphere` | Substitui o Sol do FBX; pai do portal solar e de uma `InfoArea` |
 | `SolarSystem.fbx` | Malhas dos corpos, raiz sob `Environment` |
 | `Male_002.fbx` | Avatar filho do Player |
