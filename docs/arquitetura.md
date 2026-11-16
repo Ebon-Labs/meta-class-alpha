@@ -147,7 +147,7 @@ O movimento celeste está em `Assets/Scripts/SolarSystem/` e não depende de red
 Dois eixos de movimento ficam em objetos diferentes de propósito. Órbita e rotação no mesmo transform brigam com a pose local dos filhos. O padrão é:
 
 - o **wrapper** orbita o Sol e não gira (`enableOrbit` ligado, `enableSpin` desligado);
-- o **corpo** filho gira no lugar e não translada (`enableSpin` ligado, `enableOrbit` desligado).
+- o **corpo** filho gira no lugar e não translada (`enableSpin` ligado, `enableOrbit` desligado). O eixo padrão é o Y da malha. Terra e Saturno guardam outro eixo e o ponto por onde ele passa: a Terra no polo, Saturno na normal dos anéis.
 
 `PlanetOrbitMotion` grava a pose local dos filhos cujo nome começa com `InteractionOrb` e a restaura no `LateUpdate`, para o marcador não derivar quando o pai é movido. Rótulos ficam de fora desse travamento: eles próprios ajustam escala e pose.
 
@@ -359,7 +359,7 @@ Parâmetros do controlador na cena: `timeScale = 4320`, `distanceScale = 300`, o
 | Netuno | 7 | 9020,7 | 60182 | 16,11 | 28,32° |
 | Lua | — | 195 em volta da Terra | 27,322 | 655,728 | 6,68° |
 
-Vênus e Urano usam dia sideral negativo: a rotação do corpo é retrógrada. Os wrappers dos planetas não giram; só transladam em torno do eixo Y do Sol. A orientação que antes estava no wrapper está no objeto do planeta, e é esse objeto que o giro usa como referência. A Lua translada em torno de `EarthCenter`, com o eixo inclinado 5,145°, e o corpo gira no próprio eixo. O raio 195 não vem do catálogo em unidades astronômicas.
+Vênus e Urano usam dia sideral negativo: a rotação do corpo é retrógrada. Os wrappers dos planetas não giram; só transladam em torno do eixo Y do Sol. A orientação que antes estava no wrapper está no objeto do planeta, e é esse objeto que o giro usa como referência. Na posição inicial, o polo da Terra inclina 23,44° para o Sol e o giro acompanha esse polo. Saturno gira na normal dos anéis, passando pelo centro deles. Os demais corpos continuam no eixo local de cima. A Lua translada em torno de `EarthCenter`, com o eixo inclinado 5,145°, e o corpo gira no próprio eixo. O raio 195 não vem do catálogo em unidades astronômicas.
 
 ### 3.4 Sala, portais e sistema solar
 

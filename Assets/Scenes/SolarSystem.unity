@@ -2505,7 +2505,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 635656655}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.4133752, y: 0.57369065, z: 0.57369065, w: -0.41337517}
+  m_LocalRotation: {x: 0.29633131, y: 0.65593518, z: 0.46752548, w: -0.51318294}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -2598,6 +2598,8 @@ MonoBehaviour:
   axialTiltDegrees: 23.44
   siderealDayHours: 23.934
   applyAxialTiltOnStart: 0
+  spinAxis: {x: 0, y: 0, z: 1}
+  spinCenter: {x: 0, y: 1.18962, z: 0.0273574}
   timeScale: 4320
 --- !u!1001 &654923565
 PrefabInstance:
@@ -4054,6 +4056,8 @@ MonoBehaviour:
   axialTiltDegrees: 26.73
   siderealDayHours: 10.656
   applyAxialTiltOnStart: 0
+  spinAxis: {x: 0, y: -0.37436694, z: 0.92728065}
+  spinCenter: {x: 0, y: 2.56681016, z: -0.00139967}
   timeScale: 4320
 --- !u!114 &910000011
 MonoBehaviour:
