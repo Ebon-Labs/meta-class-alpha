@@ -1,6 +1,6 @@
 # Documento de Arquitetura
 
-**Projeto:** meta-class-alpha  
+**Projeto:** educaverso  
 **Cenas de build:** `Assets/Scenes/Menu.unity` (primeira), depois `Assets/Scenes/SolarSystem.unity` e `Assets/Scenes/Tutorial.unity`  
 **Escopo:** funcionalidades implementadas e a forma como o menu e a cena SolarSystem as compõem  
 **Fora de escopo:** sala de controle e portal de retorno descritos em [TDD-sala-observacao-controle.md](TDD-sala-observacao-controle.md), que ainda não estão implementados. O painel descritivo desse TDD está feito (`InfoArea` e `SceneInfoPanel`, seções 2.13 e 3).  

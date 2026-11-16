@@ -1,6 +1,6 @@
 # TDD — Sala de observação e controle
 
-**Projeto:** meta-class-alpha  
+**Projeto:** educaverso  
 **Escopo:** features de sala de controle, retorno via portal, painel descritivo de UI e nome do player visível na cena  
 **Status:** parcial. O painel descritivo (seção 4) está feito. Sala de controle, portal de retorno e nome do player continuam a fazer.  
 **Contexto técnico atual:** Unity + Mirror (multiplayer) + Cardboard XR; interação por gaze (`CameraPointerController`); teleporte via tag `Teleportable`; UI HUD no Canvas World Space do Player (`UILogger` / TMP).
