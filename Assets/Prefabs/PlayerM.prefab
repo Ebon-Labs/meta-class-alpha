@@ -1632,7 +1632,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: MetaClass::AvatarHeadYaw
   syncDirection: 0
   syncMode: 0
-  syncInterval: 0.1
+  syncInterval: 0
 --- !u!114 &2864296461989590327
 MonoBehaviour:
   m_ObjectHideFlags: 0

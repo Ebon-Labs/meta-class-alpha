@@ -75,6 +75,7 @@ A rede usa Mirror com transporte Telepathy. O contrato genérico é:
 - um `NetworkManager` na cena, com um prefab de jogador e um transporte;
 - o jogador é o único objeto spawnado pela rede;
 - posição e rotação do dono seguem para o servidor (`NetworkTransform` com `SyncDirection.ClientToServer`) e dali para os demais clientes;
+- o giro da cabeça do dono (yaw do corpo, yaw da cabeça e pitch, os mesmos **45°**) segue no mesmo caminho, num `[Command]` unreliable, e os outros clientes aplicam essa pose no `Avatar`;
 - câmera, canvas e listener existem no prefab, mas só o jogador local os liga.
 
 Parâmetros atuais do manager, reutilizáveis como padrão do projeto: porta **7777**, no máximo **4** conexões, `dontDestroyOnLoad`, `autoStartServerBuild` ligado e `autoConnectClientBuild` desligado. O endereço padrão no Editor é `localhost`. O manager vive na cena Menu, com cena offline `Menu` e cena online `SolarSystem`. SolarSystem não carrega um segundo `NetworkManager`. O HUD de canto do Mirror continua sendo o controle que cria a sala.
@@ -115,7 +116,7 @@ O indicador de progresso é um `Slider` filho do jogador, ativado só durante a 
 
 ### 2.6 Olhar no Editor
 
-`CameraEditorController` gira a vista do jogador local com o mouse, só no Editor. O osso `head` do `Avatar` acompanha o giro horizontal da câmera, em torno do eixo Y do jogador, no máximo **45°** para cada lado. Acima disso, o corpo do `Avatar` gira no mesmo eixo Y e a cabeça permanece no limite. No eixo X, a câmera e a cabeça não passam de **45°** para cima nem para baixo. O movimento da cabeça é só para cima ou só para baixo. O corpo não inclina. A cabeça não gira no eixo Z. A câmera, o listener e a pose do visor ficam no filho `Head`. O cursor permanece visível e livre, para o botão `SAIR` e o menu receberem o clique comum.
+`CameraEditorController` gira a vista do jogador local com o mouse, só no Editor. O osso `head` do `Avatar` acompanha o giro horizontal da câmera, em torno do eixo Y do jogador, no máximo **45°** para cada lado. Acima disso, o corpo do `Avatar` gira no mesmo eixo Y e a cabeça permanece no limite. No eixo X, a câmera sobe até **60°** e desce até **45°**. A cabeça continua em **45°** para cima e para baixo. O movimento da cabeça é só para cima ou só para baixo. O corpo não inclina. A cabeça não gira no eixo Z. A câmera, o listener e a pose do visor ficam no filho `Head`. Essa pose da cabeça e do corpo do `Avatar` é a que os outros jogadores veem. O cursor permanece visível e livre, para o botão `SAIR` e o menu receberem o clique comum.
 
 ### 2.7 Voz espacial
 
@@ -404,7 +405,7 @@ sequenceDiagram
     end
 ```
 
-O que cada cliente calcula sozinho: órbitas, rotações, escala dos rótulos, posição da luz, visibilidade de orbes e rótulos, e o texto de `SceneInfo`. O painel descritivo não atravessa a rede: cada cliente testa só o próprio jogador contra as `InfoArea`. O que a rede replica: transform do jogador e pacotes de voz. Um teleporte é uma mudança de `transform.position` no dono; os outros clientes veem o avatar chegar à borda do portal porque o `NetworkTransform` está em `ClientToServer`.
+O que cada cliente calcula sozinho: órbitas, rotações, escala dos rótulos, posição da luz, visibilidade de orbes e rótulos, e o texto de `SceneInfo`. O painel descritivo não atravessa a rede: cada cliente testa só o próprio jogador contra as `InfoArea`. O que a rede replica: transform do jogador, a pose da cabeça do `Avatar` e pacotes de voz. Um teleporte é uma mudança de `transform.position` no dono; os outros clientes veem o avatar chegar à borda do portal porque o `NetworkTransform` está em `ClientToServer`.
 
 A fase orbital não é reconciliada. Dois clientes que entram em momentos diferentes, ou que alterassem `timeScale` só de um lado, veriam os planetas em lugares diferentes. Na cena os valores estão iguais e fixos no componente, então a divergência prática vem do instante em que cada processo começou a simular.
 
@@ -485,7 +486,7 @@ Assets/Scripts/
 │   └── ControlButtonAppearance.cs
 ├── Player/
 │   ├── Gaze/CameraPointerController.cs
-│   ├── Look/AvatarHeadYaw.cs        cabeça até 45° no Y; corpo no excesso
+│   ├── Look/AvatarHeadYaw.cs        cabeça até 45° no Y; corpo no excesso; pose visível aos outros
 │   ├── Hud/ScreenText.cs            frases em pt-BR
 │   └── Voice/VoiceChatController.cs
 └── SolarSystem/                     órbita pelo centro da malha, rótulos, luz, nuvens

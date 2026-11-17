@@ -33,12 +33,44 @@ public class AvatarHeadYawTests
     }
 
     [Test]
+    public void FromLook_CarriesYawAndPitchForTheOtherPlayers()
+    {
+        AvatarHeadYaw.ShownPose level = AvatarHeadYaw.FromLook(0f, 0f, Quaternion.Euler(10f, 30f, 0f), AvatarHeadYaw.LimitDegrees);
+        Assert.AreEqual(0f, level.Body, 0.05f);
+        Assert.AreEqual(30f, level.Head, 0.05f);
+        Assert.AreEqual(10f, level.Pitch, 0.05f);
+
+        AvatarHeadYaw.ShownPose past = AvatarHeadYaw.FromLook(0f, 0f, Quaternion.Euler(0f, 90f, 0f), AvatarHeadYaw.LimitDegrees);
+        Assert.AreEqual(45f, past.Body, 0.05f);
+        Assert.AreEqual(45f, past.Head, 0.05f);
+        Assert.AreEqual(0f, past.Pitch, 0.05f);
+
+        AvatarHeadYaw.ShownPose held = AvatarHeadYaw.FromLook(10f, 25f, Quaternion.Euler(90f, 0f, 0f), AvatarHeadYaw.LimitDegrees);
+        Assert.AreEqual(10f, held.Body, 0.05f);
+        Assert.AreEqual(15f, held.Head, 0.05f);
+        Assert.AreEqual(45f, held.Pitch, 0.05f);
+    }
+
+    [Test]
+    public void Moved_IgnoresAPoseInsideThePublishStep()
+    {
+        AvatarHeadYaw.ShownPose rest = new AvatarHeadYaw.ShownPose(0f, 0f, 0f);
+        AvatarHeadYaw.ShownPose twitch = new AvatarHeadYaw.ShownPose(0.2f, 0f, 0f);
+        AvatarHeadYaw.ShownPose turn = new AvatarHeadYaw.ShownPose(0f, 1f, 0f);
+        Assert.IsFalse(AvatarHeadYaw.Moved(rest, rest, AvatarHeadYaw.PublishEpsilonDegrees));
+        Assert.IsFalse(AvatarHeadYaw.Moved(rest, twitch, AvatarHeadYaw.PublishEpsilonDegrees));
+        Assert.IsTrue(AvatarHeadYaw.Moved(rest, turn, AvatarHeadYaw.PublishEpsilonDegrees));
+    }
+
+    [Test]
     public void LookPitch_UsesOnlyTheVerticalTurnWithinTheCameraLimits()
     {
         Assert.AreEqual(30f, AvatarHeadYaw.LookPitch(Quaternion.Euler(30f, 0f, 0f)), 0.05f);
         Assert.AreEqual(-20f, AvatarHeadYaw.LookPitch(Quaternion.Euler(-20f, 40f, 0f)), 0.05f);
-        Assert.AreEqual(45f, CameraEditorController.ClampPitch(80f), 0.001f);
-        Assert.AreEqual(-45f, CameraEditorController.ClampPitch(-70f), 0.001f);
+        Assert.AreEqual(45f, AvatarHeadYaw.ClampHeadPitch(80f), 0.001f);
+        Assert.AreEqual(-45f, AvatarHeadYaw.ClampHeadPitch(-70f), 0.001f);
+        AvatarHeadYaw.ShownPose raised = AvatarHeadYaw.FromLook(0f, 0f, Quaternion.Euler(-70f, 0f, 0f), AvatarHeadYaw.LimitDegrees);
+        Assert.AreEqual(-45f, raised.Pitch, 0.05f);
     }
 
     [Test]
