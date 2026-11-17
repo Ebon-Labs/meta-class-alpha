@@ -111,6 +111,50 @@ public class MoveToEdgeTests
     }
 
     [Test]
+    public void GroundOfTarget_UsesTheBodyGroundNotTheRoomOrTheMoon()
+    {
+        var room = new GameObject("PseudoGround");
+        var roomGround = new GameObject(MoveToEdge.GroundName);
+        var earthWrapper = new GameObject("EarthWrapper");
+        var earth = new GameObject("Earth");
+        var earthGround = new GameObject(MoveToEdge.GroundName);
+        var moonWrapper = new GameObject("MoonWrapper");
+        var moon = new GameObject("Moon");
+        var moonGround = new GameObject(MoveToEdge.GroundName);
+        var moonInfo = new GameObject("InfoArea");
+        var info = new GameObject("InfoArea");
+        var sunWrapper = new GameObject("SunWrapper");
+        var sun = new GameObject("Sun");
+        var sunGround = new GameObject(MoveToEdge.GroundName);
+        var sunInfo = new GameObject("InfoArea");
+        try
+        {
+            roomGround.transform.SetParent(room.transform, false);
+            earth.transform.SetParent(earthWrapper.transform, false);
+            earthGround.transform.SetParent(earth.transform, false);
+            moonWrapper.transform.SetParent(earthWrapper.transform, false);
+            moon.transform.SetParent(moonWrapper.transform, false);
+            moonGround.transform.SetParent(moon.transform, false);
+            moonInfo.transform.SetParent(moonWrapper.transform, false);
+            info.transform.SetParent(earth.transform, false);
+            sun.transform.SetParent(sunWrapper.transform, false);
+            sunGround.transform.SetParent(sunWrapper.transform, false);
+            sunInfo.transform.SetParent(sun.transform, false);
+
+            Assert.AreSame(earthGround.transform, MoveToEdge.GroundOfTarget(info.transform));
+            Assert.AreSame(moonGround.transform, MoveToEdge.GroundOfTarget(moonInfo.transform));
+            Assert.AreSame(sunGround.transform, MoveToEdge.GroundOfTarget(sunInfo.transform));
+            Assert.AreNotSame(roomGround.transform, MoveToEdge.GroundOfTarget(info.transform));
+        }
+        finally
+        {
+            Object.DestroyImmediate(room);
+            Object.DestroyImmediate(earthWrapper);
+            Object.DestroyImmediate(sunWrapper);
+        }
+    }
+
+    [Test]
     public void WithGroundHeight_ChangesOnlyY()
     {
         Vector3 parked = MoveToEdge.WithGroundHeight(new Vector3(12f, 40f, -3f), hasGround: true, groundY: 0f);

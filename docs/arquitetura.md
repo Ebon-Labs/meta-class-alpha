@@ -206,7 +206,7 @@ O campo `body` é o texto mostrado. O valor padrão do prefab é uma frase de Lo
 | Ação | Comportamento |
 |------|----------------|
 | `RotateClassButton` | Clique de olhar. A sala gira **45°** no sentido horário em torno da posição mundial da `HostArea` capturada no clique. Dura **3 s**, com SmoothStep (`EdgeApproach`). Sem `HostArea`, o pivô é o próprio transform da sala |
-| Viagem ao astro | `MoveToEdge` leva o centro da sala (`Class Center`) até a borda do destino, estacionando em **Y = 8**. Duração padrão **7 s**. A volta para casa conserva a altura de origem capturada |
+| Viagem ao astro | `MoveToEdge` leva o centro da sala (`Class Center`) até a borda do destino. A altura é o topo do `Ground` daquele planeta, da Lua ou do Sol, não o `Ground` filho de `PseudoGround`. Duração padrão **7 s**. A volta para casa continua na altura do chão da sala |
 | `GoHomeOrb` | O anfitrião volta para `HostArea`; o cliente, para `GuestArea`. O texto do HUD é "Voltar à sala" |
 
 O sentido horário do projeto é yaw negativo: `Quaternion.AngleAxis` com ângulo negativo no eixo Y.
@@ -478,7 +478,7 @@ Assets/Scripts/
 │   ├── MenuBackdrop.cs
 │   └── MainScreen.cs
 ├── Interaction/
-│   ├── MoveToEdge.cs                viagem ao astro, 7 s, Y = 8
+│   ├── MoveToEdge.cs                viagem ao astro, 7 s, altura do Ground do alvo
 │   ├── TeleportReveal.cs            esconde o alvo e mostra o próximo
 │   ├── PassengerHold.cs
 │   ├── EdgeApproach.cs              SmoothStep compartilhado
