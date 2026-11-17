@@ -5,6 +5,7 @@ using UnityEngine;
 public class AvatarHeadYaw : NetworkBehaviour
 {
     public const float LimitDegrees = 45f;
+    public const float MaxPitchUpDegrees = 60f;
     public const float PublishEpsilonDegrees = 0.5f;
     public const string BoneName = "head";
     public const string BodyName = "Avatar";
@@ -53,7 +54,7 @@ public class AvatarHeadYaw : NetworkBehaviour
 
     public static float ClampHeadPitch(float pitch)
     {
-        return Mathf.Clamp(pitch, -LimitDegrees, LimitDegrees);
+        return Mathf.Clamp(pitch, -MaxPitchUpDegrees, LimitDegrees);
     }
 
     public static float ClampYaw(float yaw, float limit)

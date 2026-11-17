@@ -75,7 +75,7 @@ A rede usa Mirror com transporte Telepathy. O contrato genérico é:
 - um `NetworkManager` na cena, com um prefab de jogador e um transporte;
 - o jogador é o único objeto spawnado pela rede;
 - posição e rotação do dono seguem para o servidor (`NetworkTransform` com `SyncDirection.ClientToServer`) e dali para os demais clientes;
-- o giro da cabeça do dono (yaw do corpo, yaw da cabeça e pitch, os mesmos **45°**) segue no mesmo caminho, num `[Command]` unreliable, e os outros clientes aplicam essa pose no `Avatar`;
+- o giro da cabeça do dono (yaw do corpo e da cabeça até **45°**, pitch até **60°** para cima e **45°** para baixo) segue no mesmo caminho, num `[Command]` unreliable, e os outros clientes aplicam essa pose no `Avatar`;
 - câmera, canvas e listener existem no prefab, mas só o jogador local os liga.
 
 Parâmetros atuais do manager, reutilizáveis como padrão do projeto: porta **7777**, no máximo **4** conexões, `dontDestroyOnLoad`, `autoStartServerBuild` ligado e `autoConnectClientBuild` desligado. O endereço padrão no Editor é `localhost`. O manager vive na cena Menu, com cena offline `Menu` e cena online `SolarSystem`. SolarSystem não carrega um segundo `NetworkManager`. O HUD de canto do Mirror continua sendo o controle que cria a sala.
@@ -116,7 +116,7 @@ O indicador de progresso é um `Slider` filho do jogador, ativado só durante a 
 
 ### 2.6 Olhar no Editor
 
-`CameraEditorController` gira a vista do jogador local com o mouse, só no Editor. O osso `head` do `Avatar` acompanha o giro horizontal da câmera, em torno do eixo Y do jogador, no máximo **45°** para cada lado. Acima disso, o corpo do `Avatar` gira no mesmo eixo Y e a cabeça permanece no limite. No eixo X, a câmera sobe até **60°** e desce até **45°**. A cabeça continua em **45°** para cima e para baixo. O movimento da cabeça é só para cima ou só para baixo. O corpo não inclina. A cabeça não gira no eixo Z. A câmera, o listener e a pose do visor ficam no filho `Head`. Essa pose da cabeça e do corpo do `Avatar` é a que os outros jogadores veem. O cursor permanece visível e livre, para o botão `SAIR` e o menu receberem o clique comum.
+`CameraEditorController` gira a vista do jogador local com o mouse, só no Editor. O osso `head` do `Avatar` acompanha o giro horizontal da câmera, em torno do eixo Y do jogador, no máximo **45°** para cada lado. Acima disso, o corpo do `Avatar` gira no mesmo eixo Y e a cabeça permanece no limite. No eixo X, a câmera e a cabeça sobem até **60°** e descem até **45°**. O movimento da cabeça é só para cima ou só para baixo. O corpo não inclina. A cabeça não gira no eixo Z. A câmera, o listener e a pose do visor ficam no filho `Head`. Essa pose da cabeça e do corpo do `Avatar` é a que os outros jogadores veem. O cursor permanece visível e livre, para o botão `SAIR` e o menu receberem o clique comum.
 
 ### 2.7 Voz espacial
 

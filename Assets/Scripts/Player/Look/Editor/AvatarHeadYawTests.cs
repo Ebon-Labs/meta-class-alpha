@@ -68,9 +68,9 @@ public class AvatarHeadYawTests
         Assert.AreEqual(30f, AvatarHeadYaw.LookPitch(Quaternion.Euler(30f, 0f, 0f)), 0.05f);
         Assert.AreEqual(-20f, AvatarHeadYaw.LookPitch(Quaternion.Euler(-20f, 40f, 0f)), 0.05f);
         Assert.AreEqual(45f, AvatarHeadYaw.ClampHeadPitch(80f), 0.001f);
-        Assert.AreEqual(-45f, AvatarHeadYaw.ClampHeadPitch(-70f), 0.001f);
+        Assert.AreEqual(-60f, AvatarHeadYaw.ClampHeadPitch(-70f), 0.001f);
         AvatarHeadYaw.ShownPose raised = AvatarHeadYaw.FromLook(0f, 0f, Quaternion.Euler(-70f, 0f, 0f), AvatarHeadYaw.LimitDegrees);
-        Assert.AreEqual(-45f, raised.Pitch, 0.05f);
+        Assert.AreEqual(-60f, raised.Pitch, 0.05f);
     }
 
     [Test]
