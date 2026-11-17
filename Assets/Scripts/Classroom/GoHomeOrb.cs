@@ -4,11 +4,13 @@ using UnityEngine;
 [DisallowMultipleComponent]
 public class GoHomeOrb : MonoBehaviour
 {
+    public const string Tag = "Go Home";
+
     public static bool IsTarget(Transform hit)
     {
         for (Transform current = hit; current != null; current = current.parent)
         {
-            if (current.name == "GoHomeOrb" || current.GetComponent<GoHomeOrb>() != null)
+            if (current.CompareTag(Tag))
                 return true;
         }
 

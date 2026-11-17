@@ -97,7 +97,7 @@ Fluxo, independente do conteúdo da cena:
 
 `OnPointerEnter` e `OnPointerExit` são enviados com `SendMessage` apenas para as tags `Interactive`, `Teleportable` e `Player`. O destaque visual fica a cargo de quem implementar esses métodos, em geral `ObjectBasicController`.
 
-O nome exibido no HUD tem uma convenção: se o pai do alvo tem tag `Planet`, a mensagem é `Planeta: <nome do pai>`. Caso contrário, usa o nome do próprio objeto. `PortalOne`, `PortalTwo` e `PortalThree` aparecem como **1**, **2** e **3**.
+O nome exibido no HUD tem uma convenção: se o pai do alvo tem tag `Planet`, a mensagem é `Planeta: <nome do pai>`. Caso contrário, usa o nome do próprio objeto. `PortalOne`, `PortalTwo` e `PortalThree` aparecem como **1**, **2** e **3**. `GoHomeOrb`, `GoHomeOrb 1` e `GoHomeOrb 2` aparecem como **Voltar à sala**.
 
 ### 2.4 Feedback visual de foco
 
@@ -207,7 +207,7 @@ O campo `body` é o texto mostrado. O valor padrão do prefab é uma frase de Lo
 |------|----------------|
 | `RotateClassButton` | Clique de olhar. A sala gira **45°** no sentido horário em torno da posição mundial da `HostArea` capturada no clique. Dura **3 s**, com SmoothStep (`EdgeApproach`). Sem `HostArea`, o pivô é o próprio transform da sala |
 | Viagem ao astro | `MoveToEdge` leva o centro da sala (`Class Center`) até a borda do destino. A altura é o topo do `Ground` daquele planeta, da Lua ou do Sol, não o `Ground` filho de `PseudoGround`. Duração padrão **7 s**. A volta para casa continua na altura do chão da sala |
-| `GoHomeOrb` | O anfitrião volta para `HostArea`; o cliente, para `GuestArea`. O texto do HUD é "Voltar à sala" |
+| Tag `Go Home` | Qualquer objeto com essa tag, no clique de olhar, leva o anfitrião para `HostArea` e o cliente para `GuestArea`. O texto do HUD é "Voltar à sala" |
 
 O sentido horário do projeto é yaw negativo: `Quaternion.AngleAxis` com ângulo negativo no eixo Y.
 
@@ -330,7 +330,7 @@ Player                        tag Player
 | Sessão VR | `InitCardboard` no `Plane`, com o material de skybox estrelado |
 | Presença em rede | O `NetworkManager` veio do Menu e permanece com `dontDestroyOnLoad`. Jogadores spawnados a partir de `Player.prefab` |
 | Giro da sala | `ClassController` na Class; `RotateClassButton` dispara os 45° em torno da `HostArea` |
-| Volta à sala | `GoHomeOrb`; anfitrião em `HostArea`, cliente em `GuestArea` |
+| Volta à sala | Qualquer objeto com a tag `Go Home`; anfitrião em `HostArea`, cliente em `GuestArea` |
 | Olhar e teleporte | `CameraPointerController` no Player. Alvos reais de teleporte são os portais, não as malhas dos planetas |
 | Feedback de foco | `ObjectBasicController` em `Sphere Portal`, `Cylinder Portal` e `Treasure` |
 | HUD | Canvas do Player, à frente da câmera em World Space |
@@ -359,7 +359,7 @@ Parâmetros do controlador na cena: `timeScale = 4320`, `distanceScale = 300`, o
 | Netuno | 7 | 9020,7 | 60182 | 16,11 | 28,32° |
 | Lua | — | 195 em volta da Terra | 27,322 | 655,728 | 6,68° |
 
-Vênus e Urano usam dia sideral negativo: a rotação do corpo é retrógrada. Os wrappers dos planetas não giram; só transladam em torno do eixo Y do Sol. A orientação que antes estava no wrapper está no objeto do planeta, e é esse objeto que o giro usa como referência. Na posição inicial, o polo da Terra inclina 23,44° para o Sol e o giro acompanha esse polo. Saturno gira na normal dos anéis, passando pelo centro deles. Os demais corpos continuam no eixo local de cima. A Lua translada em torno de `EarthCenter`, com o eixo inclinado 5,145°, e o corpo gira no próprio eixo. O raio 195 não vem do catálogo em unidades astronômicas.
+Vênus e Urano usam dia sideral negativo: a rotação do corpo é retrógrada. Os wrappers dos planetas não giram; só transladam em torno do eixo Y do Sol. A orientação que antes estava no wrapper está no objeto do planeta, e é esse objeto que o giro usa como referência. Na posição inicial, o polo de cada planeta inclina a obliquidade do catálogo para o Sol, e o giro acompanha esse polo: Mercúrio 0,034°, Vênus 177,36°, Terra 23,44°, Marte 25,19°, Júpiter 3,13°, Urano 97,77° e Netuno 28,32°. Saturno gira na normal dos anéis, passando pelo centro deles. A Lua translada em torno de `EarthCenter`, com o eixo inclinado 5,145°, e o corpo gira no próprio eixo. O raio 195 não vem do catálogo em unidades astronômicas.
 
 ### 3.4 Sala, portais e sistema solar
 

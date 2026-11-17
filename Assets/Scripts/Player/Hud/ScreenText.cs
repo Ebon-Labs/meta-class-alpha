@@ -43,6 +43,8 @@ public static class ScreenText
         { "control.PauseButton", "Pausar" },
         { "control.StopButton", "Parar" },
         { "control.GoHomeOrb", "Voltar à sala" },
+        { "control.GoHomeOrb 1", "Voltar à sala" },
+        { "control.GoHomeOrb 2", "Voltar à sala" },
         { "control.RotateClassButton", "Rotação" },
         { "control.RegroupButton", "Reagrupar" },
         { "control.InteractionMarkerOrb", "Marcador" },
