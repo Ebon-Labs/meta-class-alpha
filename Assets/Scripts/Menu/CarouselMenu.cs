@@ -72,6 +72,9 @@ public class CarouselMenu : MonoBehaviour
         if (CreateRoomButton.Press(screen, view))
             return;
 
+        if (EbonLabsCredit.Press(screen, view))
+            return;
+
         if (ImageMenuThumb.Press(screen, view))
         {
             Begin(SignedStep(ImageMenuThumb.ObjectName));

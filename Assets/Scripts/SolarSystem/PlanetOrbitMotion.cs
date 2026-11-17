@@ -30,6 +30,10 @@ public class PlanetOrbitMotion : MonoBehaviour
     [SerializeField] float siderealDayHours = 23.934f;
     [Tooltip("If true, applies axial tilt once from the scene local rotation.")]
     [SerializeField] bool applyAxialTiltOnStart = false;
+    [Tooltip("Axis in mesh space. Up keeps the previous spin. Earth uses the pole; Saturn uses the ring normal.")]
+    [SerializeField] Vector3 spinAxis = Vector3.up;
+    [Tooltip("Point in mesh space the axis passes through, so a mesh whose center is not the pivot still turns in place.")]
+    [SerializeField] Vector3 spinCenter = Vector3.zero;
 
     [Header("Time")]
     [Tooltip("Simulation speed. 4320 ≈ 1 Earth sidereal day every 20 real seconds.")]
@@ -157,8 +161,7 @@ public class PlanetOrbitMotion : MonoBehaviour
             return;
 
         _spinAngleDegrees = PlanetSpinCalculator.AngleAtClock(siderealDayHours, clock);
-        transform.localPosition = _initialLocalPosition;
-        transform.localRotation = PlanetSpinCalculator.EvaluateLocalRotation(_baseLocalRotation, _spinAngleDegrees);
+        ApplySpinPose();
     }
 
     void LateUpdate()
@@ -338,10 +341,20 @@ public class PlanetOrbitMotion : MonoBehaviour
         float degreesPerSecond = PlanetSpinCalculator.DegreesPerSecond(siderealDayHours, timeScale);
         _spinAngleDegrees = PlanetSpinCalculator.AdvanceAngle(_spinAngleDegrees, degreesPerSecond, dt);
 
-        transform.localPosition = _initialLocalPosition;
+        ApplySpinPose();
+    }
+
+    void ApplySpinPose()
+    {
         transform.localRotation = PlanetSpinCalculator.EvaluateLocalRotation(
             _baseLocalRotation,
-            _spinAngleDegrees);
+            _spinAngleDegrees,
+            spinAxis);
+        transform.localPosition = PlanetSpinCalculator.EvaluateLocalPosition(
+            _initialLocalPosition,
+            _baseLocalRotation,
+            transform.localRotation,
+            spinCenter);
     }
 
     void CacheChildLocalPoses()

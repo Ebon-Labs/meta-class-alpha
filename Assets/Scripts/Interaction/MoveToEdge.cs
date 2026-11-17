@@ -121,6 +121,53 @@ public class MoveToEdge : MonoBehaviour
         return null;
     }
 
+    public static Transform GroundOfTarget(Transform target)
+    {
+        Transform cursor = target;
+        while (cursor != null)
+        {
+            Transform ground = GroundUnder(cursor);
+            if (ground != null)
+                return ground;
+
+            if (IsWrapper(cursor.name))
+                return null;
+
+            cursor = cursor.parent;
+        }
+
+        return null;
+    }
+
+    public static Transform GroundUnder(Transform root)
+    {
+        if (root == null)
+            return null;
+
+        for (int i = 0; i < root.childCount; i++)
+        {
+            Transform child = root.GetChild(i);
+            if (child.name == GroundName)
+                return child;
+        }
+
+        for (int i = 0; i < root.childCount; i++)
+        {
+            Transform child = root.GetChild(i);
+            if (IsWrapper(child.name))
+                continue;
+
+            for (int j = 0; j < child.childCount; j++)
+            {
+                Transform nested = child.GetChild(j);
+                if (nested.name == GroundName)
+                    return nested;
+            }
+        }
+
+        return null;
+    }
+
     public static float RayRadius(Vector3 extents, Vector3 direction)
     {
         float distance = float.PositiveInfinity;
@@ -260,7 +307,7 @@ public class MoveToEdge : MonoBehaviour
         }
 
         elapsed += Time.deltaTime;
-        MoveSubject(EdgeApproach.Move(start, OnGround(EdgeTarget()), elapsed, duration));
+        MoveSubject(EdgeApproach.Move(start, OnTargetGround(EdgeTarget()), elapsed, duration));
         if (duration <= 0f || elapsed >= duration)
             Finish();
     }
@@ -285,6 +332,13 @@ public class MoveToEdge : MonoBehaviour
         }
 
         return Landing(destinationCenter, destinationRadius, start);
+    }
+
+    Vector3 OnTargetGround(Vector3 point)
+    {
+        Transform target = destination != null ? destination.transform : null;
+        bool hasGround = TryGroundHeight(GroundOfTarget(target), out float height);
+        return WithGroundHeight(point, hasGround, height);
     }
 
     Vector3 OnGround(Vector3 point)

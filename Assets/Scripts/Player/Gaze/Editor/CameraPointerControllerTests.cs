@@ -35,17 +35,21 @@ public class CameraPointerControllerTests
     }
 
     [Test]
-    public void GoHomeOrb_IncludesTheOrbAndItsChildren()
+    public void GoHome_IncludesEveryTaggedObjectAndItsChildren()
     {
-        GameObject orb = new GameObject("GoHomeOrb");
+        GameObject orb = new GameObject("GoHomeOrb 1");
         GameObject child = new GameObject("label");
-        GameObject other = new GameObject("Sun");
+        GameObject other = new GameObject("GoHomeOrb");
+        GameObject portal = new GameObject("Portal");
         try
         {
+            orb.tag = GoHomeOrb.Tag;
+            portal.tag = GoHomeOrb.Tag;
             child.transform.SetParent(orb.transform, false);
 
             Assert.IsTrue(GoHomeOrb.IsTarget(orb.transform));
             Assert.IsTrue(GoHomeOrb.IsTarget(child.transform));
+            Assert.IsTrue(GoHomeOrb.IsTarget(portal.transform));
             Assert.IsFalse(GoHomeOrb.IsTarget(other.transform));
             Assert.IsFalse(GoHomeOrb.IsTarget(null));
         }
@@ -53,6 +57,7 @@ public class CameraPointerControllerTests
         {
             Object.DestroyImmediate(orb);
             Object.DestroyImmediate(other);
+            Object.DestroyImmediate(portal);
         }
     }
 

@@ -5,7 +5,7 @@ using UnityEngine.SceneManagement;
 public class CameraEditorController : NetworkBehaviour
 {
     public const string MenuScene = "Menu";
-    public const float MaxPitchUpDegrees = 45f;
+    public const float MaxPitchUpDegrees = 60f;
     public const float MaxPitchDownDegrees = 45f;
 
     public float sensitivity = 5f;

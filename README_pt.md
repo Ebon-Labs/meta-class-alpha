@@ -1,4 +1,4 @@
-# meta-class-alpha
+# educaverso
 
 > **Idiomas:** [English](README.md) | Português (BR)
 
@@ -55,7 +55,7 @@ Câmera (direção do olhar)
 ## Arquitetura do projeto
 
 ```
-meta-class-alpha/
+educaverso/
 ├── Assets/
 │   ├── Scenes/Menu.unity         # Primeira cena do build
 │   ├── Scenes/SolarSystem.unity      # Sala de aula, carregada como cena online
@@ -153,7 +153,7 @@ Módulos Unity recomendados no Hub: **Android Build Support** (SDK, NDK, OpenJDK
 
 ```bash
 git clone <url-do-repositorio>
-cd meta-class-alpha
+cd educaverso
 ```
 
 Abra a pasta no **Unity Hub** com o editor **6000.3.6f1**.
@@ -237,7 +237,7 @@ Extensões atuais: C#, Unity Tools, Unity Debug, DocComment.
 
 | Campo | Valor |
 |-------|-------|
-| Package Name | `com.EbonLabs.metaclassalpha` |
+| Package Name | `com.EbonLabs.educaverso` |
 | Versão | `0.1` (versionCode: 1) |
 | Min API Level | 25 |
 | Scripting Backend | IL2CPP |
@@ -257,6 +257,6 @@ Extensões atuais: C#, Unity Tools, Unity Debug, DocComment.
 ## Licença e créditos
 
 - **Empresa:** EbonLabs
-- **Produto:** meta-class-alpha
+- **Produto:** Educaverso
 - Bibliotecas de terceiros: Mirror, Google Cardboard XR, ParrelSync, TextMesh Pro
 - Fonte do menu: [Montserrat](https://github.com/JulietaUla/Montserrat) Bold, SIL Open Font License (`Assets/Fonts/OFL.txt`)

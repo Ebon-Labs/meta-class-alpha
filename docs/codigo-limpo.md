@@ -1,6 +1,6 @@
 # Código limpo — consulta para agentes
 
-**Projeto:** meta-class-alpha  
+**Projeto:** educaverso  
 **Uso:** ler este arquivo antes de criar ou alterar código. É a referência de como produzir código neste repositório.  
 **Palavras-chave:** clean code, SOLID, arquitetura, testes, NUnit, Edit Mode, MetaClass  
 **Arquitetura vigente:** [arquitetura.md](arquitetura.md)

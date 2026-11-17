@@ -51,5 +51,5 @@
         "temp/": true,
         "Temp/": true
     },
-    "dotnet.defaultSolution": "meta-class-alpha.slnx"
+    "dotnet.defaultSolution": "educaverso.slnx"
 }

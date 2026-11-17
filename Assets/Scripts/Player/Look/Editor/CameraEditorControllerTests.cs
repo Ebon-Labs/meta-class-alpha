@@ -17,16 +17,18 @@ public class CameraEditorControllerTests
     }
 
     [Test]
-    public void ClampPitch_StopsAtFortyFiveUpAndDown()
+    public void ClampPitch_StopsAtSixtyUpAndFortyFiveDown()
     {
         Assert.AreEqual(20f, CameraEditorController.ClampPitch(20f), 0.001f);
         Assert.AreEqual(45f, CameraEditorController.ClampPitch(80f), 0.001f);
-        Assert.AreEqual(-45f, CameraEditorController.ClampPitch(-75f), 0.001f);
+        Assert.AreEqual(-60f, CameraEditorController.ClampPitch(-75f), 0.001f);
 
         Quaternion look = Quaternion.Euler(80f, 25f, 0f);
         Quaternion clamped = CameraEditorController.ClampLookPitch(look);
 
         Assert.AreEqual(45f, AvatarHeadYaw.LookPitch(clamped), 0.05f);
+        Quaternion raised = CameraEditorController.ClampLookPitch(Quaternion.Euler(-75f, 25f, 0f));
+        Assert.AreEqual(-60f, AvatarHeadYaw.LookPitch(raised), 0.05f);
         Assert.AreEqual(25f, AvatarHeadYaw.LookYaw(clamped), 0.05f);
 
         Quaternion tilted = Quaternion.Euler(80f, 25f, 12f);

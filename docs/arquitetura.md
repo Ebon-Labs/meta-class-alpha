@@ -1,6 +1,6 @@
 # Documento de Arquitetura
 
-**Projeto:** meta-class-alpha  
+**Projeto:** educaverso  
 **Cenas de build:** `Assets/Scenes/Menu.unity` (primeira), depois `Assets/Scenes/SolarSystem.unity` e `Assets/Scenes/Tutorial.unity`  
 **Escopo:** funcionalidades implementadas e a forma como o menu e a cena SolarSystem as compõem  
 **Fora de escopo:** sala de controle e portal de retorno descritos em [TDD-sala-observacao-controle.md](TDD-sala-observacao-controle.md), que ainda não estão implementados. O painel descritivo desse TDD está feito (`InfoArea` e `SceneInfoPanel`, seções 2.13 e 3).  
@@ -75,6 +75,7 @@ A rede usa Mirror com transporte Telepathy. O contrato genérico é:
 - um `NetworkManager` na cena, com um prefab de jogador e um transporte;
 - o jogador é o único objeto spawnado pela rede;
 - posição e rotação do dono seguem para o servidor (`NetworkTransform` com `SyncDirection.ClientToServer`) e dali para os demais clientes;
+- o giro da cabeça do dono (yaw do corpo e da cabeça até **45°**, pitch até **60°** para cima e **45°** para baixo) segue no mesmo caminho, num `[Command]` unreliable, e os outros clientes aplicam essa pose no `Avatar`;
 - câmera, canvas e listener existem no prefab, mas só o jogador local os liga.
 
 Parâmetros atuais do manager, reutilizáveis como padrão do projeto: porta **7777**, no máximo **4** conexões, `dontDestroyOnLoad`, `autoStartServerBuild` ligado e `autoConnectClientBuild` desligado. O endereço padrão no Editor é `localhost`. O manager vive na cena Menu, com cena offline `Menu` e cena online `SolarSystem`. SolarSystem não carrega um segundo `NetworkManager`. O HUD de canto do Mirror continua sendo o controle que cria a sala.
@@ -97,7 +98,7 @@ Fluxo, independente do conteúdo da cena:
 
 `OnPointerEnter` e `OnPointerExit` são enviados com `SendMessage` apenas para as tags `Interactive`, `Teleportable` e `Player`. O destaque visual fica a cargo de quem implementar esses métodos, em geral `ObjectBasicController`.
 
-O nome exibido no HUD tem uma convenção: se o pai do alvo tem tag `Planet`, a mensagem é `Planeta: <nome do pai>`. Caso contrário, usa o nome do próprio objeto. `PortalOne`, `PortalTwo` e `PortalThree` aparecem como **1**, **2** e **3**.
+O nome exibido no HUD tem uma convenção: se o pai do alvo tem tag `Planet`, a mensagem é `Planeta: <nome do pai>`. Caso contrário, usa o nome do próprio objeto. `PortalOne`, `PortalTwo` e `PortalThree` aparecem como **1**, **2** e **3**. `GoHomeOrb`, `GoHomeOrb 1` e `GoHomeOrb 2` aparecem como **Voltar à sala**.
 
 ### 2.4 Feedback visual de foco
 
@@ -115,7 +116,7 @@ O indicador de progresso é um `Slider` filho do jogador, ativado só durante a 
 
 ### 2.6 Olhar no Editor
 
-`CameraEditorController` gira a vista do jogador local com o mouse, só no Editor. O osso `head` do `Avatar` acompanha o giro horizontal da câmera, em torno do eixo Y do jogador, no máximo **45°** para cada lado. Acima disso, o corpo do `Avatar` gira no mesmo eixo Y e a cabeça permanece no limite. No eixo X, a câmera e a cabeça não passam de **45°** para cima nem para baixo. O movimento da cabeça é só para cima ou só para baixo. O corpo não inclina. A cabeça não gira no eixo Z. A câmera, o listener e a pose do visor ficam no filho `Head`. O cursor permanece visível e livre, para o botão `SAIR` e o menu receberem o clique comum.
+`CameraEditorController` gira a vista do jogador local com o mouse, só no Editor. O osso `head` do `Avatar` acompanha o giro horizontal da câmera, em torno do eixo Y do jogador, no máximo **45°** para cada lado. Acima disso, o corpo do `Avatar` gira no mesmo eixo Y e a cabeça permanece no limite. No eixo X, a câmera e a cabeça sobem até **60°** e descem até **45°**. O movimento da cabeça é só para cima ou só para baixo. O corpo não inclina. A cabeça não gira no eixo Z. A câmera, o listener e a pose do visor ficam no filho `Head`. Essa pose da cabeça e do corpo do `Avatar` é a que os outros jogadores veem. O cursor permanece visível e livre, para o botão `SAIR` e o menu receberem o clique comum.
 
 ### 2.7 Voz espacial
 
@@ -147,7 +148,7 @@ O movimento celeste está em `Assets/Scripts/SolarSystem/` e não depende de red
 Dois eixos de movimento ficam em objetos diferentes de propósito. Órbita e rotação no mesmo transform brigam com a pose local dos filhos. O padrão é:
 
 - o **wrapper** orbita o Sol e não gira (`enableOrbit` ligado, `enableSpin` desligado);
-- o **corpo** filho gira no lugar e não translada (`enableSpin` ligado, `enableOrbit` desligado).
+- o **corpo** filho gira no lugar e não translada (`enableSpin` ligado, `enableOrbit` desligado). O eixo padrão é o Y da malha. Terra e Saturno guardam outro eixo e o ponto por onde ele passa: a Terra no polo, Saturno na normal dos anéis.
 
 `PlanetOrbitMotion` grava a pose local dos filhos cujo nome começa com `InteractionOrb` e a restaura no `LateUpdate`, para o marcador não derivar quando o pai é movido. Rótulos ficam de fora desse travamento: eles próprios ajustam escala e pose.
 
@@ -206,8 +207,8 @@ O campo `body` é o texto mostrado. O valor padrão do prefab é uma frase de Lo
 | Ação | Comportamento |
 |------|----------------|
 | `RotateClassButton` | Clique de olhar. A sala gira **45°** no sentido horário em torno da posição mundial da `HostArea` capturada no clique. Dura **3 s**, com SmoothStep (`EdgeApproach`). Sem `HostArea`, o pivô é o próprio transform da sala |
-| Viagem ao astro | `MoveToEdge` leva o centro da sala (`Class Center`) até a borda do destino, estacionando em **Y = 8**. Duração padrão **7 s**. A volta para casa conserva a altura de origem capturada |
-| `GoHomeOrb` | O anfitrião volta para `HostArea`; o cliente, para `GuestArea`. O texto do HUD é "Voltar à sala" |
+| Viagem ao astro | `MoveToEdge` leva o centro da sala (`Class Center`) até a borda do destino. A altura é o topo do `Ground` daquele planeta, da Lua ou do Sol, não o `Ground` filho de `PseudoGround`. Duração padrão **7 s**. A volta para casa continua na altura do chão da sala |
+| Tag `Go Home` | Qualquer objeto com essa tag, no clique de olhar, leva o anfitrião para `HostArea` e o cliente para `GuestArea`. O texto do HUD é "Voltar à sala" |
 
 O sentido horário do projeto é yaw negativo: `Quaternion.AngleAxis` com ângulo negativo no eixo Y.
 
@@ -225,11 +226,11 @@ A cena Menu é a primeira do build. Ela não tem jogador local, então o gaze n�
 | `EnterBack` | Voltar | +90° horário, mesmo sentido de Create |
 | `TutorialButton` | Instruções | nenhum giro: o toque abre `Tutorial.unity` em host + client |
 
-O acerto usa os limites visíveis do renderer, com **48 px** de folga, e escolhe o rótulo cujo centro na tela está mais perto do toque. Só entra o rótulo virado para a câmera. Cantos atrás da câmera são ignorados. Create, Enter e as voltas não chamam `StartHost` nem `StartClient`. O toque em `TutorialButton` troca a cena online para `Assets/Scenes/Tutorial.unity` e chama `NetworkManager.StartHost()` (host + client), só enquanto não há sessão ativa. Na cena Tutorial, o jogador sem área de anfitrião ou convidado fica no centro do objeto `Ground`, acima do topo da malha, na altura dos olhos. O toque em `SolarSystemThumb` gira o carrossel e não inicia a sala. A sala do sistema solar continua no botão Entrar e no Host do HUD, com `onlineScene` de volta para `Assets/Scenes/SolarSystem.unity`. A miniatura também precisa estar virada para a câmera. O clique numa sala da lista é testado antes da miniatura. Ao entrar em SolarSystem ou Tutorial, `coloque-oculos-vr` cobre a visão por **5 s** e só então a cena aparece. Na cena Tutorial, quando essa imagem some, `boas-vindas-treinamento` toca uma vez.
+O acerto usa os limites visíveis do renderer, com **48 px** de folga, e escolhe o rótulo cujo centro na tela está mais perto do toque. Só entra o rótulo virado para a câmera. Cantos atrás da câmera são ignorados. Create, Enter e as voltas não chamam `StartHost` nem `StartClient`. O toque em `EbonLabsCredit`, a marca ao lado de `CreditsText` ("Desenvolvido por"), abre https://ebonlabs.pages.dev/ e não gira o carrossel. O toque em `TutorialButton` troca a cena online para `Assets/Scenes/Tutorial.unity` e chama `NetworkManager.StartHost()` (host + client), só enquanto não há sessão ativa. Na cena Tutorial, o jogador sem área de anfitrião ou convidado fica no centro do objeto `Ground`, acima do topo da malha, na altura dos olhos. O toque em `SolarSystemThumb` gira o carrossel e não inicia a sala. A sala do sistema solar continua no botão Entrar e no Host do HUD, com `onlineScene` de volta para `Assets/Scenes/SolarSystem.unity`. A miniatura também precisa estar virada para a câmera. O clique numa sala da lista é testado antes da miniatura. Ao entrar em SolarSystem ou Tutorial, `coloque-oculos-vr` cobre a visão por **5 s** e só então a cena aparece. Na cena Tutorial, quando essa imagem some, `boas-vindas-treinamento` toca uma vez.
 
 `LanRoomBeacon` nasce em runtime no `NetworkDiscovery`, quando `RoomList` liga. Servidor ativo anuncia a sala; cliente que não é servidor para a busca; sem sessão, a busca começa. O anúncio é UDP em broadcast, porta **47777**, a cada **3 s**. `RoomList` guarda cada sala pelo `serverId` e apaga as que ficam mais de **7 s** sem anúncio novo. O componente fica no campo TMP da face de busca: o campo é só leitura, e sem salas o placeholder da cena continua visível. Cada sala é uma linha (apelido, ou host e porta). O toque na linha entra só como cliente (`StartClient` com o URI da sala) e não cria outra sala. O anfitrião não lista a própria sala.
 
-O fundo é `educaverso_logo_bg_menu.png` no shader `Custom/MenuBackdrop`. `MenuBackdrop` cobre a câmera ortográfica em 16:9. O objeto `Logo` é uma Image em canvas World Space com `educaverso_logo.png` e oscila na vertical enquanto a cena está ativa (`LogoBounce`, amplitude **0,35**, período **1,6 s**). Na face de criar, `SolarSystemThumb` é outra Image, com `solar_system_thumb`. Os TextMeshPro do menu usam o atlas `Montserrat-Bold SDF`. O material das letras e o da miniatura `SolarSystemThumb` usam Cull Back (`_CullMode` 2), então as costas ficam ocultas.
+O fundo é `educaverso_logo_bg_menu.png` no shader `Custom/MenuBackdrop`. `MenuBackdrop` cobre a câmera ortográfica em 16:9. O objeto `Logo` é uma Image em canvas World Space com `educaverso_logo.png` e oscila na vertical enquanto a cena está ativa (`LogoBounce`, amplitude **0,35**, período **1,6 s**). Na face de criar, `SolarSystemThumb` é outra Image, com `solar_system_thumb`. Os TextMeshPro do menu usam o atlas `Montserrat-Bold SDF`. O material das letras, o da miniatura `SolarSystemThumb` e o dos objetos `Overlay` usam Cull Back (`_CullMode` 2), então as costas ficam ocultas.
 
 ### 2.16 Botões da sala
 
@@ -330,7 +331,7 @@ Player                        tag Player
 | Sessão VR | `InitCardboard` no `Plane`, com o material de skybox estrelado |
 | Presença em rede | O `NetworkManager` veio do Menu e permanece com `dontDestroyOnLoad`. Jogadores spawnados a partir de `Player.prefab` |
 | Giro da sala | `ClassController` na Class; `RotateClassButton` dispara os 45° em torno da `HostArea` |
-| Volta à sala | `GoHomeOrb`; anfitrião em `HostArea`, cliente em `GuestArea` |
+| Volta à sala | Qualquer objeto com a tag `Go Home`; anfitrião em `HostArea`, cliente em `GuestArea` |
 | Olhar e teleporte | `CameraPointerController` no Player. Alvos reais de teleporte são os portais, não as malhas dos planetas |
 | Feedback de foco | `ObjectBasicController` em `Sphere Portal`, `Cylinder Portal` e `Treasure` |
 | HUD | Canvas do Player, à frente da câmera em World Space |
@@ -338,9 +339,9 @@ Player                        tag Player
 | Voz | `VoiceChatController` e `AudioSource` no Player; os outros ouvem na posição do avatar |
 | Órbita | `PlanetOrbitMotion` em cada `*Wrapper`, centro no Sol, `SolarSystemMotionController` na raiz do FBX. O wrapper se desloca para o centro da malha ficar no círculo. A folga contra o Sol vale para os planetas; a Lua orbita `EarthCenter`, não segue o `distanceScale` solar e não aplica essa folga |
 | Botões da sala | Marcadores, voz, ritmo, distância, chão e tela. O ícone dos quatro primeiros é o oposto do estado atual |
-| Rotação | `PlanetOrbitMotion` na malha de cada planeta e na Lua, com o perfil científico correspondente. Na Lua o perfil não é reaplicado no `Awake` |
+| Rotação | `PlanetOrbitMotion` na malha de cada planeta e na Lua, com o perfil científico correspondente. A orientação axial está no planeta; o wrapper fica sem rotação. Na Lua o perfil não é reaplicado no `Awake` |
 | Rótulos | Uma instância de `PlanetLabel.prefab` por wrapper de planeta e mais uma no `MoonWrapper`, com `overrideText` igual ao nome do corpo |
-| Painel descritivo | `SceneInfo` no Canvas do Player. Uma `InfoArea` em cada wrapper de planeta, no `MoonWrapper` e no Sol |
+| Painel descritivo | `SceneInfo` no Canvas do Player. Uma `InfoArea` filha de cada planeta, no centro da malha; a da Lua fica no `MoonWrapper` e a do Sol no próprio Sol |
 | Luz | `Sun Light` segue `Sun Sphere` |
 | Nuvens | Filhos `Clouds` já presentes em Terra e Vênus. `PlanetCloudLayer` existe como script e não está atribuído na cena |
 | Marcadores | Um `InteractionOrb` por wrapper de planeta e um no `MoonWrapper`, visíveis porque `showInteractionOrbs` está ligado |
@@ -359,7 +360,7 @@ Parâmetros do controlador na cena: `timeScale = 4320`, `distanceScale = 300`, o
 | Netuno | 7 | 9020,7 | 60182 | 16,11 | 28,32° |
 | Lua | — | 195 em volta da Terra | 27,322 | 655,728 | 6,68° |
 
-Vênus e Urano usam dia sideral negativo: a rotação do corpo é retrógrada. Os wrappers dos planetas não giram; só transladam em torno do eixo Y do Sol. A Lua translada em torno de `EarthCenter`, com o eixo inclinado 5,145°, e o corpo gira no próprio eixo. O raio 195 não vem do catálogo em unidades astronômicas.
+Vênus e Urano usam dia sideral negativo: a rotação do corpo é retrógrada. Os wrappers dos planetas não giram; só transladam em torno do eixo Y do Sol. A orientação que antes estava no wrapper está no objeto do planeta, e é esse objeto que o giro usa como referência. Na posição inicial, o polo de cada planeta inclina a obliquidade do catálogo para o Sol, e o giro acompanha esse polo: Mercúrio 0,034°, Vênus 177,36°, Terra 23,44°, Marte 25,19°, Júpiter 3,13°, Urano 97,77° e Netuno 28,32°. Saturno gira na normal dos anéis, passando pelo centro deles. A Lua translada em torno de `EarthCenter`, com o eixo inclinado 5,145°, e o corpo gira no próprio eixo. O raio 195 não vem do catálogo em unidades astronômicas.
 
 ### 3.4 Sala, portais e sistema solar
 
@@ -404,7 +405,7 @@ sequenceDiagram
     end
 ```
 
-O que cada cliente calcula sozinho: órbitas, rotações, escala dos rótulos, posição da luz, visibilidade de orbes e rótulos, e o texto de `SceneInfo`. O painel descritivo não atravessa a rede: cada cliente testa só o próprio jogador contra as `InfoArea`. O que a rede replica: transform do jogador e pacotes de voz. Um teleporte é uma mudança de `transform.position` no dono; os outros clientes veem o avatar chegar à borda do portal porque o `NetworkTransform` está em `ClientToServer`.
+O que cada cliente calcula sozinho: órbitas, rotações, escala dos rótulos, posição da luz, visibilidade de orbes e rótulos, e o texto de `SceneInfo`. O painel descritivo não atravessa a rede: cada cliente testa só o próprio jogador contra as `InfoArea`. O que a rede replica: transform do jogador, a pose da cabeça do `Avatar` e pacotes de voz. Um teleporte é uma mudança de `transform.position` no dono; os outros clientes veem o avatar chegar à borda do portal porque o `NetworkTransform` está em `ClientToServer`.
 
 A fase orbital não é reconciliada. Dois clientes que entram em momentos diferentes, ou que alterassem `timeScale` só de um lado, veriam os planetas em lugares diferentes. Na cena os valores estão iguais e fixos no componente, então a divergência prática vem do instante em que cada processo começou a simular.
 
@@ -418,7 +419,7 @@ A fase orbital não é reconciliada. Dois clientes que entram em momentos difere
 | `Treasure.prefab` | Um sob `Interactive` |
 | `PlanetLabel.prefab` | Um por wrapper de planeta e um no `MoonWrapper`, texto fixo do corpo |
 | `InteractionOrb.prefab` | Um por wrapper de planeta e um no `MoonWrapper` |
-| `InfoArea.prefab` | Um por wrapper de planeta, um no `MoonWrapper` e um no Sol. O `body` da cena substitui o Lorem ipsum do prefab |
+| `InfoArea.prefab` | Uma filha de cada planeta, no centro da malha, mais uma no `MoonWrapper` e uma no Sol. O `body` da cena substitui o Lorem ipsum do prefab |
 | `Sun Sphere` | Substitui o Sol do FBX; pai do portal solar e de uma `InfoArea` |
 | `SolarSystem.fbx` | Malhas dos corpos, raiz sob `Environment` |
 | `Male_002.fbx` | Avatar filho do Player |
@@ -460,6 +461,7 @@ Assets/Scripts/
 ├── Presentation/ZBounce.cs          oscilação local em Z enquanto visível
 ├── Menu/
 │   ├── CarouselMenu.cs              giro de 90° por toque na tela
+│   ├── EbonLabsCredit.cs            toque na marca abre o site da Ebon Labs
 │   ├── SolarSystemThumbHost.cs      toque na miniatura cria a sala
 │   ├── RoomList.cs                  salas abertas e entrada como cliente
 │   ├── LanRoomBeacon.cs             anúncio ou busca conforme a sessão
@@ -477,14 +479,14 @@ Assets/Scripts/
 │   ├── MenuBackdrop.cs
 │   └── MainScreen.cs
 ├── Interaction/
-│   ├── MoveToEdge.cs                viagem ao astro, 7 s, Y = 8
+│   ├── MoveToEdge.cs                viagem ao astro, 7 s, altura do Ground do alvo
 │   ├── TeleportReveal.cs            esconde o alvo e mostra o próximo
 │   ├── PassengerHold.cs
 │   ├── EdgeApproach.cs              SmoothStep compartilhado
 │   └── ControlButtonAppearance.cs
 ├── Player/
 │   ├── Gaze/CameraPointerController.cs
-│   ├── Look/AvatarHeadYaw.cs        cabeça até 45° no Y; corpo no excesso
+│   ├── Look/AvatarHeadYaw.cs        cabeça até 45° no Y; corpo no excesso; pose visível aos outros
 │   ├── Hud/ScreenText.cs            frases em pt-BR
 │   └── Voice/VoiceChatController.cs
 └── SolarSystem/                     órbita pelo centro da malha, rótulos, luz, nuvens

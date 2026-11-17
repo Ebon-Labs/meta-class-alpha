@@ -5,8 +5,14 @@ using UnityEngine;
 public class AvatarHeadYaw : NetworkBehaviour
 {
     public const float LimitDegrees = 45f;
+    public const float MaxPitchUpDegrees = 60f;
+    public const float PublishEpsilonDegrees = 0.5f;
     public const string BoneName = "head";
     public const string BodyName = "Avatar";
+
+    [SyncVar] float syncedBodyYaw;
+    [SyncVar] float syncedHeadYaw;
+    [SyncVar] float syncedPitch;
 
     Transform bone;
     Transform body;
@@ -17,6 +23,8 @@ public class AvatarHeadYaw : NetworkBehaviour
     float bodyYaw;
     float lookYaw;
     bool captured;
+    ShownPose published;
+    bool hasPublished;
 
     public readonly struct YawPose
     {
@@ -30,6 +38,25 @@ public class AvatarHeadYaw : NetworkBehaviour
         }
     }
 
+    public readonly struct ShownPose
+    {
+        public readonly float Body;
+        public readonly float Head;
+        public readonly float Pitch;
+
+        public ShownPose(float body, float head, float pitch)
+        {
+            Body = body;
+            Head = head;
+            Pitch = pitch;
+        }
+    }
+
+    public static float ClampHeadPitch(float pitch)
+    {
+        return Mathf.Clamp(pitch, -MaxPitchUpDegrees, LimitDegrees);
+    }
+
     public static float ClampYaw(float yaw, float limit)
     {
         return Mathf.Clamp(Mathf.DeltaAngle(0f, yaw), -limit, limit);
@@ -41,6 +68,28 @@ public class AvatarHeadYaw : NetworkBehaviour
         float head = Mathf.Clamp(delta, -limit, limit);
         float body = bodyYaw + (delta - head);
         return new YawPose(Mathf.DeltaAngle(0f, body), head);
+    }
+
+    public static ShownPose FromLook(float bodyYaw, float lookYaw, Quaternion look, float limit)
+    {
+        Vector3 flat = look * Vector3.forward;
+        flat.y = 0f;
+        float yaw = flat.sqrMagnitude >= 0.000001f ? LookYaw(look) : lookYaw;
+        YawPose pose = Follow(bodyYaw, yaw, limit);
+        float pitch = ClampHeadPitch(LookPitch(look));
+        return new ShownPose(pose.Body, pose.Head, pitch);
+    }
+
+    public static bool Moved(ShownPose previous, ShownPose next, float epsilon)
+    {
+        return AnglePast(previous.Body, next.Body, epsilon)
+            || AnglePast(previous.Head, next.Head, epsilon)
+            || AnglePast(previous.Pitch, next.Pitch, epsilon);
+    }
+
+    static bool AnglePast(float from, float to, float epsilon)
+    {
+        return Mathf.Abs(Mathf.DeltaAngle(from, to)) > epsilon;
     }
 
     public static float LookYaw(Quaternion look)
@@ -181,38 +230,78 @@ public class AvatarHeadYaw : NetworkBehaviour
     void LateUpdate()
     {
         StopIndependentMotion(gameObject);
-        if (!isLocalPlayer)
+        if (!Capture())
             return;
 
-        if (!captured)
+        if (isLocalPlayer)
         {
-            bone = FindBone(transform, BoneName);
-            if (bone == null)
-                return;
-            body = FindBody(transform, bone);
-            if (body == null)
-                return;
-            boneRest = bone.localRotation;
-            bodyRest = body.localRotation;
-            boneUp = bone.InverseTransformDirection(transform.up);
-            boneForward = bone.InverseTransformDirection(transform.forward);
-            captured = true;
+            ShowLocal();
+            return;
         }
 
+        Show(new ShownPose(syncedBodyYaw, syncedHeadYaw, syncedPitch));
+    }
+
+    bool Capture()
+    {
+        if (captured)
+            return bone != null && body != null;
+
+        bone = FindBone(transform, BoneName);
+        body = FindBody(transform, bone);
+        if (bone == null || body == null)
+            return false;
+
+        boneRest = bone.localRotation;
+        bodyRest = body.localRotation;
+        boneUp = bone.InverseTransformDirection(transform.up);
+        boneForward = bone.InverseTransformDirection(transform.forward);
+        captured = true;
+        return true;
+    }
+
+    void ShowLocal()
+    {
         Camera view = GetComponentInChildren<Camera>();
         if (view == null)
             return;
 
-        Vector3 flat = view.transform.localRotation * Vector3.forward;
+        Quaternion look = view.transform.localRotation;
+        ShownPose pose = FromLook(bodyYaw, lookYaw, look, LimitDegrees);
+        Vector3 flat = look * Vector3.forward;
         flat.y = 0f;
         if (flat.sqrMagnitude >= 0.000001f)
-            lookYaw = LookYaw(view.transform.localRotation);
+            lookYaw = LookYaw(look);
 
-        YawPose pose = Follow(bodyYaw, lookYaw, LimitDegrees);
         bodyYaw = pose.Body;
-        body.localRotation = WithYaw(bodyRest, bodyYaw, Vector3.up);
-        float pitch = CameraEditorController.ClampPitch(LookPitch(view.transform.localRotation));
-        Quaternion nodded = Nod(boneRest, pitch, boneUp, boneForward);
+        Show(pose);
+        Publish(pose);
+    }
+
+    void Show(ShownPose pose)
+    {
+        body.localRotation = WithYaw(bodyRest, pose.Body, Vector3.up);
+        Quaternion nodded = Nod(boneRest, pose.Pitch, boneUp, boneForward);
         bone.localRotation = WithYaw(nodded, pose.Head, UpAxis(bone.parent, transform));
+    }
+
+    void Publish(ShownPose pose)
+    {
+        if (!isClient)
+            return;
+        if (hasPublished && !Moved(published, pose, PublishEpsilonDegrees))
+            return;
+
+        published = pose;
+        hasPublished = true;
+        CmdShowHead(pose.Body, pose.Head, pose.Pitch);
+    }
+
+    [Command(channel = Channels.Unreliable)]
+    void CmdShowHead(float bodyAngle, float headAngle, float pitch)
+    {
+        syncedBodyYaw = bodyAngle;
+        syncedHeadYaw = headAngle;
+        syncedPitch = pitch;
     }
 }

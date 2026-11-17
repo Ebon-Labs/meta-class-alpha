@@ -46,6 +46,8 @@ public class ScreenTextTests
         Assert.AreEqual("Pausar", ScreenText.Name("PauseButton"));
         Assert.AreEqual("Parar", ScreenText.Name("StopButton"));
         Assert.AreEqual("Voltar à sala", ScreenText.Name("GoHomeOrb"));
+        Assert.AreEqual("Voltar à sala", ScreenText.Name("GoHomeOrb 1"));
+        Assert.AreEqual("Voltar à sala", ScreenText.Name("GoHomeOrb 2"));
         Assert.AreEqual("Marcador", ScreenText.Name("InteractionMarkerOrb"));
         Assert.AreEqual("1", ScreenText.Name("PortalOne"));
         Assert.AreEqual("2", ScreenText.Name("PortalTwo"));

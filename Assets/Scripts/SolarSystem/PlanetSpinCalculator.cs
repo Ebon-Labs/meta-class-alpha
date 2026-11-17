@@ -31,6 +31,26 @@ public static class PlanetSpinCalculator
 
     public static Quaternion EvaluateLocalRotation(Quaternion baseLocalRotation, float spinAngleDegrees)
     {
-        return baseLocalRotation * Quaternion.AngleAxis(spinAngleDegrees, Vector3.up);
+        return EvaluateLocalRotation(baseLocalRotation, spinAngleDegrees, Vector3.up);
+    }
+
+    public static Quaternion EvaluateLocalRotation(
+        Quaternion baseLocalRotation,
+        float spinAngleDegrees,
+        Vector3 axisInMeshSpace)
+    {
+        Vector3 axis = axisInMeshSpace.sqrMagnitude < 1e-8f ? Vector3.up : axisInMeshSpace.normalized;
+        return baseLocalRotation * Quaternion.AngleAxis(spinAngleDegrees, axis);
+    }
+
+    public static Vector3 EvaluateLocalPosition(
+        Vector3 baseLocalPosition,
+        Quaternion baseLocalRotation,
+        Quaternion spunLocalRotation,
+        Vector3 centerInMeshSpace)
+    {
+        return baseLocalPosition
+            + baseLocalRotation * centerInMeshSpace
+            - spunLocalRotation * centerInMeshSpace;
     }
 }

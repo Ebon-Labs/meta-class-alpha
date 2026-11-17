@@ -1,6 +1,6 @@
 # Riscos de segurança
 
-**Projeto:** meta-class-alpha  
+**Projeto:** educaverso  
 **Cena:** `Assets/Scenes/SolarSystem.unity`  
 **Escopo:** revisão do código do projeto em outubro de 2026. Não houve indício de malware: os scripts próprios não baixam código, não decodificam payload e não abrem processos. As DLLs em `Assets/Mirror/Plugins/Mono.Cecil/` pertencem ao Weaver do Mirror. As URLs do repositório apontam para Unity, Mirror, Cardboard e ParrelSync.
 

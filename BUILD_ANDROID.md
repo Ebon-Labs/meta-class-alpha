@@ -2,7 +2,7 @@
 
 > **Languages:** English | [Português (BR)](BUILD_ANDROID_pt.md)
 
-Guide to build an APK of **meta-class-alpha** for testing on a Google Cardboard device.
+Guide to build an APK of **educaverso** for testing on a Google Cardboard device.
 
 ## Current project configuration
 
@@ -10,7 +10,7 @@ Guide to build an APK of **meta-class-alpha** for testing on a Google Cardboard 
 |------|-------|
 | Unity | 6000.3.6f1 (Unity 6.3) |
 | Build scene | `Assets/Scenes/SolarSystem.unity` |
-| Package Name | `com.EbonLabs.metaclassalpha` |
+| Package Name | `com.EbonLabs.educaverso` |
 | Version | 0.1 (versionCode: 1) |
 | Min API Level | 25 (Android 7.1) |
 | Scripting Backend | IL2CPP |
@@ -35,7 +35,7 @@ If anything is missing, Unity usually prompts to install it when switching the p
 3. Select **Android** and click **Switch Platform** (wait for reimport).
 4. Confirm that `Assets/Scenes/SolarSystem.unity` is included in the build.
 5. Review **Edit → Project Settings → Player → Android**:
-   - **Package Name**: `com.EbonLabs.metaclassalpha`
+   - **Package Name**: `com.EbonLabs.educaverso`
    - **Minimum API Level**: 25
    - **Scripting Backend**: IL2CPP
    - **Target Architectures**: ARMv7 and ARM64
@@ -46,7 +46,7 @@ If anything is missing, Unity usually prompts to install it when switching the p
 The APK will be saved to the path you choose, for example:
 
 ```
-Builds/meta-class-alpha.apk
+Builds/educaverso.apk
 ```
 
 ## App signing
@@ -67,7 +67,7 @@ Requires a build script in `Assets/Editor/`. Example invocation:
 ```bash
 /path/to/Unity \
   -quit -batchmode -nographics \
-  -projectPath "/path/to/meta-class-alpha" \
+  -projectPath "/path/to/educaverso" \
   -buildTarget Android \
   -executeMethod AndroidBuild.BuildApk
 ```
