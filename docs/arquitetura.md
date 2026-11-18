@@ -80,8 +80,6 @@ A rede usa Mirror com transporte Telepathy. O contrato genérico é:
 
 Parâmetros atuais do manager, reutilizáveis como padrão do projeto: porta **7777**, no máximo **4** conexões, `dontDestroyOnLoad`, `autoStartServerBuild` ligado e `autoConnectClientBuild` desligado. O endereço padrão no Editor é `localhost`. O manager vive na cena Menu, com cena offline `Menu` e cena online `SolarSystem`. SolarSystem não carrega um segundo `NetworkManager`. O HUD de canto do Mirror continua sendo o controle que cria a sala.
 
-`SessionExitButton` desenha o botão **SAIR** no canto superior direito, em canvas de tela, com clique comum. Aparece em toda cena cujo nome não é `Menu` e some ao voltar para ela. O clique chama a mesma saída de `MenuReturn`: anfitrião e cliente juntos (`StopHost`) derrubam a sala e levam todos à cena offline `Menu`; só cliente (`StopClient`) sai da sala e volta ao `Menu`, e os demais ficam.
-
 `CameraPointerController.OnStartClient` posiciona o jogador local numa área aleatória próxima da origem (`x` e `z` entre 0 e 3, `y = 1`) e habilita câmera e canvas somente quando `isLocalPlayer` é verdadeiro.
 
 ### 2.3 Olhar, permanência e teleporte
@@ -106,7 +104,7 @@ O nome exibido no HUD tem uma convenção: se o pai do alvo tem tag `Planet`, a 
 
 `ZBounce` desloca a posição local no eixo Z enquanto o `Renderer` do mesmo objeto está visível para alguma câmera. A oscilação parte do repouso, sobe até a amplitude **1** e volta, com período **14,4 s**, e recomeça enquanto o objeto continuar visível. Fora de vista, volta ao repouso. Na cena Tutorial, o componente está em `PortalThree`.
 
-Na mesma cena, `PortalOne` começa desativado e só é ligado quando o vídeo do `MainScreen` chega ao fim. O teleporte para `PortalOne` o esconde e mostra `PortalTwo`. O teleporte para `PortalTwo` o esconde e mostra `PortalThree`. `PortalTwo` e `PortalThree` começam desativados. O teleporte para `PortalThree` espera **3 s** e encerra a sessão: o anfitrião chama `StopHost` e a cena offline `Menu` volta a abrir. Nesse retorno o cursor do Editor é solto, para o clique comum do menu funcionar.
+Na mesma cena, `PortalOne` começa desativado e só é ligado quando o vídeo do `MainScreen` chega ao fim. O teleporte para `PortalOne` o esconde e mostra `PortalTwo`. O teleporte para `PortalTwo` o esconde e mostra `PortalThree`. `PortalTwo` e `PortalThree` começam desativados. O teleporte para `PortalThree` espera **3 s** e encerra a sessão com `MenuReturn.Leave`: anfitrião e cliente juntos (`StopHost`) derrubam a sala e levam todos à cena offline `Menu`; só cliente (`StopClient`) sai da sala e volta ao `Menu`, e os demais ficam. Nesse retorno o cursor do Editor é solto, para o clique comum do menu funcionar.
 
 ### 2.5 HUD local
 
@@ -116,7 +114,7 @@ O indicador de progresso é um `Slider` filho do jogador, ativado só durante a 
 
 ### 2.6 Olhar no Editor
 
-`CameraEditorController` gira a vista do jogador local com o mouse, só no Editor. O osso `head` do `Avatar` acompanha o giro horizontal da câmera, em torno do eixo Y do jogador, no máximo **45°** para cada lado. Acima disso, o corpo do `Avatar` gira no mesmo eixo Y e a cabeça permanece no limite. No eixo X, a câmera e a cabeça sobem até **60°** e descem até **45°**. O movimento da cabeça é só para cima ou só para baixo. O corpo não inclina. A cabeça não gira no eixo Z. A câmera, o listener e a pose do visor ficam no filho `Head`. Essa pose da cabeça e do corpo do `Avatar` é a que os outros jogadores veem. O cursor permanece visível e livre, para o botão `SAIR` e o menu receberem o clique comum.
+`CameraEditorController` gira a vista do jogador local com o mouse, só no Editor. O osso `head` do `Avatar` acompanha o giro horizontal da câmera, em torno do eixo Y do jogador, no máximo **45°** para cada lado. Acima disso, o corpo do `Avatar` gira no mesmo eixo Y e a cabeça permanece no limite. No eixo X, a câmera e a cabeça sobem até **60°** e descem até **45°**. O movimento da cabeça é só para cima ou só para baixo. O corpo não inclina. A cabeça não gira no eixo Z. A câmera, o listener e a pose do visor ficam no filho `Head`. Essa pose da cabeça e do corpo do `Avatar` é a que os outros jogadores veem. O cursor permanece visível e livre, para o menu receber o clique comum.
 
 ### 2.7 Voz espacial
 
@@ -466,8 +464,7 @@ Assets/Scripts/
 │   ├── RoomList.cs                  salas abertas e entrada como cliente
 │   ├── LanRoomBeacon.cs             anúncio ou busca conforme a sessão
 │   ├── LogoBounce.cs
-│   ├── MenuReturn.cs               volta ao Menu 3 s após o teleporte
-│   └── SessionExitButton.cs        botão SAIR fora do Menu
+│   └── MenuReturn.cs               volta ao Menu 3 s após o teleporte
 ├── Classroom/
 │   ├── ClassController.cs           giro de 45° e áreas
 │   ├── RotateClassButton.cs
